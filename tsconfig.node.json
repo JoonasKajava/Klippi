@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "lib": ["es6", "DOM"],
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "composite": true,
+    "module": "ESNext",
+    "moduleResolution": "Node"
+  },
+  "include": ["vite.config.ts"]
+}
