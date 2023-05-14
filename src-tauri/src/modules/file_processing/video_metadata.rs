@@ -20,6 +20,7 @@ pub fn get_thumbnail(file: &PathBuf) -> Result<PathBuf, Error> {
     let input =  ffmpeg::format::input(file)?;
     println!("Duration {}", input.duration());
 
+
     Ok(PathBuf::new())
 }
 

@@ -1,0 +1,51 @@
+use std::fs::{File, self};
+use std::io::{Seek, SeekFrom};
+use std::path::{PathBuf};
+use compress_tools::*;
+use anyhow::Context;
+use anyhow::{Result};
+use tauri::Window;
+use crate::modules::file_processing::http::download;
+
+const FFMPEG_DOWNLOAD_URL: &str = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full.7z";
+
+pub fn uncompress_with_new_name(archive: PathBuf, new_name: &str) -> Result<()> {
+    let mut source = File::open(&archive)?;
+
+    let destination = archive.parent().context("Unable to get parent folder of file")?;
+
+    let file_list = list_archive_files(&mut source)?;
+
+    source.seek(SeekFrom::Start(0))?;
+
+    let first_file = file_list.first().context("Unable to get first file from archive")?;
+
+    uncompress_archive(&mut source, &destination, Ownership::Preserve)?;
+
+    drop(source);
+    fs::remove_file(&archive)?;
+
+    let uncompressed_folder = destination.join(first_file);
+    if uncompressed_folder.is_dir() {
+        let full_new_name = uncompressed_folder.with_file_name(new_name);
+        println!("Renaming {:?} to {:?}", &uncompressed_folder, &full_new_name);
+        fs::rename(&uncompressed_folder, full_new_name)?;
+    }
+
+    Ok(())
+}
+
+pub async fn install_ffmpeg(window: Window, path: &str) -> Result<String>{
+
+    let downloaded_file = download(PathBuf::from(FFMPEG_DOWNLOAD_URL), PathBuf::from(path), |progress| {
+        window.emit("download_progress", progress).context("Unable to emit progress").expect("Could not emit event");
+    }).await?;
+
+    
+
+    uncompress_with_new_name(downloaded_file, "ffmpeg")?;
+
+
+
+    Ok("Successful".into())
+}
