@@ -1,19 +1,20 @@
 <script lang="ts">
-  import { invoke } from "@tauri-apps/api/tauri";
   import TitleBar from "./lib/TitleBar.svelte";
-  import VideoSelector from "./lib/VideoSelector.svelte";
-    import MissingDependencies from "./lib/Installer/MissingDependencies.svelte";
-    import Installer from "./lib/Installer/Installer.svelte";
+  import Installer from "./lib/Installer/Installer.svelte";
+  import { fly } from "svelte/transition";
+    import { current_page } from "./lib/shared/AppStore";
 
-  let dependency_verification = invoke("verify_dependencies");
+  $current_page = Installer;
+
 </script>
 
 <TitleBar />
-
-{#await dependency_verification}
-  <div>Checking dependecies</div>
-{:then _}
-  <VideoSelector />
-{:catch error}
-  <Installer missing_dependencies={error} />
-{/await}
+{#key $current_page}
+  <div
+  class="flex-grow"
+    in:fly={{ delay: 200, duration: 200, y: 100 }}
+    out:fly={{ duration: 200, y: -100 }}
+  >
+    <svelte:component this={$current_page} />
+  </div>
+{/key}

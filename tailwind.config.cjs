@@ -1,5 +1,9 @@
 module.exports = {
-    content: ['./src/**/*.{svelte,js,ts}'],
-    plugins: [require('daisyui')],
-  };
-  
+  content: ['./src/**/*.{svelte,js,ts}'],
+  plugins: [require('daisyui')],
+  theme: {
+    minWidth: {
+      '8': '2rem',
+    }
+  }
+};

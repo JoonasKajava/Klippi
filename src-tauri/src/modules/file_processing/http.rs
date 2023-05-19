@@ -27,7 +27,7 @@ pub async fn get_available_filename(file_path: &PathBuf) -> Result<PathBuf> {
         counter += 1;
     }
 
-    if(new_name.exists()) {
+    if new_name.exists() {
         bail!("Tried 1000 times to find suitable file name and failed.")
     }
  

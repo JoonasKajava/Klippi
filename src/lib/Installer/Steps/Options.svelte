@@ -1,11 +1,14 @@
 <script lang="ts">
     import { open, ask } from "@tauri-apps/api/dialog";
     import { appDataDir, join } from "@tauri-apps/api/path";
+    import { fly } from "svelte/transition";
+    import Step from "./Step.svelte";
+    import { ffmpeg_install_location } from "../InstallerStore";
 
     export let onNext: () => void;
 
     async function get_default_install_directory() {
-        return await join(await appDataDir(), "ffmpeg");
+        return await appDataDir();
     }
 
     let install_location: string;
@@ -23,14 +26,24 @@
         }
 
     }
+
+    let ffmpeg_install_location_input : HTMLInputElement;
+
+    function next() {
+        $ffmpeg_install_location = ffmpeg_install_location_input.value;
+        onNext();
+    }
+
+    export let transitions;
 </script>
 
-<div>
+<Step transitions={transitions}>
     <div class="form-control">
         <span class="label">FFmpeg & FFProbe Installation Directory</span>
 
         <div class="input-group">
             <input
+                bind:this={ffmpeg_install_location_input}
                 readonly
                 type="text"
                 placeholder="Installation Directory..."
@@ -47,9 +60,9 @@
         </label>
     </div>
     <div class="text-right mt-6">
-        <button on:click={onNext} class="btn btn-outline btn-success">
+        <button on:click={next} class="btn btn-outline btn-success">
             Next
             <span class="material-icons">arrow_forward_ios</span>
         </button>
     </div>
-</div>
+</Step>

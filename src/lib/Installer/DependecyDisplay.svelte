@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    export let depencies: string[];
+    export let depencies: string[] = [];
     interface DependecyInfo {
         name: string;
         description: string;
@@ -12,6 +12,12 @@
             name: "FFprobe",
             description:
                 "Used to gather information about media, such as video duration",
+            source: "https://ffmpeg.org/",
+        },
+        ffmpeg: {
+            name: "FFmpeg",
+            description:
+                "Used to process media",
             source: "https://ffmpeg.org/",
         },
     };

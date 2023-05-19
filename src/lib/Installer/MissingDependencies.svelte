@@ -46,13 +46,14 @@
                 In order to function correctly {appName} needs following programs:
             </p>
             <DependecyDisplay depencies={missing_dependencies} />
-            <div class="mt-4">
+            <div class="mt-4 flex">
                 <button
                     on:click={() => modal.classList.add("modal-open")}
                     class="btn btn-outline btn-error"
                 >
                     I will install these my self
                 </button>
+                <div class="divider divider-horizontal">OR</div>
                 <button on:click={onInstallClick} class="btn btn-outline btn-success">
                     Install these for me
                     <span class="material-icons">arrow_forward_ios</span>

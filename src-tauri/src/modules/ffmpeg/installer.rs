@@ -2,10 +2,12 @@ use std::fs::{File, self};
 use std::io::{Seek, SeekFrom};
 use std::path::{PathBuf};
 use compress_tools::*;
-use anyhow::Context;
+use anyhow::{Context, bail};
 use anyhow::{Result};
 use tauri::Window;
 use crate::modules::file_processing::http::download;
+
+use super::get_version;
 
 const FFMPEG_DOWNLOAD_URL: &str = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full.7z";
 
@@ -35,17 +37,43 @@ pub fn uncompress_with_new_name(archive: PathBuf, new_name: &str) -> Result<()> 
     Ok(())
 }
 
+#[derive(Clone, serde::Serialize)]
+pub struct StepChange {
+    previous_step: String,
+    next_step: String
+}
+
 pub async fn install_ffmpeg(window: Window, path: &str) -> Result<String>{
 
     let downloaded_file = download(PathBuf::from(FFMPEG_DOWNLOAD_URL), PathBuf::from(path), |progress| {
         window.emit("download_progress", progress).context("Unable to emit progress").expect("Could not emit event");
     }).await?;
 
-    
+    window.emit("step_change", StepChange {
+        previous_step: "Downloading".into(),
+        next_step: "Installing".into()
+
+    }).context("Unable to emit").expect("Could not emit event");
 
     uncompress_with_new_name(downloaded_file, "ffmpeg")?;
 
+    window.emit("step_change", StepChange {
+        previous_step: "Installing".into(),
+        next_step: "Verifying".into()
 
+    }).context("Unable to emit").expect("Could not emit event");
+
+    let probe_version = get_version("ffprobe");
+    let ffmpeg_version = get_version("ffmpeg");
+
+    if probe_version.is_err() || ffmpeg_version.is_err() {
+        bail!("Unable to verify installation")
+    }
+    window.emit("step_change", StepChange {
+        previous_step: "Verifying".into(),
+        next_step: "Done".into()
+
+    }).context("Unable to emit").expect("Could not emit event");
 
     Ok("Successful".into())
 }

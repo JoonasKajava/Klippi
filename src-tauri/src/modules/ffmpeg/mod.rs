@@ -1,7 +1,13 @@
-use std::process::Command;
+use std::{process::Command, path::PathBuf};
+
+use crate::modules::config::{app_config::AppConfig, Static};
 
 pub mod ffprobe;
 pub mod installer;
+pub mod ffmpeg;
+pub mod ffmpeg_builder;
+pub mod ffmpeg_factory;
+pub mod progress;
 
 #[derive(Debug)]
 pub enum VersionResultError {
@@ -16,7 +22,14 @@ pub struct Version {
 }
 
 pub fn get_version(of: &str) -> Result<Version, VersionResultError> {
-    let output = Command::new(of)
+
+    let ffmpeg_location = PathBuf::from(AppConfig::current().ffmpeg_location.clone());
+
+    let full_program = ffmpeg_location.join("bin").join(&of);
+
+    println!("Checking verion of {:?}", full_program);
+
+    let output = Command::new( full_program)
         .arg("-version")
         .output().map_err(|_|VersionResultError::NotInstalled)?;
     let output_string = String::from_utf8_lossy(&output.stdout);

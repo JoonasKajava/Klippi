@@ -5,24 +5,11 @@ use std::{
     path::{Path, PathBuf},
 };
 
-extern crate ffmpeg_next as ffmpeg;
-
 use glob::glob;
 use anyhow::{anyhow, Error};
-use crate::modules::config::user_settings::UserSettings;
-
-pub fn get_thumbnail(file: &PathBuf) -> Result<PathBuf, Error> {
-    if !file.exists() {
-        return Err(anyhow!(format!("Cannot get thumbnail from a file that does not exist {}", file.display())));
-    }
-    ffmpeg::init()?;
-
-    let input =  ffmpeg::format::input(file)?;
-    println!("Duration {}", input.duration());
+use crate::modules::config::{user_settings::UserSettings, Static};
 
 
-    Ok(PathBuf::new())
-}
 
 pub fn find_lastest_videos() -> Vec<String> {
     let settings = UserSettings::current();
