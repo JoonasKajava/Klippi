@@ -57,7 +57,7 @@
     class:fullscreen={video_fullscreen}
     on:mouseenter={() => (display_controls = true)}
     on:mouseleave={() => (display_controls = false)}
-    class="relative inline-flex flex-col video-player w-5/12 transition-all"
+    class="relative inline-flex flex-col video-player transition-all z-50"
 >
     <!-- svelte-ignore a11y-media-has-caption -->
     <video
@@ -129,7 +129,10 @@
     {/if}
 </div>
 
-<Timeline seconds={duration} />
+<Timeline
+on:input={(e) => video_player.currentTime =e.detail.target.valueAsNumber}
+bind:value={current_time}
+seconds={duration} />
 
 <style lang="scss">
     .video-player * {

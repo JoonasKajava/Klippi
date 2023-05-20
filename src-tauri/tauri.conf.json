@@ -91,8 +91,8 @@
         "resizable": true,
         "title": "klippi",
         "width": 1000,
-        "height": 600,
-        "minHeight": 600,
+        "height": 700,
+        "minHeight": 700,
         "minWidth":  1000
       }
     ]

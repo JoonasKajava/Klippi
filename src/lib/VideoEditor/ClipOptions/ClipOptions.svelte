@@ -4,6 +4,7 @@
     import Advanced from "./Tabs/Advanced.svelte";
     import Share from "./Tabs/Share.svelte";
     import { fly } from "svelte/transition";
+    import Stats from "./Stats.svelte";
 
     let current_tab: ComponentType = Basic;
 
@@ -20,7 +21,8 @@
 </script>
 
 <div class="px-3">
-    <div class="tabs tabs-boxed flex-nowrap">
+    <h2 class="text-2xl text-center mb-2">Create Clip</h2>
+    <div class="tabs tabs-boxed flex-nowrap justify-center">
         <button
             class:tab-active={current_tab == Basic}
             on:click={() => change_tab(Basic)}
@@ -40,10 +42,15 @@
 
     {#key current_tab}
         <div
+            style="width: 300px;"
             in:fly={{ x: 100 * move_direction, duration: 200, delay: 200 }}
             out:fly={{ x: -100 * move_direction, duration: 200 }}
         >
             <svelte:component this={current_tab} />
+            <button class="btn w-full my-2 btn-primary">Create Clip!</button>
+            <Stats />
         </div>
     {/key}
+
+    
 </div>

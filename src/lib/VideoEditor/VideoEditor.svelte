@@ -3,9 +3,6 @@
 import { selected_video } from "./VideoEditorStore";
     import VideoPlayer from "./VideoPlayer/VideoPlayer.svelte";
 </script>
-
-sdfgsdfg
-<h1>Editor</h1>
 <div class="flex flex-grow">
     <div class="flex-grow">
         <VideoPlayer video={$selected_video} />
