@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::fs::{File, self};
 use std::path::{PathBuf};
 use std::sync::{Arc, RwLock};
-use tauri::api::path::app_config_dir;
+use tauri::api::path::{app_config_dir, home_dir};
 use tauri::api::path::video_dir;
 use tauri::Config;
 use anyhow::Result;
@@ -27,8 +27,8 @@ impl JsonConfig for UserSettings {
 impl DefaultValues for UserSettings {
     fn default(config: &Config) -> Result<UserSettings> {
         Ok(UserSettings { 
-            clip_location: video_dir().expect("Able to get video directory").join("Clips").into_os_string().into_string().unwrap(),
-            videos_directory: video_dir().expect("Able to get video directory").into_os_string().into_string().unwrap()
+            clip_location: get_video_dir().join("Clips").into_os_string().into_string().unwrap(),
+            videos_directory: get_video_dir().into_os_string().into_string().unwrap()
         })
     }
 }
@@ -45,4 +45,12 @@ impl Static for UserSettings {
 
 lazy_static::lazy_static! {
     static ref USER_SETTINGS: RwLock<Arc<UserSettings>> = RwLock::new(Default::default());
+}
+
+
+fn get_video_dir() -> PathBuf {
+    match video_dir() {
+        Some(dir) => return dir,
+        None => return home_dir().expect("Unable to get home dir"),
+    }
 }
