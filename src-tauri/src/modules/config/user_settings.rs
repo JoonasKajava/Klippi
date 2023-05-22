@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::fs::{File, self};
+use ts_rs::TS;
 use std::path::{PathBuf};
 use std::sync::{Arc, RwLock};
 use tauri::api::path::{app_config_dir, home_dir};
@@ -8,11 +8,11 @@ use tauri::Config;
 use anyhow::Result;
 
 use super::{JsonConfig, DefaultValues, Static};
-use super::app_config::AppConfig;
 
 const USER_SETTINGS_FILENAME: &str = "UserSettings.json";
 
-#[derive(Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
+#[ts(export, export_to="../src/models/")]
 pub struct UserSettings {
     pub clip_location: String,
     pub videos_directory: String,
@@ -25,7 +25,7 @@ impl JsonConfig for UserSettings {
 }
 
 impl DefaultValues for UserSettings {
-    fn default(config: &Config) -> Result<UserSettings> {
+    fn default(_config: &Config) -> Result<UserSettings> {
         Ok(UserSettings { 
             clip_location: get_video_dir().join("Clips").into_os_string().into_string().unwrap(),
             videos_directory: get_video_dir().into_os_string().into_string().unwrap()
