@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use std::{process::{Child, Stdio},  thread, io::{BufReader, BufRead}};
 
 
-use crate::modules::ffmpeg::progress::{self, Progress, Status};
+use crate::modules::ffmpeg::progress::{Progress, Status};
 
 use super::ffmpeg_builder::{FFmpegBuilder, Param};
 
@@ -12,10 +12,10 @@ pub struct FFmpegRunner {
 }
 
 
-impl<'a> FFmpegBuilder<'a>  {
+impl FFmpegBuilder {
     pub async fn run(mut self, on_progress: impl Fn(Progress) + std::marker::Sync + std::marker::Send + 'static) -> Result<Child> {
-        self = self.option(Param::Pair("progress", "-"));
-        self = self.option(Param::Single("nostats"));
+        self.option(Param::create_pair("progress", "-"));
+        self.option(Param::Single("nostats".into()));
 
         println!("Running: {}", self);
 

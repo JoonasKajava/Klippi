@@ -1,5 +1,4 @@
 use std::{
-    fs::File,
     path::PathBuf,
     sync::{Arc, RwLock},
 };
@@ -11,12 +10,14 @@ use tauri::{
     api::path::{app_config_dir, app_data_dir, app_cache_dir},
     Config,
 };
+use ts_rs::TS;
 
 use super::{Static, JsonConfig, DefaultValues};
 
 const APP_CONFIGURATION_FILENAME: &str = "AppConfig.json";
 
-#[derive(Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
+#[ts(export, export_to="../src/models/")]
 pub struct AppConfig {
     pub ffmpeg_location: String,
     pub thumbnail_cache: String

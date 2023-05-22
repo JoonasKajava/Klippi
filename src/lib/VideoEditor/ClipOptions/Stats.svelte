@@ -10,7 +10,7 @@
         <div class:text-error={$validation_errors.includes(ValidationError.InvalidDuration)} class="stat-value">{$duration.toFixed(1)}s</div>
         <div class="stat-desc">Seconds</div>
     </div>
-    <div class="stat" >
+    <div class="stat auto-rows-min" >
         <div class="stat-title">Estimated Size:</div>
         <div class="stat-value text-3xl">{prettyBytes(isFinite($estimated_size) ? $estimated_size : 0)}</div>
     </div>

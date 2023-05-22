@@ -2,11 +2,10 @@ use std::{
     cmp::Ordering,
     collections::HashMap,
     fs::{Metadata, self},
-    path::{Path, PathBuf},
+    path::{Path},
 };
 
 use glob::glob;
-use anyhow::{anyhow, Error};
 use crate::modules::config::{user_settings::UserSettings, Static};
 
 

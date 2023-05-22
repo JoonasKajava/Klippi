@@ -4,6 +4,7 @@
     import VolumeController from "./VolumeController.svelte";
     import { appWindow } from "@tauri-apps/api/window";
     import Timeline from "../Timeline/Timeline.svelte";
+    import { speed } from "../ClipOptions/ClipOptionsStore";
 
     export let video: string;
 
@@ -41,6 +42,7 @@
 
     $: if (video_player) {
         video_player.volume = volume;
+        video_player.playbackRate = $speed;
     }
 
     function exit_fullscreen() {
@@ -131,7 +133,7 @@
 
 <Timeline
 on:input={(e) => video_player.currentTime =e.detail.target.valueAsNumber}
-bind:value={current_time}
+bind:video_current_time={current_time}
 seconds={duration} />
 
 <style lang="scss">

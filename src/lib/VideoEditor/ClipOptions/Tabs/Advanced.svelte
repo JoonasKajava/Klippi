@@ -14,59 +14,59 @@
     } from "../ClipOptionsStore";
     interface Option {
         label: string;
-        value: string;
+        value: number;
         default?: boolean;
     }
 
     const resolution_options: Option[] = [
         {
-            label: "640x360",
-            value: "640x360",
+            label: "360p",
+            value: 360,
         },
         {
-            label: "854x480",
-            value: "854x480",
+            label: "480p",
+            value: 480,
         },
         {
-            label: "960x540",
-            value: "960x540",
+            label: "540p",
+            value: 540,
         },
         {
-            label: "1280x720",
-            value: "1280x720",
+            label: "720p",
+            value: 720,
             default: true,
         },
         {
-            label: "1366x768",
-            value: "1366x768",
+            label: "768p",
+            value: 768,
         },
         {
-            label: "1600x900",
-            value: "1600x900",
+            label: "900p",
+            value: 900,
         },
         {
-            label: "1920x1080",
-            value: "1920x1080",
+            label: "1080p",
+            value: 1080,
         },
         {
-            label: "2560x1440",
-            value: "2560x1440",
+            label: "1440p",
+            value: 1440,
         },
         {
-            label: "3200x1800",
-            value: "3200x1800",
+            label: "1800p",
+            value: 1800,
         },
         {
-            label: "3840x2160",
-            value: "3840x2160",
+            label: "2160p",
+            value: 2160,
         },
         {
-            label: "5120x2880",
-            value: "5120x2880",
+            label: "2880p",
+            value: 2880,
         },
         {
-            label: "7680x4320",
-            value: "7680x4320",
+            label: "4320p",
+            value: 4320,
         },
     ];
 

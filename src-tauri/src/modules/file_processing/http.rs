@@ -2,6 +2,7 @@ use anyhow::{Context, bail};
 use anyhow::{Result};
 use futures_util::StreamExt;
 use reqwest::{Client};
+use ts_rs::TS;
 use std::time::{Duration, Instant};
 use std::{fs, path::PathBuf};
 
@@ -9,7 +10,8 @@ use std::fs::File;
 use std::io::Write;
 
 use std::cmp::min;
-#[derive(Clone, serde::Serialize)]
+#[derive(Clone, serde::Serialize, TS)]
+#[ts(export, export_to="../src/models/")]
 pub struct DownloadProgress {
     progress: f64,
     total_size: u64,

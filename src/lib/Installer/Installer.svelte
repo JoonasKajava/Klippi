@@ -13,6 +13,7 @@
     import { ffmpeg_install_location } from "./InstallerStore";
     import VideoSelector from "../VideoSelector.svelte";
     import { current_page } from "../shared/AppStore";
+    import type { StepChange } from "src/models/StepChange";
 
     let missing_dependencies: string[];
 
@@ -70,12 +71,6 @@
             error = e;
         });
     }
-
-    interface StepChange {
-        previous_step: string;
-        next_step: string;
-    }
-
     let unlisten: UnlistenFn;
 
     appWindow

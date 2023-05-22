@@ -7,7 +7,9 @@ pub mod installer;
 pub mod ffmpeg;
 pub mod ffmpeg_builder;
 pub mod ffmpeg_factory;
+pub mod models;
 pub mod progress;
+pub mod ffmpeg_builder_helpers;
 
 #[derive(Debug)]
 pub enum VersionResultError {

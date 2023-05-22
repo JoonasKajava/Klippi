@@ -5,7 +5,13 @@
     import Share from "./Tabs/Share.svelte";
     import { fly } from "svelte/transition";
     import Stats from "./Stats.svelte";
-    import { clip_name, duration, final_bitrate, framerate, speed, validation_errors } from "./ClipOptionsStore";
+
+    import { calculated_audio_bitrate, clip_end, clip_name, clip_start, final_bitrate, framerate, mute_audio, resolition, speed, validation_errors } from "./ClipOptionsStore";
+    import { invoke } from "@tauri-apps/api/tauri";
+    import type { ClipCreationOptions } from "src/models/ClipCreationOptions";
+    import { selected_video } from "../VideoEditorStore";
+    import { current_page } from "../../shared/AppStore";
+    import Processing from "../../Processing/Processing.svelte";
 
 
     let current_tab: ComponentType = Basic;
@@ -21,6 +27,33 @@
         current_tab = to;
     }
 
+
+
+    async function create_clip() {
+        let name = $clip_name + ".mp4";
+        let exists = await invoke<boolean>("clip_exists", {file: name});
+        let confirmed = false;
+        if(exists) {
+            confirmed = await confirm(`Clip ${name} already exists, do you want to override it?`);
+        }
+        if(!confirmed) return;
+        let options: ClipCreationOptions = {
+            from: $selected_video,
+            to: name,
+            start: $clip_start,
+            end: $clip_end,
+            video_bitrate:$final_bitrate,
+            audio_bitrate: $calculated_audio_bitrate,
+            framerate: $framerate,
+            speed: $speed,
+            resolution: $resolition,
+            mute: $mute_audio
+        };
+
+        invoke("create_clip", {options: options});
+
+        $current_page = Processing;
+    } 
 
 </script>
 
@@ -52,7 +85,7 @@
             out:fly={{ x: -100 * move_direction, duration: 200 }}
         >
             <svelte:component this={current_tab} />
-            <button disabled={$validation_errors.length > 0} class="btn w-full my-2 btn-primary">Create Clip!</button>
+            <button on:click={async () => await create_clip()} disabled={$validation_errors.length > 0} class="btn w-full my-2 btn-primary">Create Clip!</button>
             <Stats />
         </div>
     {/key}

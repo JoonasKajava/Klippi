@@ -1,20 +1,30 @@
-use std::{path::PathBuf, fs};
+use std::{path::PathBuf, fs, sync::Arc};
 
 use anyhow::{Context, Result};
-use tauri::Window;
+use tauri::{Window};
+use ts_rs::TS;
+
+use crate::modules::config::user_settings::UserSettings;
 
 use super::{
-    ffmpeg::{ get_version, installer::install_ffmpeg, ffmpeg_factory::create_thumbnail_command},
+    ffmpeg::{ get_version, installer::install_ffmpeg, ffmpeg_factory::{create_thumbnail_command, create_clip_command}, models::clip_creation_options::ClipCreationOptions},
     file_processing::video_metadata::find_lastest_videos, config::{app_config::AppConfig, Static}, utils::filesystem_utils::PathBufExtensions,
 };
 
-#[derive(Clone, serde::Serialize)]
+
+#[derive(Clone, serde::Serialize, TS)]
+#[ts(export, export_to="../src/models/")]
 pub struct VideoData {
     thumbnail: String,
     file: String,
     name: String,
 }
 
+#[tauri::command]
+pub async fn clip_exists(file: PathBuf) -> bool {
+    
+    PathBuf::from(&UserSettings::current().clip_location).join(file).exists()
+}
 #[tauri::command]
 pub async fn get_thumbnail(of: &PathBuf) -> Result<PathBuf> {
 
@@ -79,4 +89,25 @@ pub async fn install_dependencies(window: Window, path: &str) -> Result<String, 
             Err(e.to_string())
         }
     }
+}
+
+#[tauri::command]
+pub async fn create_clip(window: Window,options: ClipCreationOptions) -> Result<String, String>  {
+
+    let final_options = ClipCreationOptions {
+        to: PathBuf::from(UserSettings::current().clip_location.clone()).join(options.to),
+        ..options
+    };
+
+    let command = create_clip_command(&final_options).map_err(|_|"Unable to get command".to_string())?;
+    
+    command.run(move |progress| {
+        window.emit("ffmpeg_progress", progress).expect("Could not emit event");
+    }).await.map_err(|_|"Running failed!")?.wait().map_err(|_|"Wait failed")?;
+    Ok("Success".into())
+}
+
+#[tauri::command]
+pub async fn get_user_settings() -> Arc<UserSettings> {
+     return UserSettings::current().clone();
 }

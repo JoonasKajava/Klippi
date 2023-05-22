@@ -10,6 +10,9 @@ dependencies:
   sass:
     specifier: ^1.62.1
     version: 1.62.1
+  svelte-konva:
+    specifier: ^0.2.0
+    version: 0.2.0(konva@9.0.2)(svelte@3.59.1)
 
 devDependencies:
   '@sveltejs/vite-plugin-svelte':
@@ -841,6 +844,10 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
+  /konva@9.0.2:
+    resolution: {integrity: sha512-kHPqZkIN191ysRD5OnWezIzcJtENyMZkCqRxi4szq9iyGzBDugxZkx5RmHWkmuDE9cR1lyeJoeQTeV5hoaGplg==}
+    dev: false
+
   /lilconfig@2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
@@ -1225,6 +1232,16 @@ packages:
       svelte: 3.59.1
     dev: true
 
+  /svelte-konva@0.2.0(konva@9.0.2)(svelte@3.59.1):
+    resolution: {integrity: sha512-G4Xvctx7M7o1+5pUCBk/jQNKrJf5gJZiPxbY8zaMBcnLgnE9o9cHPL6gCrym6RCkBRK+BnWecXhRJO7RUnKnQw==}
+    peerDependencies:
+      konva: '>=8'
+      svelte: '>=3'
+    dependencies:
+      konva: 9.0.2
+      svelte: 3.59.1
+    dev: false
+
   /svelte-preprocess@5.0.0(postcss@8.4.23)(sass@1.62.1)(svelte@3.59.1)(typescript@4.9.5):
     resolution: {integrity: sha512-q7lpa7i2FBu8Pa+G0MmuQQWETBwCKgsGmuq1Sf6n8q4uaG9ZLcLP0Y+etC6bF4sE6EbLxfiI38zV6RfPe3RSfg==}
     engines: {node: '>= 14.10.0'}
@@ -1278,7 +1295,6 @@ packages:
   /svelte@3.59.1:
     resolution: {integrity: sha512-pKj8fEBmqf6mq3/NfrB9SLtcJcUvjYSWyePlfCqN9gujLB25RitWK8PvFzlwim6hD/We35KbPlRteuA6rnPGcQ==}
     engines: {node: '>= 8'}
-    dev: true
 
   /tailwindcss@3.3.2:
     resolution: {integrity: sha512-9jPkMiIBXvPc2KywkraqsUfbfj+dHDb+JPWtSJa9MLFdrPyazI7q6WX2sUrm7R9eVR7qqv3Pas7EvQFzxKnI6w==}

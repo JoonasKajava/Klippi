@@ -12,7 +12,7 @@ export const bitrate_lock = writable(true);
 
 export const audio_bitrate = writable(64);
 
-export const resolition = writable("1280x720");
+export const resolition = writable(720);
 
 export const clip_start = writable<number>(null);
 export const clip_end = writable<number>(null);

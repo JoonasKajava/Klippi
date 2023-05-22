@@ -11,6 +11,9 @@ use modules::ffmpeg::get_version;
 use modules::tauri_commands::get_latest_videos;
 use modules::tauri_commands::install_dependencies;
 use modules::tauri_commands::verify_dependencies;
+use modules::tauri_commands::create_clip;
+use modules::tauri_commands::clip_exists;
+use modules::tauri_commands::get_user_settings;
 use tauri::http::ResponseBuilder;
 use url::Position;
 use url::Url;
@@ -24,7 +27,6 @@ use tauri::http::{
 
 use crate::modules::config::app_config::AppConfig;
 use crate::modules::config::Init;
-use crate::modules::environment::add_to_env_variable;
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -33,14 +35,14 @@ fn main() {
             println!("Version: {:?}", get_version("ffprobe"));
             println!("Version: {:?}", get_version("ffmpeg"));
 
-            add_to_env_variable("Path", "test")?;
-
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             get_latest_videos,
             verify_dependencies,
-            install_dependencies
+            install_dependencies,
+            create_clip,
+            clip_exists,get_user_settings
         ])
         // TODO: THIS IS FIX FOR https://github.com/tauri-apps/tauri/issues/6375 remove in future
         .register_uri_scheme_protocol("stream", move |_app, request| {

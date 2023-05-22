@@ -4,19 +4,12 @@
   import { open } from "@tauri-apps/api/dialog";
   import { selected_video } from "./VideoEditor/VideoEditorStore";
   import VideoEditor from "./VideoEditor/VideoEditor.svelte";
-  import type { ComponentType } from "svelte";
   import { videoDir } from "@tauri-apps/api/path";
   import { current_page } from "./shared/AppStore";
-    import { fly } from "svelte/transition";
+  import { fly } from "svelte/transition";
+  import type { VideoData } from "src/models/VideoData";
 
   let latest_videos = invoke<VideoData[]>("get_latest_videos", { count: 3 });
-  interface VideoData {
-    thumbnail: string;
-    file: string;
-    name: string;
-  }
-
-  let toggle = false;
 
   function select_video(video: string) {
     selected_video.set(video);
@@ -50,13 +43,20 @@
     class="file-input file-input-bordered file-input-info w-full max-w-xs mt-8"
   />
   {#await latest_videos}
-  <div in:fly={{y: 100, duration: 200}} out:fly={{y: -100, duration: 200}} class="mt-5">
-    <h3 class="font-bold text-center">Loading latest videos</h3>
-    <progress class="progress w-56" />
-  </div>
-
+    <div
+      in:fly={{ y: 100, duration: 200 }}
+      out:fly={{ y: -100, duration: 200 }}
+      class="mt-5"
+    >
+      <h3 class="font-bold text-center">Loading latest videos</h3>
+      <progress class="progress w-56" />
+    </div>
   {:then videos}
-    <div in:fly={{y: 100, duration: 200, delay: 200}} out:fly={{y: -100, duration: 200}} class="stats shadow mt-5 w-min">
+    <div
+      in:fly={{ y: 100, duration: 200, delay: 200 }}
+      out:fly={{ y: -100, duration: 200 }}
+      class="stats shadow mt-5 w-min"
+    >
       {#each videos as video}
         <div
           on:click={() => select_video(video.file)}

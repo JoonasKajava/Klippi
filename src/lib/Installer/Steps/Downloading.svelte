@@ -5,25 +5,19 @@
     import { fly } from "svelte/transition";
     import Step from "./Step.svelte";
     import { onDestroy } from 'svelte';
-
-    interface Progress {
-        progress: number;
-        total_size: number;
-        downloaded: number;
-        speed: number;
-    }
+    import type { DownloadProgress } from "src/models/DownloadProgress";
 
     export let onNext: () => void;
-    let progress: Progress = {
+    let progress: DownloadProgress = {
         progress: 0,
-        total_size: 0,
-        downloaded: 0,
-        speed: 0,
+        total_size: 0n,
+        downloaded: 0n,
+        speed: 0
     };
 
     let unlisten : UnlistenFn;
 
-    appWindow.listen("download_progress", (event: Event<Progress>) => {
+    appWindow.listen("download_progress", (event: Event<DownloadProgress>) => {
         progress = event.payload;
     }).then((handle) => {
         unlisten = handle;
@@ -50,11 +44,11 @@
 
         <div class="stat">
             <div class="stat-title">File Size</div>
-            <div class="stat-value">{prettyBytes(progress.total_size)}</div>
+            <div class="stat-value">{prettyBytes(Number(progress.total_size))}</div>
         </div>
         <div class="stat">
             <div class="stat-title">Downloaded</div>
-            <div class="stat-value">{prettyBytes(progress.downloaded)}</div>
+            <div class="stat-value">{prettyBytes(Number(progress.downloaded))}</div>
         </div>
     </div>
 </Step>

@@ -5,6 +5,7 @@ use compress_tools::*;
 use anyhow::{Context, bail};
 use anyhow::{Result};
 use tauri::Window;
+use ts_rs::TS;
 use crate::modules::file_processing::http::download;
 
 use super::get_version;
@@ -37,7 +38,8 @@ pub fn uncompress_with_new_name(archive: PathBuf, new_name: &str) -> Result<()> 
     Ok(())
 }
 
-#[derive(Clone, serde::Serialize)]
+#[derive(Clone, serde::Serialize, TS)]
+#[ts(export, export_to="../src/models/")]
 pub struct StepChange {
     previous_step: String,
     next_step: String
