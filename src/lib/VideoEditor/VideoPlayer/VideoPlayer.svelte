@@ -4,13 +4,14 @@
     import VolumeController from "./VolumeController.svelte";
     import { appWindow } from "@tauri-apps/api/window";
     import Timeline from "../Timeline/Timeline.svelte";
-    import { speed } from "../ClipOptions/ClipOptionsStore";
+    import { clip_end, clip_start, speed } from "../ClipOptions/ClipOptionsStore";
 
     export let video: string;
     let video_player: HTMLVideoElement;
     let is_playing;
     let video_fullscreen = false;
     let display_controls = false;
+    let loop_clip = false;
 
     let duration: number;
     let current_time: number = 0;
@@ -22,6 +23,12 @@
     }
 
     function timeupdate() {
+        if (loop_clip) {
+            if (video_player.currentTime > $clip_end || video_player.currentTime < $clip_start - 1) {
+                video_player.currentTime = $clip_start;
+            }
+        }
+
         current_time = video_player.currentTime;
     }
 
@@ -101,6 +108,14 @@
                     <div>
                         <VolumeController bind:value={volume} />
                         <button
+                            on:click={() => (loop_clip = !loop_clip)}
+                            class="btn btn-circle btn-sm"
+                            class:spin={loop_clip}
+                        >
+                            <span class="material-icons">loop</span>
+                        </button>
+
+                        <button
                             on:click={toggle_fullscreen}
                             class="btn btn-circle btn-sm"
                         >
@@ -145,5 +160,18 @@
         position: absolute;
         inset: 0;
         width: 100%;
+    }
+
+    .spin {
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(-360deg);
+        }
     }
 </style>

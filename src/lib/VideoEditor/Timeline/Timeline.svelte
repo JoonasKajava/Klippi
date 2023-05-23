@@ -182,12 +182,13 @@
         stage.on("pointerup", (e: KonvaEventObject<PointerEvent>) => {
 
             let duration = clip_range.getSelfRect().width / marker_gap;
+            let start = clip_range.x() / marker_gap;
 
             range_start = null;
             console.log(clip_range.width());
             if(clip_range.width() > 0) {
-                $clip_start = clip_range.x();
-                $clip_end = clip_range.x() + duration;
+                $clip_start = start;
+                $clip_end = start + duration;
             }
         });
 

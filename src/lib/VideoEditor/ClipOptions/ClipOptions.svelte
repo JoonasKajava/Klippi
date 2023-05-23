@@ -32,7 +32,7 @@
     async function create_clip() {
         let name = $clip_name + ".mp4";
         let exists = await invoke<boolean>("clip_exists", {file: name});
-        let confirmed = false;
+        let confirmed = true;
         if(exists) {
             confirmed = await confirm(`Clip ${name} already exists, do you want to override it?`);
         }
