@@ -7,8 +7,6 @@
     import { speed } from "../ClipOptions/ClipOptionsStore";
 
     export let video: string;
-
-    let video_player_container: HTMLElement;
     let video_player: HTMLVideoElement;
     let is_playing;
     let video_fullscreen = false;
@@ -50,7 +48,6 @@
             if (value) toggle_fullscreen();
         });
     }
-
 </script>
 
 <svelte:window on:keyup={exit_fullscreen} />
@@ -131,10 +128,13 @@
     {/if}
 </div>
 
-<Timeline
-on:input={(e) => video_player.currentTime =e.detail.target.valueAsNumber}
-bind:video_current_time={current_time}
-seconds={duration} />
+{#key duration}
+    <Timeline
+        onUpdate={(e) => (video_player.currentTime = e)}
+        video_current_time={current_time}
+        seconds={duration}
+    />
+{/key}
 
 <style lang="scss">
     .video-player * {
