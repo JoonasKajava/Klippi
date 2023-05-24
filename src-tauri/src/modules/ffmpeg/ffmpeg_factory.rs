@@ -7,6 +7,10 @@ use std::{
     path::PathBuf,
 };
 
+pub fn create_timeline_thumbnails() {
+    // $ ffmpeg -hwaccel auto -skip_frame nokey -i Don\'t\ Starve\ Together\ 2021.01.04\ -\ 22.44.20.02.DVR.mp4 -r 1 -vf "scale=64:-1" -tune fastdecode -preset fast -benchmark test/out%d.bmp
+}
+
 pub fn create_thumbnail_command(of: &PathBuf, into: &PathBuf) -> Result<FFmpegBuilder> {
     let mut instance = FFmpegBuilder::new();
 
