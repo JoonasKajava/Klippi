@@ -4,7 +4,11 @@
     import VolumeController from "./VolumeController.svelte";
     import { appWindow } from "@tauri-apps/api/window";
     import Timeline from "../Timeline/Timeline.svelte";
-    import { clip_end, clip_start, speed } from "../ClipOptions/ClipOptionsStore";
+    import {
+        clip_end,
+        clip_start,
+        speed,
+    } from "../ClipOptions/ClipOptionsStore";
 
     export let video: string;
     let video_player: HTMLVideoElement;
@@ -17,6 +21,8 @@
     let current_time: number = 0;
     let volume = 0.5;
 
+    const FRAME_RATE = 60;
+
     function toggle_play() {
         video_player.paused ? video_player.play() : video_player.pause();
         is_playing = !video_player.paused;
@@ -24,7 +30,10 @@
 
     function timeupdate() {
         if (loop_clip) {
-            if (video_player.currentTime > $clip_end || video_player.currentTime < $clip_start - 1) {
+            if (
+                video_player.currentTime > $clip_end ||
+                video_player.currentTime < $clip_start - 1
+            ) {
                 video_player.currentTime = $clip_start;
             }
         }
@@ -143,6 +152,10 @@
     {/if}
 </div>
 
+<div class="flex justify-between mx-4 my-2">
+    <button on:click={() => video_player.currentTime -= (1/FRAME_RATE)} class="btn btn-outline btn-primary btn-sm"><span class="material-icons">arrow_back_ios</span> Previous Frame</button>
+    <button on:click={() => video_player.currentTime += (1/FRAME_RATE)} class="btn btn-outline btn-primary btn-sm">Next Frame <span class="material-icons">arrow_forward_ios</span></button>
+</div>
 {#key duration}
     <Timeline
         onUpdate={(e) => (video_player.currentTime = e)}

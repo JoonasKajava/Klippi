@@ -1,5 +1,5 @@
-use std::{path::PathBuf, fs, sync::Arc};
-
+use std::{path::PathBuf, fs, sync::{Arc}, process::Child};
+use once_cell::sync::OnceCell;
 use anyhow::{Context, Result};
 use tauri::{Window};
 use ts_rs::TS;
@@ -7,7 +7,7 @@ use ts_rs::TS;
 use crate::modules::config::user_settings::UserSettings;
 
 use super::{
-    ffmpeg::{ get_version, installer::install_ffmpeg, ffmpeg_factory::{create_thumbnail_command, create_clip_command}, models::clip_creation_options::ClipCreationOptions},
+    ffmpeg::{ get_version, installer::install_ffmpeg, ffmpeg_factory::{create_thumbnail_command, create_clip_command, create_timeline_thumbnails_command}, models::clip_creation_options::ClipCreationOptions, progress::{Progress, Status}},
     file_processing::video_metadata::find_lastest_videos, config::{app_config::AppConfig, Static}, utils::filesystem_utils::PathBufExtensions,
 };
 
@@ -25,6 +25,34 @@ pub async fn clip_exists(file: PathBuf) -> bool {
     
     PathBuf::from(&UserSettings::current().clip_location).join(file).exists()
 }
+
+#[derive(Clone, serde::Serialize, TS)]
+#[ts(export, export_to="../src/models/")]
+pub enum TimelineThumbnailsResult {
+    Generating(PathBuf),
+    Found(PathBuf)
+}
+
+#[tauri::command]
+pub async fn get_timeline_thumbnails(window: Window,of: PathBuf, duration: usize) -> TimelineThumbnailsResult {
+    let hashed_path = &of.to_hashed();
+
+    let folder_name = hashed_path.file_name().expect("Unable to get filename");
+
+    let folder_path = PathBuf::from(AppConfig::current().thumbnail_cache.clone()).join(folder_name);
+
+    if folder_path.join(format!("{}.bmp", duration)).exists() {
+        return TimelineThumbnailsResult::Found(folder_path);
+    }
+
+    let command = create_timeline_thumbnails_command(&of, &folder_path).unwrap();
+    command.run(move |progress| {
+        window.emit("thumbnail_progress", progress).expect("Could not emit event");
+    }).await.unwrap();
+
+    return TimelineThumbnailsResult::Generating(folder_path)
+}
+
 #[tauri::command]
 pub async fn get_thumbnail(of: &PathBuf) -> Result<PathBuf> {
 

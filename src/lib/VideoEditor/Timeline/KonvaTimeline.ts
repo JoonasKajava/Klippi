@@ -1,6 +1,8 @@
 import Konva from "konva";
 import type { KonvaEventObject } from "konva/lib/Node";
 import { clip_end, clip_start } from "../ClipOptions/ClipOptionsStore";
+import { join } from "@tauri-apps/api/path";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
@@ -14,6 +16,7 @@ Konva.dragButtons = [2];
 const DETAIL_NAME = "detail";
 const CLIP_MARKER_NAME = "clip_marker";
 const TIME_MARKER_NAME = "time_marker";
+const THUMBNAIL_NAME = "thumbnail";
 const CLIP_MARKER_ANCHOR_NAME = "_anchor";
 
 
@@ -41,6 +44,8 @@ export class KonvaTimeline {
 
     private _mouse_drag_start: number;
 
+    private _created_thumbnails: number = 1;
+
     private _on_select_current_time: (time: number) => void;
 
     constructor(width: number, height: number, seconds_in_timeline: number, current_time_update: (time: number) => void) {
@@ -49,6 +54,12 @@ export class KonvaTimeline {
         this._seconds_in_timeline = seconds_in_timeline;
         this._marker_gap = width / seconds_in_timeline;
         this._on_select_current_time = current_time_update;
+    }
+
+    timestamp_to_string(timestamp: number) : string {
+        return `${Math.floor(timestamp / 60)}:${(timestamp % 60)
+            .toFixed(0)
+            .padStart(2, "0")}`;
     }
 
     select_current_time(e: KonvaEventObject<WheelEvent>) {
@@ -128,6 +139,7 @@ export class KonvaTimeline {
         let childs = this._timeline_group.getChildren();
         for (let child of childs) {
             if (child.name() === CLIP_MARKER_NAME) continue;
+            if (child.name().includes(THUMBNAIL_NAME)) continue;
             child.scaleX(1 / scale);
         }
 
@@ -219,7 +231,7 @@ export class KonvaTimeline {
             fill: "black",
             x: timestamp * this._marker_gap,
             y: this._height,
-            text: timestamp.toString(),
+            text: this.timestamp_to_string(timestamp),
             fontSize: 15,
             fontFamily: 'Calibri',
             visible: false
@@ -229,6 +241,10 @@ export class KonvaTimeline {
         text.offsetY(text.height());
 
         mark.height(this._height - text.height())
+        mark.listening(false);
+        text.listening(false);
+        mark.perfectDrawEnabled(false);
+        text.perfectDrawEnabled(false);
 
         this._timeline_group.add(mark);
         this._timeline_group.add(text);
@@ -262,11 +278,11 @@ export class KonvaTimeline {
             x: this._current_time * this._marker_gap,
             y: 0,
             height: this._height,
-            width: 1,
-            zIndex: 100,
+            width: 1
         });
 
         this._timeline_group.add(this._current_time_marker);
+
         return this._current_time_marker;
     }
 
@@ -294,5 +310,32 @@ export class KonvaTimeline {
         this._stage.on('pointerup', this.complete_clip_marker_change.bind(this));
 
         return this._stage;
+    }
+
+    async create_timeline_thumbnail(thumbnail_path: string, index: number) {
+        let full_path = await join(thumbnail_path, `${index}.bmp`);
+
+        console.log(index);
+        Konva.Image.fromURL(convertFileSrc(full_path), (image) => {
+            image.setAttrs({
+                name: `${THUMBNAIL_NAME} ${DETAIL_NAME}`,
+                x: (index - 2) * this._marker_gap,
+                y: 0,
+                height: this._height * 0.7,
+                width: this._marker_gap,
+                visible: true
+            });
+            image.listening(false);
+            image.perfectDrawEnabled(false);
+            this._timeline_group.add(image);
+        })
+        this._current_time_marker.zIndex(0);
+    }
+
+    create_timeline_thumbnails(thumbnail_path: string, upto: number) {
+        for(let i = this._created_thumbnails; i < upto; i++) {
+            this.create_timeline_thumbnail(thumbnail_path, i);
+        }
+        this._created_thumbnails = upto;
     }
 }

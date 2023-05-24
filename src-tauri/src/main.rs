@@ -14,6 +14,7 @@ use modules::tauri_commands::verify_dependencies;
 use modules::tauri_commands::create_clip;
 use modules::tauri_commands::clip_exists;
 use modules::tauri_commands::get_user_settings;
+use modules::tauri_commands::get_timeline_thumbnails;
 use tauri::http::ResponseBuilder;
 use url::Position;
 use url::Url;
@@ -42,7 +43,9 @@ fn main() {
             verify_dependencies,
             install_dependencies,
             create_clip,
-            clip_exists,get_user_settings
+            clip_exists,
+            get_user_settings,
+            get_timeline_thumbnails
         ])
         // TODO: THIS IS FIX FOR https://github.com/tauri-apps/tauri/issues/6375 remove in future
         .register_uri_scheme_protocol("stream", move |_app, request| {

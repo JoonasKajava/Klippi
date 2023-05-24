@@ -31,6 +31,9 @@ impl Progress {
     }
 
     fn set(&mut self, key: &str, value: &str) -> Result<(), ProgressParseError> {
+        if value == "N/A" {
+            return Ok(())
+        }
         match key {
             "frame" => self.frame = Some(Progress::parse_value(value)?),
             "fps" => self.fps = Some(Progress::parse_value(value)?),

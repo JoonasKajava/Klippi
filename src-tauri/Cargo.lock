@@ -1664,6 +1664,7 @@ dependencies = [
  "http-range-header",
  "lazy_static",
  "md5",
+ "once_cell",
  "percent-encoding",
  "rand 0.8.5",
  "reqwest",

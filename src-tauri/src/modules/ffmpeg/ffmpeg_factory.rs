@@ -1,14 +1,37 @@
+use crate::modules::{utils::filesystem_utils::PathBufExtensions, config::{app_config::AppConfig, Static}};
+
 use super::{
     ffmpeg_builder::{FFmpegBuilder, File, Param},
     models::clip_creation_options::ClipCreationOptions,
 };
-use anyhow::Result;
+use anyhow::{Result, Context};
 use std::{
-    path::PathBuf,
+    path::PathBuf, thread::ThreadId, fs,
 };
 
-pub fn create_timeline_thumbnails() {
+pub fn create_timeline_thumbnails_command(from: &PathBuf, into: &PathBuf)-> Result<FFmpegBuilder> {
     // $ ffmpeg -hwaccel auto -skip_frame nokey -i Don\'t\ Starve\ Together\ 2021.01.04\ -\ 22.44.20.02.DVR.mp4 -r 1 -vf "scale=64:-1" -tune fastdecode -preset fast -benchmark test/out%d.bmp
+    let mut instance = FFmpegBuilder::new();
+
+
+    let thumbnails_folder= into.join("%d.bmp");
+
+    fs::create_dir_all(&thumbnails_folder.parent().unwrap())?;
+
+    instance.input(File { path: from.to_path_buf(), options: vec![
+        Param::create_pair("hwaccel", "auto"),
+        Param::create_pair("skip_frame", "nokey")
+    ] })?
+    .video_filter("scale", "64:-1")
+    .output(File {
+        path: thumbnails_folder,
+        options: vec![
+            Param::create_pair("r", "1"),
+            Param::create_pair("tune", "fastdecode"),
+            Param::create_pair("preset", "fast")
+        ]
+    });
+    return Ok(instance);
 }
 
 pub fn create_thumbnail_command(of: &PathBuf, into: &PathBuf) -> Result<FFmpegBuilder> {
