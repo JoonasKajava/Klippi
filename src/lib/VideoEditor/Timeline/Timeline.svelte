@@ -1,18 +1,23 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import type { Event, UnlistenFn } from "@tauri-apps/api/event";
+    import type { Event } from "@tauri-apps/api/event";
     import { KonvaTimeline } from "./KonvaTimeline";
     import { invoke } from "@tauri-apps/api/tauri";
     import { selected_video } from "../VideoEditorStore";
     import { thumbnail_processes } from "./TimelineStore";
     import { appWindow } from "@tauri-apps/api/window";
     import type { Progress } from "src/models/Progress";
-    import { duration } from "../ClipOptions/ClipOptionsStore";
     import type { TimelineThumbnailsResult } from "src/models/TimelineThumbnailsResult";
 
     export let video_current_time: number;
     export let onUpdate: (value: number) => void;
     export let seconds: number;
+
+    const CENTER_SCALE = 30;
+
+    export function center() {
+        timeline.stage_set_scale(CENTER_SCALE, (-video_current_time*CENTER_SCALE * timeline.get_marker_gap()) + width/2);
+    }
 
     let width: number;
     let height: number;
@@ -27,9 +32,11 @@
         timeline.update_stage_dimensions(width, height);
     }
 
+ 
+
     onMount(() => {
         if(!seconds) return;
-        timeline = new KonvaTimeline(width, height, seconds, onUpdate);
+        timeline = new KonvaTimeline(width - 1, height - 1, seconds, onUpdate);
         timeline.create_stage();
         timeline.create_timeline_group();
         timeline.create_current_time_marker();
@@ -71,6 +78,6 @@
     });
 </script>
 
-<div class="h-16" bind:clientWidth={width} bind:clientHeight={height}>
-    <div id="stage" on:contextmenu={(e) => e.preventDefault()} />
+<div class="h-16 relative" bind:offsetWidth={width} bind:offsetHeight={height}>
+    <div id="stage" class="absolute" on:contextmenu={(e) => e.preventDefault()} />
 </div>

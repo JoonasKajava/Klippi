@@ -11,7 +11,7 @@
     let progress_value: number;
 
     $: if(progress) {
-        progress_value = progress && isFinite(progress.out_time) && progress.out_time > 0 ? progress.out_time/$duration*100 : 0;
+        progress_value = progress && isFinite(progress.out_time) && progress.out_time > 0 ? Math.min(progress.out_time/$duration*100, 100) : 0;
     }
 
     appWindow
@@ -46,7 +46,7 @@
 
             <div class="stat">
                 <div class="stat-title">Processing left</div>
-                <div class="stat-value font-mono">{($duration - progress.out_time).toFixed(1)}sec</div>
+                <div class="stat-value font-mono">{(Math.max($duration - progress.out_time, 0)).toFixed(1)}sec</div>
             </div>
         </div>
     {/if}

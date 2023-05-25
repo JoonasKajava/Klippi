@@ -11,6 +11,7 @@
     } from "../ClipOptions/ClipOptionsStore";
 
     export let video: string;
+    let timeline: Timeline;
     let video_player: HTMLVideoElement;
     let is_playing;
     let video_fullscreen = false;
@@ -153,11 +154,26 @@
 </div>
 
 <div class="flex justify-between mx-4 my-2">
-    <button on:click={() => video_player.currentTime -= (1/FRAME_RATE)} class="btn btn-outline btn-primary btn-sm"><span class="material-icons">arrow_back_ios</span> Previous Frame</button>
-    <button on:click={() => video_player.currentTime += (1/FRAME_RATE)} class="btn btn-outline btn-primary btn-sm">Next Frame <span class="material-icons">arrow_forward_ios</span></button>
+    <button
+        on:click={() => (video_player.currentTime -= 1 / FRAME_RATE)}
+        class="btn btn-outline btn-primary btn-sm"
+        ><span class="material-icons">arrow_back_ios</span> Previous Frame</button
+    >
+    <button on:click={timeline.center} class="btn btn-outline btn-primary btn-sm"
+        >Center timeline <span class="ml-1 material-icons"
+            >center_focus_strong</span
+        >
+    </button>
+    <button
+        on:click={() => (video_player.currentTime += 1 / FRAME_RATE)}
+        class="btn btn-outline btn-primary btn-sm"
+        >Next Frame <span class="material-icons">arrow_forward_ios</span
+        ></button
+    >
 </div>
 {#key duration}
     <Timeline
+        bind:this={timeline}
         onUpdate={(e) => (video_player.currentTime = e)}
         video_current_time={current_time}
         seconds={duration}

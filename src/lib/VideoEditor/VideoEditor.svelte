@@ -4,10 +4,10 @@ import { selected_video } from "./VideoEditorStore";
     import VideoPlayer from "./VideoPlayer/VideoPlayer.svelte";
 </script>
 <div class="flex flex-grow">
-    <div class="flex-grow">
+    <div class="basis-2/3">
         <VideoPlayer video={$selected_video} />
     </div>
-    <div class="flex-shrink">
+    <div class="basis-1/3">
         <ClipOptions />
     </div>
 </div>
