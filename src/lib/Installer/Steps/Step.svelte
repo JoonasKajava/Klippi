@@ -1,7 +1,7 @@
 
 
-<script>
-    import { fly } from "svelte/transition";
+<script type="ts">
+    import { fly} from "svelte/transition";
 
     export let transitions;
 

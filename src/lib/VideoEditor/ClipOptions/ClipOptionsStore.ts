@@ -19,7 +19,7 @@ export const clip_end = writable<number>(null);
 
 
 
-export const duration = derived([speed, clip_start, clip_end], ([$speed, $clip_start, $clip_end]) => ($clip_end - $clip_start) / $speed);
+export const duration = derived([speed, clip_start, clip_end], ([$speed, $clip_start, $clip_end]) => Math.max(($clip_end - $clip_start) / $speed, 0));
 
 /// In kilobits
 export const calculated_audio_bitrate = derived([audio_bitrate, mute_audio], ([$audio_bitrate, $mute_audio]) => {

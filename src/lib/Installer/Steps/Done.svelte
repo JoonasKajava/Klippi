@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onDestroy, type ComponentType } from "svelte";
+    import { onDestroy } from "svelte";
     import Step from "./Step.svelte";
     import VideoSelector from "../../VideoSelector.svelte";
     import { current_page } from "../../shared/AppStore";

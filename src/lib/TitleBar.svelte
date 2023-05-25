@@ -9,8 +9,6 @@
 
     const appName = getName();
 
-    let video;
-
     async function onMaximize() {
         await appWindow.isMaximized() ? appWindow.unmaximize() : appWindow.maximize();
     }
@@ -19,11 +17,9 @@
         if($current_page == page) return;
         $current_page = page;
     }
-
-    selected_video.subscribe((v) => video = v);
 </script>
 
-<div data-tauri-drag-region class="navbar">
+<div data-tauri-drag-region class="navbar" id="titlebar">
     <div data-tauri-drag-region class="navbar-start">
         {#await appName then name}
             <span class="text-xl">{name}</span>
@@ -33,7 +29,7 @@
         <div class="btn-group btn-group-horizontal">
             <button class="btn">Settings</button>
             <button class="btn" class:btn-active={$current_page == VideoSelector} on:click={() => go_to(VideoSelector)}>Video Selector</button>
-            <button class="btn" class:btn-active={$current_page == VideoEditor} disabled={!video} on:click={() => go_to(VideoEditor)}>Editor</button>
+            <button class="btn" class:btn-active={$current_page == VideoEditor} disabled={!$selected_video} on:click={() => go_to(VideoEditor)}>Editor</button>
         </div>
     </div>
     <div data-tauri-drag-region class="navbar-end">

@@ -7,8 +7,10 @@
     import {
         clip_end,
         clip_start,
+        duration,
         speed,
     } from "../ClipOptions/ClipOptionsStore";
+    import { onMount } from "svelte";
 
     export let video: string;
     let timeline: Timeline;
@@ -18,9 +20,12 @@
     let display_controls = false;
     let loop_clip = false;
 
-    let duration: number;
+    let video_duration: number;
     let current_time: number = 0;
     let volume = 0.5;
+
+    let timeline_height: number;
+    let window_height: number;
 
     const FRAME_RATE = 60;
 
@@ -35,7 +40,7 @@
     }
 
     function timeupdate() {
-        if (loop_clip) {
+        if (loop_clip && $duration > 0) {
             if (
                 video_player.currentTime > $clip_end ||
                 video_player.currentTime < $clip_start - 1
@@ -82,9 +87,10 @@
     }
 
     function keyboard_navigation(
-        e: KeyboardEvent & { currentTarget: EventTarget & Window }
+        e: KeyboardEvent & { currentTarget: EventTarget & Window, target: HTMLElement }
     ) {
-        switch (e.key) {
+        if(e.target.nodeName.toLowerCase() === 'input') return;
+        switch (e.code) {
             case "ArrowLeft":
                 move_one_frame(-1);
                 break;
@@ -95,13 +101,29 @@
                 set_clip_start();
                 break;
             case "ArrowDown":
-                set_clip_end();
+                set_clip_end();   
+                break;
+            case "Space":
+                timeline.center();
                 break;
         }
     }
+
+    function update_video_max_Height() {
+        video_player.style.maxHeight = `${
+            window_height -
+            timeline_height -
+            document.getElementById("titlebar").clientHeight -
+            20
+        }px`;
+    }
 </script>
 
-<svelte:window on:keyup={exit_fullscreen} on:keydown={keyboard_navigation} />
+<svelte:window
+    on:resize={update_video_max_Height}
+    on:keyup={exit_fullscreen}
+    on:keydown={keyboard_navigation}
+/>
 
 <div
     class:fullscreen={video_fullscreen}
@@ -113,7 +135,7 @@
     <video
         on:click={toggle_play}
         on:timeupdate={timeupdate}
-        on:durationchange={(d) => (duration = video_player.duration)}
+        on:durationchange={(d) => (video_duration = video_player.duration)}
         bind:this={video_player}
     >
         <source src={convertFileSrc(video, "stream")} />
@@ -144,7 +166,7 @@
                         </button>
                         <span
                             >{pretty_seconds(current_time)} / {pretty_seconds(
-                                duration
+                                video_duration
                             )}</span
                         >
                     </div>
@@ -179,39 +201,40 @@
                         (video_player.currentTime =
                             e.currentTarget.valueAsNumber)}
                     bind:value={current_time}
-                    max={duration}
+                    max={video_duration}
                     class="range w-full range-xs"
                 />
             </div>
         </div>
     {/if}
 </div>
-
-<div class="flex justify-between mx-3 my-2">
-    <button on:click={() => move_one_frame(-1)} class="text-sm">
-        <kbd class="kbd kbd-sm">◀︎</kbd> Previous frame
-    </button>
-    <button on:click={set_clip_start} class="text-sm">
-        Set clip start <kbd class="kbd kbd-sm">▲</kbd>
-    </button>
-    <button on:click={timeline.center} class="text-sm">
-        Center Timeline <kbd class="kbd kbd-sm">Space</kbd>
-    </button>
-    <button on:click={set_clip_end} class="text-sm"
-        >Set clip end<kbd class="kbd kbd-sm">▼</kbd>
-    </button>
-    <button on:click={() => move_one_frame(1)} class="text-sm">
-        Next frame <kbd class="kbd kbd-sm">▶︎</kbd>
-    </button>
+<div bind:clientHeight={timeline_height}>
+    <div class="flex justify-between mx-3 my-2">
+        <button on:click={() => move_one_frame(-1)} class="text-sm">
+            <kbd class="kbd kbd-sm">◀︎</kbd> Previous frame
+        </button>
+        <button on:click={set_clip_start} class="text-sm">
+            Set clip start <kbd class="kbd kbd-sm">▲</kbd>
+        </button>
+        <button on:click={timeline.center} class="text-sm">
+            Center Timeline <kbd class="kbd kbd-sm">Space</kbd>
+        </button>
+        <button on:click={set_clip_end} class="text-sm"
+            >Set clip end<kbd class="kbd kbd-sm">▼</kbd>
+        </button>
+        <button on:click={() => move_one_frame(1)} class="text-sm">
+            Next frame <kbd class="kbd kbd-sm">▶︎</kbd>
+        </button>
+    </div>
+    {#key video_duration}
+        <Timeline
+            bind:this={timeline}
+            onUpdate={(e) => (video_player.currentTime = e)}
+            video_current_time={current_time}
+            seconds={video_duration}
+        />
+    {/key}
 </div>
-{#key duration}
-    <Timeline
-        bind:this={timeline}
-        onUpdate={(e) => (video_player.currentTime = e)}
-        video_current_time={current_time}
-        seconds={duration}
-    />
-{/key}
 
 <style lang="scss">
     .video-player * {

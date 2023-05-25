@@ -67,14 +67,14 @@ export class KonvaTimeline {
     }
 
     update_clip_marker(start: number, duration: number) {
-        if(!this._clip_marker) this.create_clip_marker();
-        
+        if (!this._clip_marker) this.create_clip_marker();
+
         this._clip_marker.x(start * this._marker_gap);
         this._clip_marker.width(duration * this._marker_gap);
     }
 
 
-    timestamp_to_string(timestamp: number) : string {
+    timestamp_to_string(timestamp: number): string {
         return `${Math.floor(timestamp / 60)}:${(timestamp % 60)
             .toFixed(0)
             .padStart(2, "0")}`;
@@ -93,18 +93,18 @@ export class KonvaTimeline {
     start_clip_marker_change(e: KonvaEventObject<MouseEvent>) {
         if (e.evt.button != 0) return;
 
-        if(e.target.name() === CLIP_MARKER_NAME) {
+        if (e.target.name() === CLIP_MARKER_NAME) {
             this._clip_marker.startDrag();
             this._was_controlling_clip_marker = true;
             return;
         }
 
-        if(e.target.name().includes(CLIP_MARKER_ANCHOR_NAME)) {
+        if (e.target.name().includes(CLIP_MARKER_ANCHOR_NAME)) {
             this._was_controlling_clip_marker = true;
             return;
         }
         this._mouse_drag_start = this._stage.getRelativePointerPosition().x / this._marker_gap;
-        if(!this._clip_marker) {
+        if (!this._clip_marker) {
             this.create_clip_marker();
         }
     }
@@ -116,7 +116,7 @@ export class KonvaTimeline {
         if (distance > 0.1) {
             this._clip_marker.x(
                 (range_end < this._mouse_drag_start ? range_end : this._mouse_drag_start) *
-                    this._marker_gap
+                this._marker_gap
             );
             this._clip_marker.width(distance * this._marker_gap);
             this._was_controlling_clip_marker = true;
@@ -124,18 +124,18 @@ export class KonvaTimeline {
     }
 
     complete_clip_marker_change() {
-        if(!this._clip_marker) return;
+        if (!this._clip_marker) return;
 
         let duration = this._clip_marker.getSelfRect().width / this._marker_gap;
         let start = this._clip_marker.x() / this._marker_gap;
 
         this._mouse_drag_start = null;
-        if(this._clip_marker.width() > 0) {
+        if (this._clip_marker.width() > 0) {
             clip_start.set(start);
             clip_end.set(start + duration);
         }
     }
-    
+
 
     stage_horizontal_bound(x: number) {
         let right_bound =
@@ -146,7 +146,7 @@ export class KonvaTimeline {
     }
 
     stage_set_scale(scale: number, stage_position: number) {
-        
+
         this._stage.scale({ x: scale, y: 1 });
 
         this._stage.position({
@@ -182,7 +182,7 @@ export class KonvaTimeline {
             direction > 0 ? old_scale * zoom_speed : old_scale / zoom_speed;
 
         if (new_scale <= 1) return;
-        
+
         this.stage_set_scale(new_scale, pointer.x - mouse_point_to.x * new_scale);
     }
 
@@ -198,14 +198,14 @@ export class KonvaTimeline {
 
 
     update_current_time(current_time: number) {
-        if(!this._current_time_marker) return;
+        if (!this._current_time_marker) return;
         this._current_time_marker.x(current_time * this._marker_gap);
         this._current_time = current_time;
     }
 
     update_detail_visibility() {
         let details = this._timeline_group.getChildren((e) => e.name().includes(DETAIL_NAME))
-        for(let detail of details) {
+        for (let detail of details) {
             detail.visible(this._stage.scaleX() > DETAIL_CUTOFF_SCALE);
         }
     }
@@ -351,7 +351,7 @@ export class KonvaTimeline {
     }
 
     create_timeline_thumbnails(thumbnail_path: string, upto: number) {
-        for(let i = this._created_thumbnails; i < upto; i++) {
+        for (let i = this._created_thumbnails; i < upto; i++) {
             this.create_timeline_thumbnail(thumbnail_path, i);
         }
         this._created_thumbnails = upto;

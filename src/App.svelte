@@ -3,7 +3,6 @@
   import Installer from "./lib/Installer/Installer.svelte";
   import { fly } from "svelte/transition";
   import { current_page } from "./lib/shared/AppStore";
-  import Processing from "./lib/Processing/Processing.svelte";
 
   $current_page = Installer;
 </script>

@@ -12,6 +12,6 @@
     </div>
     <div class="stat auto-rows-min" >
         <div class="stat-title">Estimated Size:</div>
-        <div class="stat-value text-3xl">{prettyBytes(isFinite($estimated_size) ? $estimated_size : 0)}</div>
+        <div class="stat-value text-3xl">{prettyBytes(isFinite($estimated_size) && $estimated_size > 0 ? $estimated_size : 0)}</div>
     </div>
 </div>
