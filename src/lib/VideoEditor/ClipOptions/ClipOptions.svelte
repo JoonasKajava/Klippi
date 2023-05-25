@@ -80,7 +80,6 @@
 
     {#key current_tab}
         <div
-            style="width: 300px;"
             in:fly={{ x: 100 * move_direction, duration: 200, delay: 200 }}
             out:fly={{ x: -100 * move_direction, duration: 200 }}
         >
