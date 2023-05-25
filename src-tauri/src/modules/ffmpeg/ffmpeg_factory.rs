@@ -1,12 +1,10 @@
-use crate::modules::{utils::filesystem_utils::PathBufExtensions, config::{app_config::AppConfig, Static}};
-
 use super::{
     ffmpeg_builder::{FFmpegBuilder, File, Param},
     models::clip_creation_options::ClipCreationOptions,
 };
-use anyhow::{Result, Context};
+use anyhow::{Result};
 use std::{
-    path::PathBuf, thread::ThreadId, fs,
+    path::PathBuf, fs,
 };
 
 pub fn create_timeline_thumbnails_command(from: &PathBuf, into: &PathBuf)-> Result<FFmpegBuilder> {

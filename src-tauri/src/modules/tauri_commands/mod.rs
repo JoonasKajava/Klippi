@@ -1,4 +1,4 @@
-use std::{path::PathBuf, fs, sync::{Arc}, process::Command};
+use std::{path::PathBuf, fs, sync::{Arc}};
 use anyhow::{Context, Result};
 use tauri::{Window};
 use ts_rs::TS;
@@ -6,7 +6,7 @@ use ts_rs::TS;
 use crate::modules::config::user_settings::UserSettings;
 
 use super::{
-    ffmpeg::{ get_version, installer::install_ffmpeg, ffmpeg_factory::{create_thumbnail_command, create_clip_command, create_timeline_thumbnails_command}, models::clip_creation_options::ClipCreationOptions, progress::{Progress, Status}},
+    ffmpeg::{ get_version, installer::install_ffmpeg, ffmpeg_factory::{create_thumbnail_command, create_clip_command, create_timeline_thumbnails_command}, models::clip_creation_options::ClipCreationOptions,},
     file_processing::video_metadata::find_lastest_videos, config::{app_config::AppConfig, Static}, utils::filesystem_utils::PathBufExtensions,
 };
 

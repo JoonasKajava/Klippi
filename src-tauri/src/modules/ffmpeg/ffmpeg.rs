@@ -6,11 +6,6 @@ use crate::modules::ffmpeg::progress::{Progress, Status};
 
 use super::ffmpeg_builder::{FFmpegBuilder, Param};
 
-pub struct FFmpegRunner {
-
-    pub process: Child
-}
-
 
 impl FFmpegBuilder {
     pub async fn run(mut self, on_progress: impl Fn(Progress) + std::marker::Sync + std::marker::Send + 'static) -> Result<Child> {

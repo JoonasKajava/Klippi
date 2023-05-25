@@ -18,6 +18,7 @@ pub enum VersionResultError {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct Version {
     major: usize,
     minor: usize

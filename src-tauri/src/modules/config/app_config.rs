@@ -7,7 +7,7 @@ use std::{
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use tauri::{
-    api::path::{app_cache_dir, app_config_dir, app_data_dir},
+    api::path::{app_config_dir, app_data_dir},
     Config,
 };
 use ts_rs::TS;

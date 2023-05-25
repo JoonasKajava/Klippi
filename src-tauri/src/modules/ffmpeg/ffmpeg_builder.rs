@@ -121,7 +121,7 @@ impl<'a> fmt::Display for FFmpegBuilder {
     }
 }
 
-
+#[allow(dead_code)]
 impl<'a> File {
     pub fn from(path: &PathBuf) -> File {
         File { path: path.into(), options: Vec::new() }
