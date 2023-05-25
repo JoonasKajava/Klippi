@@ -35,7 +35,6 @@ fn main() {
             AppConfig::init(&app.config())?;
             println!("Version: {:?}", get_version("ffprobe"));
             println!("Version: {:?}", get_version("ffmpeg"));
-
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

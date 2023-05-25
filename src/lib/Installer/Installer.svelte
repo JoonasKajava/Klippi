@@ -17,12 +17,13 @@
 
     let missing_dependencies: string[];
 
-    invoke("verify_dependencies").then((missing: string[]) => {
-        if(!missing) {
+    invoke("verify_dependencies")
+        .then(() => {
             $current_page = VideoSelector;
-        }
-        missing_dependencies = missing;
-    });
+        })
+        .catch((missing: string[]) => {
+            missing_dependencies = missing;
+        });
 
     interface Step {
         name: String;

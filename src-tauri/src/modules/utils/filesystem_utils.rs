@@ -1,9 +1,11 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, process::Command};
 use md5;
 
 
 pub trait PathBufExtensions {
     fn to_hashed(&self) -> PathBuf;
+
+    fn reveal(&self);
 }
 
 impl PathBufExtensions for PathBuf {
@@ -15,5 +17,12 @@ impl PathBufExtensions for PathBuf {
 
         new_path.set_file_name(hash);
         return new_path;
+    }
+
+    fn reveal(&self) {
+        let mut command = Command::new("explorer");
+        command.args(["/select,", self.to_str().unwrap()]);
+        println!("{:?}", command);
+        command.spawn().unwrap();
     }
 }

@@ -1,5 +1,4 @@
-use std::{path::PathBuf, fs, sync::{Arc}, process::Child};
-use once_cell::sync::OnceCell;
+use std::{path::PathBuf, fs, sync::{Arc}, process::Command};
 use anyhow::{Context, Result};
 use tauri::{Window};
 use ts_rs::TS;
@@ -132,6 +131,9 @@ pub async fn create_clip(window: Window,options: ClipCreationOptions) -> Result<
     command.run(move |progress| {
         window.emit("ffmpeg_progress", progress).expect("Could not emit event");
     }).await.map_err(|_|"Running failed!")?.wait().map_err(|_|"Wait failed")?;
+
+    final_options.to.reveal();
+
     Ok("Success".into())
 }
 

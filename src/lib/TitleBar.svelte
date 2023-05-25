@@ -27,7 +27,7 @@
     </div>
     <div data-tauri-drag-region class="navbar-center">
         <div class="btn-group btn-group-horizontal">
-            <button class="btn">Settings</button>
+            <button disabled={true} class="btn">Settings</button>
             <button class="btn" class:btn-active={$current_page == VideoSelector} on:click={() => go_to(VideoSelector)}>Video Selector</button>
             <button class="btn" class:btn-active={$current_page == VideoEditor} disabled={!$selected_video} on:click={() => go_to(VideoEditor)}>Editor</button>
         </div>

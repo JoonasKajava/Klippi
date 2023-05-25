@@ -1,10 +1,10 @@
-use std::{path::{PathBuf}, process::Command};
+use std::{path::{PathBuf}, process::Command, os::windows::process::CommandExt};
 use anyhow::{Result, bail};
 use std::fmt;
 
 use crate::modules::config::{app_config::AppConfig, Static};
 
-
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 #[derive(Debug)]
 pub struct FFmpegBuilder {
@@ -108,7 +108,7 @@ impl<'a> FFmpegBuilder {
         for output in &self.outputs {
             output.push_to(&mut command, false);
         }
-
+        command.creation_flags(CREATE_NO_WINDOW);
         command
     }
 }

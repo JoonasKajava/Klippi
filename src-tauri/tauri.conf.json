@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "Klippi",
-    "version": "0.0.0"
+    "version": "1.0.2"
   },
   "tauri": {
     "allowlist": {
@@ -75,7 +75,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "klippi",
       "targets": "all"
     },
     "security": {

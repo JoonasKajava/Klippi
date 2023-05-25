@@ -10,7 +10,6 @@ use std::{
 };
 
 pub fn create_timeline_thumbnails_command(from: &PathBuf, into: &PathBuf)-> Result<FFmpegBuilder> {
-    // $ ffmpeg -hwaccel auto -skip_frame nokey -i Don\'t\ Starve\ Together\ 2021.01.04\ -\ 22.44.20.02.DVR.mp4 -r 1 -vf "scale=64:-1" -tune fastdecode -preset fast -benchmark test/out%d.bmp
     let mut instance = FFmpegBuilder::new();
 
 
