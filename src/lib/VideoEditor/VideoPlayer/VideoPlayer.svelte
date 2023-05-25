@@ -13,7 +13,7 @@
     export let video: string;
     let timeline: Timeline;
     let video_player: HTMLVideoElement;
-    let is_playing;
+    let is_playing: boolean;
     let video_fullscreen = false;
     let display_controls = false;
     let loop_clip = false;
@@ -23,6 +23,11 @@
     let volume = 0.5;
 
     const FRAME_RATE = 60;
+
+    function move_one_frame(direction: -1 | 1) {
+        video_player.pause();
+        video_player.currentTime += direction / FRAME_RATE;
+    }
 
     function toggle_play() {
         video_player.paused ? video_player.play() : video_player.pause();
@@ -65,9 +70,38 @@
             if (value) toggle_fullscreen();
         });
     }
+
+    function set_clip_start() {
+        $clip_start = video_player.currentTime;
+        timeline.update_clip_marker();
+    }
+
+    function set_clip_end() {
+        $clip_end = video_player.currentTime;
+        timeline.update_clip_marker();
+    }
+
+    function keyboard_navigation(
+        e: KeyboardEvent & { currentTarget: EventTarget & Window }
+    ) {
+        switch (e.key) {
+            case "ArrowLeft":
+                move_one_frame(-1);
+                break;
+            case "ArrowRight":
+                move_one_frame(1);
+                break;
+            case "ArrowUp":
+                set_clip_start();
+                break;
+            case "ArrowDown":
+                set_clip_end();
+                break;
+        }
+    }
 </script>
 
-<svelte:window on:keyup={exit_fullscreen} />
+<svelte:window on:keyup={exit_fullscreen} on:keydown={keyboard_navigation} />
 
 <div
     class:fullscreen={video_fullscreen}
@@ -153,23 +187,22 @@
     {/if}
 </div>
 
-<div class="flex justify-between mx-4 my-2">
-    <button
-        on:click={() => (video_player.currentTime -= 1 / FRAME_RATE)}
-        class="btn btn-outline btn-primary btn-sm"
-        ><span class="material-icons">arrow_back_ios</span> Previous Frame</button
-    >
-    <button on:click={timeline.center} class="btn btn-outline btn-primary btn-sm"
-        >Center timeline <span class="ml-1 material-icons"
-            >center_focus_strong</span
-        >
+<div class="flex justify-between mx-3 my-2">
+    <button on:click={() => move_one_frame(-1)} class="text-sm">
+        <kbd class="kbd kbd-sm">◀︎</kbd> Previous frame
     </button>
-    <button
-        on:click={() => (video_player.currentTime += 1 / FRAME_RATE)}
-        class="btn btn-outline btn-primary btn-sm"
-        >Next Frame <span class="material-icons">arrow_forward_ios</span
-        ></button
-    >
+    <button on:click={set_clip_start} class="text-sm">
+        Set clip start <kbd class="kbd kbd-sm">▲</kbd>
+    </button>
+    <button on:click={timeline.center} class="text-sm">
+        Center Timeline <kbd class="kbd kbd-sm">Space</kbd>
+    </button>
+    <button on:click={set_clip_end} class="text-sm"
+        >Set clip end<kbd class="kbd kbd-sm">▼</kbd>
+    </button>
+    <button on:click={() => move_one_frame(1)} class="text-sm">
+        Next frame <kbd class="kbd kbd-sm">▶︎</kbd>
+    </button>
 </div>
 {#key duration}
     <Timeline

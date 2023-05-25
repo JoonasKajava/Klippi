@@ -56,6 +56,8 @@ export class KonvaTimeline {
         this._on_select_current_time = current_time_update;
     }
 
+
+
     get_scale() {
         return this._stage.scaleX();
     }
@@ -63,6 +65,14 @@ export class KonvaTimeline {
     get_marker_gap() {
         return this._marker_gap;
     }
+
+    update_clip_marker(start: number, duration: number) {
+        if(!this._clip_marker) this.create_clip_marker();
+        
+        this._clip_marker.x(start * this._marker_gap);
+        this._clip_marker.width(duration * this._marker_gap);
+    }
+
 
     timestamp_to_string(timestamp: number) : string {
         return `${Math.floor(timestamp / 60)}:${(timestamp % 60)
