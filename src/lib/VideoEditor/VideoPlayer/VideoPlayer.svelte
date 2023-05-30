@@ -10,7 +10,6 @@
         duration,
         speed,
     } from "../ClipOptions/ClipOptionsStore";
-    import { onMount } from "svelte";
 
     export let video: string;
     let timeline: Timeline;
@@ -89,6 +88,7 @@
     function keyboard_navigation(
         e: KeyboardEvent & { currentTarget: EventTarget & Window, target: HTMLElement }
     ) {
+        console.log(e);
         if(e.target.nodeName.toLowerCase() === 'input') return;
         switch (e.code) {
             case "ArrowLeft":
