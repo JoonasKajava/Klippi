@@ -1,18 +1,30 @@
-use std::{path::PathBuf, fs, sync::{Arc}};
+use anyhow::bail;
 use anyhow::{Context, Result};
-use tauri::{Window};
+use std::error::Error;
+use std::{fs, path::PathBuf, sync::Arc};
+use tauri::Window;
 use ts_rs::TS;
 
 use crate::modules::config::user_settings::UserSettings;
+use crate::modules::ffmpeg::VersionResultError::NotInstalled;
+use crate::modules::ffmpeg::VersionResultError::ParseError;
 
 use super::{
-    ffmpeg::{ get_version, installer::install_ffmpeg, ffmpeg_factory::{create_thumbnail_command, create_clip_command, create_timeline_thumbnails_command}, models::clip_creation_options::ClipCreationOptions,},
-    file_processing::video_metadata::find_lastest_videos, config::{app_config::AppConfig, Static}, utils::filesystem_utils::PathBufExtensions,
+    config::{app_config::AppConfig, Static},
+    ffmpeg::{
+        ffmpeg_factory::{
+            create_clip_command, create_thumbnail_command, create_timeline_thumbnails_command,
+        },
+        get_version,
+        installer::install_ffmpeg,
+        models::clip_creation_options::ClipCreationOptions,
+    },
+    file_processing::video_metadata::find_lastest_videos,
+    utils::filesystem_utils::PathBufExtensions,
 };
 
-
 #[derive(Clone, serde::Serialize, TS)]
-#[ts(export, export_to="../src/models/")]
+#[ts(export, export_to = "../src/models/")]
 pub struct VideoData {
     thumbnail: String,
     file: String,
@@ -21,19 +33,24 @@ pub struct VideoData {
 
 #[tauri::command]
 pub async fn clip_exists(file: PathBuf) -> bool {
-    
-    PathBuf::from(&UserSettings::current().clip_location).join(file).exists()
+    PathBuf::from(&UserSettings::current().clip_location)
+        .join(file)
+        .exists()
 }
 
 #[derive(Clone, serde::Serialize, TS)]
-#[ts(export, export_to="../src/models/")]
+#[ts(export, export_to = "../src/models/")]
 pub enum TimelineThumbnailsResult {
     Generating(PathBuf),
-    Found(PathBuf)
+    Found(PathBuf),
 }
 
 #[tauri::command]
-pub async fn get_timeline_thumbnails(window: Window,of: PathBuf, duration: usize) -> TimelineThumbnailsResult {
+pub async fn get_timeline_thumbnails(
+    window: Window,
+    of: PathBuf,
+    duration: usize,
+) -> TimelineThumbnailsResult {
     let hashed_path = &of.to_hashed();
 
     let folder_name = hashed_path.file_name().expect("Unable to get filename");
@@ -45,21 +62,30 @@ pub async fn get_timeline_thumbnails(window: Window,of: PathBuf, duration: usize
     }
 
     let command = create_timeline_thumbnails_command(&of, &folder_path).unwrap();
-    command.run(move |progress| {
-        window.emit("thumbnail_progress", progress).expect("Could not emit event");
-    }).await.unwrap();
+    command
+        .run(move |progress| {
+            window
+                .emit("thumbnail_progress", progress)
+                .expect("Could not emit event");
+        })
+        .await
+        .unwrap();
 
-    return TimelineThumbnailsResult::Generating(folder_path)
+    return TimelineThumbnailsResult::Generating(folder_path);
+}
+
+fn friendly_error(error: anyhow::Error) -> String {
+    error.to_string()
 }
 
 #[tauri::command]
-pub async fn get_thumbnail(of: &PathBuf) -> Result<PathBuf> {
-
+pub async fn get_thumbnail(of: &PathBuf) -> Result<PathBuf, String> {
     let thumbnails_folder = PathBuf::from(AppConfig::current().thumbnail_cache.clone());
+
     if !thumbnails_folder.exists() {
-        fs::create_dir_all(&thumbnails_folder)?;
+        fs::create_dir_all(&thumbnails_folder).map_err(|_| format!("Unable to create folder {}", &thumbnails_folder.display()))?;
     }
-    
+
     let mut hash_name = of.to_hashed();
     hash_name.set_extension("jpg");
 
@@ -70,41 +96,57 @@ pub async fn get_thumbnail(of: &PathBuf) -> Result<PathBuf> {
         return Ok(output_file_path);
     }
 
-    create_thumbnail_command(of, &output_file_path)?.run(|_|()).await?.wait()?;
+    let command = create_thumbnail_command(of, &output_file_path).map_err(friendly_error)?; 
+
+    
+        command.run(|_| ())
+        .await.map_err(friendly_error)?
+        .wait().map_err(|e| e.to_string())?;
     Ok(output_file_path)
 }
 
 #[tauri::command]
-pub async fn get_latest_videos(count: usize) -> Vec<VideoData> {
+pub async fn get_latest_videos(count: usize) -> Result<Vec<VideoData>, String> {
     let mut videos: Vec<VideoData> = Vec::new();
     for video in find_lastest_videos().into_iter().take(count) {
         let video_path = &PathBuf::from(&video);
-        let thumbnail = get_thumbnail(&video_path).await.expect("Could not get thumbnail");
+        let thumbnail = get_thumbnail(&video_path)
+            .await?;
         videos.push(VideoData {
             thumbnail: thumbnail.to_string_lossy().into(),
             file: video,
-            name: video_path.file_name().context("Unable to get filename").unwrap().to_string_lossy().into()
+            name: video_path
+                .file_name()
+                .context("Unable to get filename")
+                .unwrap()
+                .to_string_lossy()
+                .into(),
         });
     }
-    videos
+    Ok(videos)
 }
 
 #[tauri::command]
-pub async fn verify_dependencies() -> Result<(), Vec<String>> {
+pub async fn verify_dependencies() -> Result<Vec<String>, &'static str> {
     let mut failed_dependencies: Vec<String> = Vec::new();
-    if get_version("ffmpeg").is_err() {
-        failed_dependencies.push("ffmpeg".into());
+
+    let ffmpeg_version = get_version("ffmpeg");
+    let ffprobe_version = get_version("ffprobe");
+
+    if let Err(e) = ffmpeg_version {
+        match e {
+            NotInstalled => failed_dependencies.push("ffmpeg".into()),
+            ParseError => return Err("Failed to read ffmpeg version"),
+        };
     }
 
-    if get_version("ffprobe").is_err() {
-        failed_dependencies.push("ffprobe".into());
+    if let Err(e) = ffprobe_version {
+        match e {
+            NotInstalled => failed_dependencies.push("ffprobe".into()),
+            ParseError => return Err("Failed to read ffprobe version"),
+        };
     }
-
-    if failed_dependencies.is_empty() {
-        Ok(())
-    } else {
-        Err(failed_dependencies)
-    }
+    Ok(failed_dependencies)
 }
 #[tauri::command]
 pub async fn install_dependencies(window: Window, path: &str) -> Result<String, String> {
@@ -119,18 +161,25 @@ pub async fn install_dependencies(window: Window, path: &str) -> Result<String, 
 }
 
 #[tauri::command]
-pub async fn create_clip(window: Window,options: ClipCreationOptions) -> Result<String, String>  {
-
+pub async fn create_clip(window: Window, options: ClipCreationOptions) -> Result<String, String> {
     let final_options = ClipCreationOptions {
         to: PathBuf::from(UserSettings::current().clip_location.clone()).join(options.to),
         ..options
     };
 
-    let command = create_clip_command(&final_options).map_err(|_|"Unable to get command".to_string())?;
-    
-    command.run(move |progress| {
-        window.emit("ffmpeg_progress", progress).expect("Could not emit event");
-    }).await.map_err(|_|"Running failed!")?.wait().map_err(|_|"Wait failed")?;
+    let command =
+        create_clip_command(&final_options).map_err(|_| "Unable to get command".to_string())?;
+
+    command
+        .run(move |progress| {
+            window
+                .emit("ffmpeg_progress", progress)
+                .expect("Could not emit event");
+        })
+        .await
+        .map_err(|_| "Running failed!")?
+        .wait()
+        .map_err(|_| "Wait failed")?;
 
     final_options.to.reveal();
 
@@ -139,5 +188,5 @@ pub async fn create_clip(window: Window,options: ClipCreationOptions) -> Result<
 
 #[tauri::command]
 pub async fn get_user_settings() -> Arc<UserSettings> {
-     return UserSettings::current().clone();
+    return UserSettings::current().clone();
 }

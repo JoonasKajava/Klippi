@@ -17,6 +17,7 @@
         if($current_page == page) return;
         $current_page = page;
     }
+
 </script>
 
 <div data-tauri-drag-region class="navbar" id="titlebar">

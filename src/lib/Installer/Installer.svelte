@@ -6,7 +6,7 @@
     import Downloading from "./Steps/Downloading.svelte";
     import { appWindow } from "@tauri-apps/api/window";
     import type { Event, UnlistenFn } from "@tauri-apps/api/event";
-    import { onDestroy, type ComponentType } from "svelte";
+    import { onDestroy } from "svelte";
     import Installing from "./Steps/Installing.svelte";
     import Verifying from "./Steps/Verifying.svelte";
     import Done from "./Steps/Done.svelte";
@@ -14,15 +14,23 @@
     import VideoSelector from "../VideoSelector.svelte";
     import { current_page } from "../shared/AppStore";
     import type { StepChange } from "src/models/StepChange";
+    import PanicRoom from "../PanicRoom/PanicRoom.svelte";
 
     let missing_dependencies: string[];
 
+    let error: String | null;
+
     invoke("verify_dependencies")
-        .then(() => {
-            $current_page = VideoSelector;
+        .then((missing: string[]) => {
+            if (missing.length <= 0) {
+                $current_page = VideoSelector;
+            } else {
+                missing_dependencies = missing;
+            }
         })
-        .catch((missing: string[]) => {
-            missing_dependencies = missing;
+        .catch((error_result: string) => {
+            error = error_result;
+            current_page.setWithProps<PanicRoom>(PanicRoom, {title: "Installer Ran Into An Error", error: error_result})
         });
 
     interface Step {
@@ -63,13 +71,12 @@
     let should_installer_start = false;
     $: completed_steps = steps.filter((x) => x.completed);
     let current_step: Step = steps[0];
-    let error: String | null;
 
     function install_dependencies() {
         invoke("install_dependencies", {
             path: $ffmpeg_install_location,
         }).catch((e: string) => {
-            error = e;
+            current_page.setWithProps<PanicRoom>(PanicRoom, {title: "Installer Ran Into An Error", error: e})
         });
     }
     let unlisten: UnlistenFn;
@@ -167,6 +174,7 @@
                 {missing_dependencies}
             />
         </div>
+
     {/if}
 </div>
 

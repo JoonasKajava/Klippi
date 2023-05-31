@@ -8,6 +8,7 @@
   import { current_page } from "./shared/AppStore";
   import { fly } from "svelte/transition";
   import type { VideoData } from "src/models/VideoData";
+  import Alert from "./PanicRoom/Alert.svelte";
 
   let latest_videos = invoke<VideoData[]>("get_latest_videos", { count: 3 });
 
@@ -72,6 +73,10 @@
           </div>
         </div>
       {/each}
+    </div>
+  {:catch error}
+    <div class="mt-4">
+      <Alert {error} />
     </div>
   {/await}
 </div>
