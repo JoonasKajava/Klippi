@@ -1,4 +1,4 @@
-use std::{path::{PathBuf}, process::Command, os::windows::process::CommandExt};
+use std::{path::PathBuf, process::Command, os::windows::process::CommandExt};
 use anyhow::{Result, bail};
 use std::fmt;
 
