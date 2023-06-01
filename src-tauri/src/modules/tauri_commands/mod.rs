@@ -1,6 +1,4 @@
-use anyhow::bail;
 use anyhow::{Context, Result};
-use std::error::Error;
 use std::{fs, path::PathBuf, sync::Arc};
 use tauri::Window;
 use ts_rs::TS;
