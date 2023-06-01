@@ -53,6 +53,7 @@ pub async fn get_timeline_thumbnails(
 ) -> TimelineThumbnailsResult {
     let hashed_path = &of.to_hashed();
 
+
     let folder_name = hashed_path.file_name().expect("Unable to get filename");
 
     let folder_path = PathBuf::from(AppConfig::current().thumbnail_cache.clone()).join(folder_name);
