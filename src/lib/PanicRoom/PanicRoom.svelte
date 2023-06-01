@@ -1,6 +1,6 @@
 <script>
     import { fly } from "svelte/transition";
-    import Alert from "./Alert.svelte";
+    import Alert from "../Alert.svelte";
 
     export let title = "";
     export let error = "";

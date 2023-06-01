@@ -8,7 +8,7 @@
   import { current_page } from "./shared/AppStore";
   import { fly } from "svelte/transition";
   import type { VideoData } from "src/models/VideoData";
-  import Alert from "./PanicRoom/Alert.svelte";
+  import Alert from "./Alert.svelte";
 
   let latest_videos = invoke<VideoData[]>("get_latest_videos", { count: 3 });
 
