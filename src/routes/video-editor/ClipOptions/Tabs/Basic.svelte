@@ -1,15 +1,8 @@
 <script lang="ts">
-    import InputGroup from "../../../shared/Input/InputGroup.svelte";
-    import {
-        ValidationError,
-        bitrate_lock,
-        clip_name,
-        framerate,
-        max_filesize,
-        mute_audio,
-        speed,
-        validation_errors,
-    } from "../ClipOptionsStore";
+    import InputGroup from "$lib/components/InputGroup.svelte";
+    import { clip_name, validation_errors, bitrate_lock, max_filesize, framerate, speed, mute_audio, ValidationError } from "$lib/stores/ClipOptionsStore";
+
+
 </script>
 
 <InputGroup label="Clip Name">

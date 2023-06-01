@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api/tauri";
     import MissingDependencies from "./MissingDependencies.svelte";
-    import { fly, slide } from "svelte/transition";
+    import { fly } from "svelte/transition";
     import Options from "./Steps/Options.svelte";
     import Downloading from "./Steps/Downloading.svelte";
     import { appWindow } from "@tauri-apps/api/window";
@@ -10,28 +10,9 @@
     import Installing from "./Steps/Installing.svelte";
     import Verifying from "./Steps/Verifying.svelte";
     import Done from "./Steps/Done.svelte";
-    import { ffmpeg_install_location } from "./InstallerStore";
-    import VideoSelector from "../VideoSelector.svelte";
-    import { current_page } from "../shared/AppStore";
-    import type { StepChange } from "src/models/StepChange";
-    import PanicRoom from "../PanicRoom/PanicRoom.svelte";
-
-    let missing_dependencies: string[];
-
-    let error: String | null;
-
-    invoke("verify_dependencies")
-        .then((missing: string[]) => {
-            if (missing.length <= 0) {
-                $current_page = VideoSelector;
-            } else {
-                missing_dependencies = missing;
-            }
-        })
-        .catch((error_result: string) => {
-            error = error_result;
-            current_page.setWithProps<PanicRoom>(PanicRoom, {title: "Installer Ran Into An Error", error: error_result})
-        });
+    import type { StepChange } from "$lib/models/StepChange";
+    import { ffmpeg_install_location, missing_dependencies } from "$lib/stores/InstallerStore";
+    import { error } from "@sveltejs/kit";
 
     interface Step {
         name: String;
@@ -76,7 +57,10 @@
         invoke("install_dependencies", {
             path: $ffmpeg_install_location,
         }).catch((e: string) => {
-            current_page.setWithProps<PanicRoom>(PanicRoom, {title: "Installer Ran Into An Error", error: e})
+            throw error(500, {
+                message: e,
+                title: "Unable to install dependencies",
+            });
         });
     }
     let unlisten: UnlistenFn;
@@ -138,43 +122,18 @@
                             transitions={step_transitions}
                         />
                     {/if}
-
-                    {#if error}
-                        <div
-                            transition:slide
-                            class="alert alert-error shadow-lg m-3"
-                        >
-                            <div>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="stroke-current flex-shrink-0 h-6 w-6"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    ><path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    /></svg
-                                >
-                                <span>{error}</span>
-                            </div>
-                        </div>
-                    {/if}
                 </div>
             </div>
         </div>
-    {:else if !installer_inprogress && missing_dependencies}
+    {:else if !installer_inprogress && $missing_dependencies}
         <div
             transition:fly={{ x: -100, duration: 200 }}
             on:outroend={() => (should_installer_start = true)}
         >
             <MissingDependencies
                 onInstallClick={() => (installer_inprogress = true)}
-                {missing_dependencies}
             />
         </div>
-
     {/if}
 </div>
 

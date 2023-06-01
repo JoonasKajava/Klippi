@@ -1,6 +1,6 @@
 <script lang="ts">
+    import { validation_errors, duration, estimated_size, ValidationError } from "$lib/stores/ClipOptionsStore";
     import prettyBytes from "pretty-bytes";
-    import { ValidationError, duration, estimated_size, validation_errors } from "./ClipOptionsStore";
 
 </script>
 

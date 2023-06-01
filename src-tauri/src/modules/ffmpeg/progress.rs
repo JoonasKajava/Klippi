@@ -4,7 +4,7 @@ use serde::Serialize;
 use ts_rs::TS;
 
 #[derive(Debug, Default, Clone, TS, Serialize)]
-#[ts(export, export_to="../src/models/")]
+#[ts(export, export_to="../src/lib/models/")]
 pub struct Progress {
     /// What frame ffmpeg is on.
     pub frame: Option<u64>,
@@ -78,7 +78,7 @@ pub enum ProgressParseError {
     UnknownKey(String)
 }
 #[derive(Debug, Default, PartialEq, Clone, Serialize, TS)]
-#[ts(export, export_to="../src/models/")]
+#[ts(export, export_to="../src/lib/models/")]
 pub enum Status {
     Continue,
     End,

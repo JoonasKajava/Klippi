@@ -2,6 +2,7 @@
     import {getName} from '@tauri-apps/api/app';
     import {appWindow} from '@tauri-apps/api/window';
     import TitleBarLink from './TitleBarLink.svelte';
+    import { selected_video } from '$lib/stores/VideoEditorStore';
 
     const appName = getName();
 
@@ -21,7 +22,7 @@
         <div class="btn-group btn-group-horizontal">
             <TitleBarLink disabled href="/settings">Settings</TitleBarLink>            
             <TitleBarLink href="/">Video Selector</TitleBarLink>
-            <TitleBarLink href="/video-editor">Editor</TitleBarLink>
+            <TitleBarLink disabled={$selected_video.length == 0} href="/video-editor">Editor</TitleBarLink>
         </div>
     </div>
     <div data-tauri-drag-region class="navbar-end">

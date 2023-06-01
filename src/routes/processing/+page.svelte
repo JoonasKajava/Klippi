@@ -1,9 +1,9 @@
 <script lang="ts">
+    import type { Progress } from "$lib/models/Progress";
+    import { duration } from "$lib/stores/ClipOptionsStore";
     import type { Event, UnlistenFn } from "@tauri-apps/api/event";
     import { appWindow } from "@tauri-apps/api/window";
-    import type { Progress } from "src/models/Progress";
     import { onDestroy } from "svelte";
-    import { duration } from "../VideoEditor/ClipOptions/ClipOptionsStore";
 
     let unlisten: UnlistenFn;
 

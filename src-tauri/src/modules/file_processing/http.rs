@@ -11,7 +11,7 @@ use std::io::Write;
 
 use std::cmp::min;
 #[derive(Clone, serde::Serialize, TS)]
-#[ts(export, export_to="../src/models/")]
+#[ts(export, export_to="../src/lib/models/")]
 pub struct DownloadProgress {
     progress: f64,
     total_size: u64,

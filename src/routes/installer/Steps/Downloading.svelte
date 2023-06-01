@@ -2,35 +2,35 @@
     import type { Event, UnlistenFn } from "@tauri-apps/api/event";
     import { appWindow } from "@tauri-apps/api/window";
     import prettyBytes from "pretty-bytes";
-    import { fly } from "svelte/transition";
     import Step from "./Step.svelte";
-    import { onDestroy } from 'svelte';
-    import type { DownloadProgress } from "src/models/DownloadProgress";
-
-    export let onNext: () => void;
+    import { onDestroy } from "svelte";
+    import type { DownloadProgress } from "$lib/models/DownloadProgress";
+    
     let progress: DownloadProgress = {
         progress: 0,
         total_size: 0n,
         downloaded: 0n,
-        speed: 0
+        speed: 0,
     };
 
-    let unlisten : UnlistenFn;
+    let unlisten: UnlistenFn;
 
-    appWindow.listen("download_progress", (event: Event<DownloadProgress>) => {
-        progress = event.payload;
-    }).then((handle) => {
-        unlisten = handle;
-    });
+    appWindow
+        .listen("download_progress", (event: Event<DownloadProgress>) => {
+            progress = event.payload;
+        })
+        .then((handle) => {
+            unlisten = handle;
+        });
 
     onDestroy(() => {
         unlisten();
-    })
+    });
 
     export let transitions;
 </script>
 
-<Step transitions={transitions}>
+<Step {transitions}>
     <div class="mt-10">
         <h1>Downloading FFmpeg</h1>
     </div>
@@ -44,11 +44,15 @@
 
         <div class="stat">
             <div class="stat-title">File Size</div>
-            <div class="stat-value">{prettyBytes(Number(progress.total_size))}</div>
+            <div class="stat-value">
+                {prettyBytes(Number(progress.total_size))}
+            </div>
         </div>
         <div class="stat">
             <div class="stat-title">Downloaded</div>
-            <div class="stat-value">{prettyBytes(Number(progress.downloaded))}</div>
+            <div class="stat-value">
+                {prettyBytes(Number(progress.downloaded))}
+            </div>
         </div>
     </div>
 </Step>

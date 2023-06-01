@@ -24,7 +24,7 @@ use super::{
 };
 
 #[derive(Clone, serde::Serialize, TS)]
-#[ts(export, export_to = "../src/models/")]
+#[ts(export, export_to = "../src/lib/models/")]
 pub struct VideoData {
     thumbnail: String,
     file: String,
@@ -39,7 +39,7 @@ pub async fn clip_exists(file: PathBuf) -> bool {
 }
 
 #[derive(Clone, serde::Serialize, TS)]
-#[ts(export, export_to = "../src/models/")]
+#[ts(export, export_to = "../src/lib/models/")]
 pub enum TimelineThumbnailsResult {
     Generating(PathBuf),
     Found(PathBuf),

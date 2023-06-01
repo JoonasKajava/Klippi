@@ -1,17 +1,8 @@
 <script lang="ts">
-    import InputGroup from "../../../shared/Input/InputGroup.svelte";
-    import {
-    ValidationError,
-    audio_bitrate,
-        bitrate_lock,
-        calculated_audio_bitrate,
-        calculated_video_bitrate,
-        final_bitrate,
-        mute_audio,
-        resolition,
-        user_bitrate,
-        validation_errors,
-    } from "../ClipOptionsStore";
+    import InputGroup from "$lib/components/InputGroup.svelte";
+    import { bitrate_lock, user_bitrate, mute_audio, audio_bitrate, calculated_video_bitrate, final_bitrate, validation_errors, calculated_audio_bitrate, resolition, ValidationError } from "$lib/stores/ClipOptionsStore";
+
+
     interface Option {
         label: string;
         value: number;

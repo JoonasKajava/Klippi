@@ -4,12 +4,7 @@
     import VolumeController from "./VolumeController.svelte";
     import { appWindow } from "@tauri-apps/api/window";
     import Timeline from "../Timeline/Timeline.svelte";
-    import {
-        clip_end,
-        clip_start,
-        duration,
-        speed,
-    } from "../ClipOptions/ClipOptionsStore";
+    import { duration, clip_end, clip_start, speed } from "$lib/stores/ClipOptionsStore";
 
     export let video: string;
     let timeline: Timeline;

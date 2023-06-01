@@ -6,12 +6,11 @@
     import { fly } from "svelte/transition";
     import Stats from "./Stats.svelte";
 
-    import { calculated_audio_bitrate, clip_end, clip_name, clip_start, final_bitrate, framerate, mute_audio, resolition, speed, validation_errors } from "./ClipOptionsStore";
     import { invoke } from "@tauri-apps/api/tauri";
-    import type { ClipCreationOptions } from "src/models/ClipCreationOptions";
-    import { selected_video } from "../VideoEditorStore";
-    import { current_page } from "../../shared/AppStore";
-    import Processing from "../../Processing/Processing.svelte";
+    import type { ClipCreationOptions } from "$lib/models/ClipCreationOptions";
+    import { clip_name, clip_start, clip_end, final_bitrate, calculated_audio_bitrate, framerate, speed, resolition, mute_audio, validation_errors } from "$lib/stores/ClipOptionsStore";
+    import { selected_video } from "$lib/stores/VideoEditorStore";
+    import { goto } from "$app/navigation";
 
 
     let current_tab: ComponentType = Basic;
@@ -52,7 +51,7 @@
 
         invoke("create_clip", {options: options});
 
-        $current_page = Processing;
+        goto("/processing");
     } 
 
 </script>

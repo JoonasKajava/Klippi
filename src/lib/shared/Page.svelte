@@ -1,5 +1,0 @@
-
-
-<div>
-    <slot></slot>
-</div>

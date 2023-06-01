@@ -39,7 +39,7 @@ pub fn uncompress_with_new_name(archive: PathBuf, new_name: &str) -> Result<()> 
 }
 
 #[derive(Clone, serde::Serialize, TS)]
-#[ts(export, export_to="../src/models/")]
+#[ts(export, export_to="../src/lib/models/")]
 pub struct StepChange {
     previous_step: String,
     next_step: String

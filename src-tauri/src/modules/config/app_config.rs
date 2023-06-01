@@ -17,7 +17,7 @@ use super::{DefaultValues, JsonConfig, Static};
 const APP_CONFIGURATION_FILENAME: &str = "AppConfig.json";
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
-#[ts(export, export_to = "../src/models/")]
+#[ts(export, export_to = "../src/lib/models/")]
 pub struct AppConfig {
     pub ffmpeg_location: String,
     pub thumbnail_cache: String,

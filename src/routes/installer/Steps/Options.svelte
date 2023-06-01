@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { open, ask } from "@tauri-apps/api/dialog";
-    import { appDataDir, join } from "@tauri-apps/api/path";
-    import { fly } from "svelte/transition";
+    import { open } from "@tauri-apps/api/dialog";
+    import { appDataDir } from "@tauri-apps/api/path";
     import Step from "./Step.svelte";
-    import { ffmpeg_install_location } from "../InstallerStore";
+    import { ffmpeg_install_location } from "../../../lib/stores/InstallerStore";
 
     export let onNext: () => void;
 

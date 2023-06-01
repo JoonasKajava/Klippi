@@ -12,7 +12,7 @@ use super::{JsonConfig, DefaultValues, Static};
 const USER_SETTINGS_FILENAME: &str = "UserSettings.json";
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
-#[ts(export, export_to="../src/models/")]
+#[ts(export, export_to="../src/lib/models/")]
 pub struct UserSettings {
     pub clip_location: String,
     pub videos_directory: String,

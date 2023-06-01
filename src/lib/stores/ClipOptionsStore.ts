@@ -1,4 +1,4 @@
-import FileSize from '../../shared/FileSize';
+import FileSize from '../utilities/FileSize';
 import { writable, derived } from 'svelte/store';
 
 export const clip_name = writable("");

@@ -3,12 +3,12 @@
     import type { Event } from "@tauri-apps/api/event";
     import { KonvaTimeline } from "./KonvaTimeline";
     import { invoke } from "@tauri-apps/api/tauri";
-    import { selected_video } from "../VideoEditorStore";
     import { thumbnail_processes } from "./TimelineStore";
     import { appWindow } from "@tauri-apps/api/window";
-    import type { Progress } from "src/models/Progress";
-    import type { TimelineThumbnailsResult } from "src/models/TimelineThumbnailsResult";
-    import {clip_start, duration } from "../ClipOptions/ClipOptionsStore";
+    import type { Progress } from "$lib/models/Progress";
+    import type { TimelineThumbnailsResult } from "$lib/models/TimelineThumbnailsResult";
+    import { duration, clip_start } from "$lib/stores/ClipOptionsStore";
+    import { selected_video } from "$lib/stores/VideoEditorStore";
 
     export let video_current_time: number;
     export let onUpdate: (value: number) => void;

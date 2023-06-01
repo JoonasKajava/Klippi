@@ -5,7 +5,7 @@ use ts_rs::TS;
 
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, TS)]
-#[ts(export, export_to="../src/models/")]
+#[ts(export, export_to="../src/lib/models/")]
 pub struct ClipCreationOptions {
     pub from: PathBuf,
     pub to: PathBuf,
