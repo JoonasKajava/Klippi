@@ -8,7 +8,10 @@
   import type { VideoData } from "../lib/models/VideoData";
   import { goto } from "$app/navigation";
   import { selected_video } from "$lib/stores/VideoEditorStore";
-    import { dependencies_has_been_verified, missing_dependencies } from "$lib/stores/InstallerStore";
+  import {
+    dependencies_has_been_verified,
+    missing_dependencies,
+  } from "$lib/stores/InstallerStore";
 
   (async () => {
     if ($dependencies_has_been_verified) return;
@@ -16,12 +19,12 @@
     missing_dependencies.set(result);
     if (result.length > 0) {
       goto("/installer");
-    }else {
+    } else {
       dependencies_has_been_verified.set(true);
     }
   })().catch((err) => {
     throw error(500, { message: err, title: "Unable to verify dependencies" });
-  })
+  });
 
   let latest_videos = invoke<VideoData[]>("get_latest_videos", { count: 3 });
 

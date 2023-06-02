@@ -10,7 +10,7 @@ use crate::modules::config::{user_settings::UserSettings, Static};
 
 
 
-pub fn find_lastest_videos() -> Vec<String> {
+pub fn find_latest_videos() -> Vec<String> {
     let settings = UserSettings::current();
     let regex = Path::new(&settings.videos_directory)
         .join("**/*.mp4")

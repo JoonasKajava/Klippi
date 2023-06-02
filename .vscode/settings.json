@@ -3,9 +3,17 @@
         "./src-tauri/Cargo.toml"
     ],
     "cSpell.words": [
+        "atempo",
         "Calibri",
+        "fastdecode",
+        "hwaccel",
         "Kbits",
+        "nokey",
+        "nostats",
         "outrostart",
+        "setpts",
+        "sseof",
+        "ultrafast",
         "unlisten",
         "unmaximize"
     ]

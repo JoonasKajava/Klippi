@@ -39,7 +39,6 @@ impl FFmpegBuilder {
                 }
             }
         });
-        println!("pääsi tänne");
         Ok(child)
 
     }

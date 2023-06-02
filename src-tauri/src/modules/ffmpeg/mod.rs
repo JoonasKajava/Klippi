@@ -30,7 +30,7 @@ pub fn get_version(of: &str) -> Result<Version, VersionResultError> {
 
     let full_program = ffmpeg_location.join("bin").join(&of);
 
-    println!("Checking verion of {:?}", full_program);
+    println!("Checking version of {:?}", full_program);
 
     let output = Command::new( full_program)
         .arg("-version")

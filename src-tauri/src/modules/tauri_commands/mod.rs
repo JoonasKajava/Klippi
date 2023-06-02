@@ -17,7 +17,7 @@ use super::{
         installer::install_ffmpeg,
         models::clip_creation_options::ClipCreationOptions,
     },
-    file_processing::video_metadata::find_lastest_videos,
+    file_processing::video_metadata::find_latest_videos,
     utils::filesystem_utils::PathBufExtensions,
 };
 
@@ -107,7 +107,7 @@ pub async fn get_thumbnail(of: &PathBuf) -> Result<PathBuf, String> {
 #[tauri::command]
 pub async fn get_latest_videos(count: usize) -> Result<Vec<VideoData>, String> {
     let mut videos: Vec<VideoData> = Vec::new();
-    for video in find_lastest_videos().into_iter().take(count) {
+    for video in find_latest_videos().into_iter().take(count) {
         let video_path = &PathBuf::from(&video);
         let thumbnail = get_thumbnail(&video_path)
             .await?;
