@@ -155,9 +155,7 @@
                             on:click={toggle_play}
                             class="btn btn-circle btn-sm"
                         >
-                            <span class="material-icons"
-                                >{is_playing ? "pause" : "play_arrow"}</span
-                            >
+                        <i class="fas fa-pause" class:fa-pause={is_playing} class:fa-play={!is_playing}></i>
                         </button>
                         <span
                             >{pretty_seconds(current_time)} / {pretty_seconds(
@@ -173,18 +171,14 @@
                             class="btn btn-circle btn-sm"
                             class:spin={loop_clip}
                         >
-                            <span class="material-icons">loop</span>
+                            <i class="fa-solid fa-arrow-rotate-left"></i>
                         </button>
 
                         <button
                             on:click={toggle_fullscreen}
                             class="btn btn-circle btn-sm"
                         >
-                            <span class="material-icons"
-                                >{video_fullscreen
-                                    ? "fullscreen_exit"
-                                    : "fullscreen"}</span
-                            >
+                        <i class="fas fa-expand" class:fa-expand={!video_fullscreen} class:fa-compress={video_fullscreen}></i>
                         </button>
                     </div>
                 </div>

@@ -61,7 +61,7 @@
     <div class="text-right mt-6">
         <button on:click={next} class="btn btn-outline btn-success">
             Next
-            <span class="material-icons">arrow_forward_ios</span>
+            <i class="fas fa-chevron-right"></i>
         </button>
     </div>
 </Step>

@@ -28,13 +28,13 @@
     <div data-tauri-drag-region class="navbar-end">
         <ul class="menu menu-horizontal">
             <li>
-                <button on:click={appWindow.minimize} class="material-icons">minimize</button>
+                <button on:click={appWindow.minimize}><i class="fas fa-window-minimize"></i></button>
             </li>
             <li>
-                <button on:click={onMaximize} class="material-icons">fullscreen</button>
+                <button on:click={onMaximize}><i class="far fa-window-maximize"></i></button>
             </li>
             <li>
-                <button on:click={appWindow.close} class="material-icons hover:bg-red-600 hover:text-white">close</button>
+                <button on:click={appWindow.close} class="hover:bg-red-600 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </li>
         </ul>
     </div>

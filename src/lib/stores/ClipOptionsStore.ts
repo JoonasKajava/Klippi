@@ -2,7 +2,7 @@ import FileSize from '../utilities/FileSize';
 import { writable, derived } from 'svelte/store';
 
 export const clip_name = writable("");
-export const max_filesize = writable(8);
+export const max_file_size = writable(8);
 export const framerate = writable(24);
 export const speed = writable(1);
 export const mute_audio = writable(false);
@@ -12,7 +12,7 @@ export const bitrate_lock = writable(true);
 
 export const audio_bitrate = writable(64);
 
-export const resolition = writable(720);
+export const resolution = writable(720);
 
 export const clip_start = writable<number>(null);
 export const clip_end = writable<number>(null);
@@ -28,9 +28,9 @@ export const calculated_audio_bitrate = derived([audio_bitrate, mute_audio], ([$
 
 });
 /// In kilobits
-export const calculated_video_bitrate = derived([duration, max_filesize, calculated_audio_bitrate], ([$duration, $max_filesize, $calculated_audio_bitrate]) => {
+export const calculated_video_bitrate = derived([duration, max_file_size, calculated_audio_bitrate], ([$duration, $max_file_size, $calculated_audio_bitrate]) => {
     if ($duration <= 0) return 0;
-    return (FileSize.fromMegaBytes($max_filesize).toKiloBits() / $duration) - $calculated_audio_bitrate
+    return (FileSize.fromMegaBytes($max_file_size).toKiloBits() / $duration) - $calculated_audio_bitrate
 
 });
 

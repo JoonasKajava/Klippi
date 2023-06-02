@@ -1,6 +1,6 @@
 <script lang="ts">
     import InputGroup from "$lib/components/InputGroup.svelte";
-    import { clip_name, validation_errors, bitrate_lock, max_filesize, framerate, speed, mute_audio, ValidationError } from "$lib/stores/ClipOptionsStore";
+    import { clip_name, validation_errors, bitrate_lock, max_file_size, framerate, speed, mute_audio, ValidationError } from "$lib/stores/ClipOptionsStore";
 
 
 </script>
@@ -17,15 +17,15 @@
     <span>.mp4</span>
 </InputGroup>
 
-<InputGroup label="Max Filesize">
+<InputGroup label="Max File Size">
     <input
         disabled={!$bitrate_lock}
-        title="Cannot enforce 'Max Filesize' while manual 'Video bitrate' is enabled."
+        title="Cannot enforce 'Max File Size' while manual 'Video bitrate' is enabled."
         type="number"
         step="0.1"
         min="0"
         class="input input-bordered input-sm flex-grow"
-        bind:value={$max_filesize}
+        bind:value={$max_file_size}
     />
     <span>MB</span>
 </InputGroup>

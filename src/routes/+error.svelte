@@ -6,6 +6,6 @@
 </script>
 
 <div class="text-center" transition:fly={{ x: -100, duration: 200 }}>
-    <h1 class="text-3xl my-3">{$page.error?.title || "Unrecoverable Error Occured"}</h1>
+    <h1 class="text-3xl my-3">{$page.error?.title || "Unrecoverable Error Occurred"}</h1>
     <Alert error={$page.error.message} />
 </div>

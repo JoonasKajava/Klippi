@@ -154,8 +154,8 @@ export class KonvaTimeline {
             y: 0,
         });
 
-        let childs = this._timeline_group.getChildren();
-        for (let child of childs) {
+        let children = this._timeline_group.getChildren();
+        for (let child of children) {
             if (child.name() === CLIP_MARKER_NAME) continue;
             if (child.name().includes(THUMBNAIL_NAME)) continue;
             child.scaleX(1 / scale);

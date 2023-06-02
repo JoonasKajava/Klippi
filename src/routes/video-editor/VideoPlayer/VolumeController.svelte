@@ -4,16 +4,16 @@
     export let value: number;
 
 
-    let diplay_volume_control = false;
+    let display_volume_control = false;
     </script>
 
 <div
-    on:mouseenter={() => (diplay_volume_control = true)}
-    on:mouseleave={() => (diplay_volume_control = false)}
+    on:mouseenter={() => (display_volume_control = true)}
+    on:mouseleave={() => (display_volume_control = false)}
     class="btn btn-circle btn-sm w-auto min-w-8 group"
 >
-    <span class="material-icons">volume_up</span>
-    {#if diplay_volume_control}
+<i class="fas fa-volume-up"></i>
+    {#if display_volume_control}
         <input
             transition:slide={{ axis: "x", duration: 200 }}
             type="range"

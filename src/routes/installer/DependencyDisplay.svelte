@@ -1,13 +1,13 @@
 <script lang="ts">
 
-    export let depencies: string[] = [];
-    interface DependecyInfo {
+    export let dependencies: string[] = [];
+    interface DependencyInfo {
         name: string;
         description: string;
         source: string;
     }
 
-    let dependecy_infos: { [name: string]: DependecyInfo } = {
+    let dependency_infos: { [name: string]: DependencyInfo } = {
         ffprobe: {
             name: "FFprobe",
             description:
@@ -22,17 +22,17 @@
         },
     };
 
-    $: dependencies_info = depencies.map((x) => dependecy_infos[x]);
+    $: dependencies_info = dependencies.map((x) => dependency_infos[x]);
 </script>
 
 
 <div class="stats shadow">
-    {#each dependencies_info as dependecy}
+    {#each dependencies_info as dependency}
         <div class="stat">
-            <div class="stat-value text-xl">{dependecy.name}</div>
-            <div class="stat-desc max-w-xs whitespace-normal">{dependecy.description}
+            <div class="stat-value text-xl">{dependency.name}</div>
+            <div class="stat-desc max-w-xs whitespace-normal">{dependency.description}
                 <br />
-                Source: <a href="{dependecy.source}">{dependecy.source}</a>
+                Source: <a href="{dependency.source}">{dependency.source}</a>
             </div>
         </div>
     {/each}

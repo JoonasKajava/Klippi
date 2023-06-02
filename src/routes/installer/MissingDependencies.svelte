@@ -1,8 +1,8 @@
 <script lang="ts">
     import { getName } from "@tauri-apps/api/app";
-    import DependecyDisplay from "./DependecyDisplay.svelte";
     import { missing_dependencies } from "$lib/stores/InstallerStore";
     import { appWindow } from "@tauri-apps/api/window";
+    import DependencyDisplay from "./DependencyDisplay.svelte";
     let appName: String;
     getName().then((name) => (appName = name));
 
@@ -17,7 +17,7 @@
             on:click={() => modal.classList.remove("modal-open")}
             class="btn btn-sm btn-circle absolute right-2 top-2"
         >
-            <span class="material-icons">close</span>
+            <i class="fa-solid fa-xmark" />
         </button>
         <h3 class="font-bold text-lg">
             Come back when you are done installing!
@@ -27,7 +27,7 @@
             programs.
         </p>
         <p>Here's again all the programs you need to install:</p>
-        <DependecyDisplay depencies={$missing_dependencies} />
+        <DependencyDisplay dependencies={$missing_dependencies} />
         <div class="modal-action">
             <button on:click={appWindow.close} class="btn">
                 Close {appName}
@@ -45,7 +45,7 @@
             <p class="py-5">
                 In order to function correctly {appName} needs following programs:
             </p>
-            <DependecyDisplay depencies={$missing_dependencies} />
+            <DependencyDisplay dependencies={$missing_dependencies} />
             <div class="mt-4 flex">
                 <button
                     on:click={() => modal.classList.add("modal-open")}
@@ -59,7 +59,7 @@
                     class="btn btn-outline btn-success"
                 >
                     Install these for me
-                    <span class="material-icons">arrow_forward_ios</span>
+                    <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
         </div>

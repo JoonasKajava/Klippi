@@ -8,7 +8,7 @@
 
     import { invoke } from "@tauri-apps/api/tauri";
     import type { ClipCreationOptions } from "$lib/models/ClipCreationOptions";
-    import { clip_name, clip_start, clip_end, final_bitrate, calculated_audio_bitrate, framerate, speed, resolition, mute_audio, validation_errors } from "$lib/stores/ClipOptionsStore";
+    import { clip_name, clip_start, clip_end, final_bitrate, calculated_audio_bitrate, framerate, speed, resolution, mute_audio, validation_errors } from "$lib/stores/ClipOptionsStore";
     import { selected_video } from "$lib/stores/VideoEditorStore";
     import { goto } from "$app/navigation";
 
@@ -45,7 +45,7 @@
             audio_bitrate: $calculated_audio_bitrate,
             framerate: $framerate,
             speed: $speed,
-            resolution: $resolition,
+            resolution: $resolution,
             mute: $mute_audio
         };
 

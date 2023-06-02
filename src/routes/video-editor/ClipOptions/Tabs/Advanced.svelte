@@ -1,7 +1,17 @@
 <script lang="ts">
     import InputGroup from "$lib/components/InputGroup.svelte";
-    import { bitrate_lock, user_bitrate, mute_audio, audio_bitrate, calculated_video_bitrate, final_bitrate, validation_errors, calculated_audio_bitrate, resolition, ValidationError } from "$lib/stores/ClipOptionsStore";
-
+    import {
+        bitrate_lock,
+        user_bitrate,
+        mute_audio,
+        audio_bitrate,
+        calculated_video_bitrate,
+        final_bitrate,
+        validation_errors,
+        calculated_audio_bitrate,
+        resolution,
+        ValidationError,
+    } from "$lib/stores/ClipOptionsStore";
 
     interface Option {
         label: string;
@@ -61,32 +71,37 @@
         },
     ];
 
-    function update_bitrate(e: Event & {currentTarget: EventTarget & HTMLInputElement;}) {
-        if($bitrate_lock) return;
+    function update_bitrate(
+        e: Event & { currentTarget: EventTarget & HTMLInputElement }
+    ) {
+        if ($bitrate_lock) return;
         $user_bitrate = e.currentTarget.valueAsNumber;
     }
 
-    function update_audio_bitrate(e: Event & {currentTarget: EventTarget & HTMLInputElement;}) {
-        if($mute_audio) return;
+    function update_audio_bitrate(
+        e: Event & { currentTarget: EventTarget & HTMLInputElement }
+    ) {
+        if ($mute_audio) return;
         $audio_bitrate = e.currentTarget.valueAsNumber;
     }
     function toggle_bitrate_lock() {
-        $bitrate_lock = !$bitrate_lock
+        $bitrate_lock = !$bitrate_lock;
         $user_bitrate = $calculated_video_bitrate;
     }
 </script>
 
 <InputGroup label="Video Bitrate">
-    <button
-        on:click={toggle_bitrate_lock}
-        class="btn btn-square btn-sm"
-    >
-        <i class="material-icons">{$bitrate_lock ? "lock" : "lock_open"}</i>
+    <button on:click={toggle_bitrate_lock} class="btn btn-square btn-sm">
+        {#if $bitrate_lock}
+            <i class="fas fa-lock" />
+        {:else}
+            <i class="fas fa-lock-open" />
+        {/if}
     </button>
     <input
-    class:input-error={$validation_errors.includes(
-        ValidationError.InvalidVideoBitrate
-    )}
+        class:input-error={$validation_errors.includes(
+            ValidationError.InvalidVideoBitrate
+        )}
         disabled={$bitrate_lock}
         type="number"
         class="input input-bordered input-sm w-full"
@@ -99,7 +114,9 @@
 <InputGroup label="Audio Bitrate">
     <input
         disabled={$mute_audio}
-        title={$mute_audio ? "Cannot change audio bitrate when 'Mute Audio' option is selected." : ""}
+        title={$mute_audio
+            ? "Cannot change audio bitrate when 'Mute Audio' option is selected."
+            : ""}
         type="number"
         class="input input-bordered input-sm w-full"
         on:input={update_audio_bitrate}
@@ -109,7 +126,7 @@
 </InputGroup>
 
 <InputGroup label="Resolution">
-    <select class="select w-full select-bordered" bind:value={$resolition}>
+    <select class="select w-full select-bordered" bind:value={$resolution}>
         {#each resolution_options as option}
             <option value={option.value} selected={option.default}
                 >{option.label}</option
