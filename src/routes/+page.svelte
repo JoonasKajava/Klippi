@@ -16,6 +16,8 @@
     missing_dependencies.set(result);
     if (result.length > 0) {
       goto("/installer");
+    }else {
+      dependencies_has_been_verified.set(true);
     }
   })().catch((err) => {
     throw error(500, { message: err, title: "Unable to verify dependencies" });
