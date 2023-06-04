@@ -46,7 +46,8 @@
             framerate: $framerate,
             speed: $speed,
             resolution: $resolution,
-            mute: $mute_audio
+            mute: $mute_audio,
+            format: "mp4"
         };
 
         invoke("create_clip", {options: options});

@@ -11,6 +11,15 @@
     "version": "1.0.2"
   },
   "tauri": {
+    "cli": {
+      "args": [
+        {
+          "name": "source",
+          "index": 1,
+          "takesValue": true
+        }
+      ]
+    },
     "allowlist": {
       "path": {
         "all": true

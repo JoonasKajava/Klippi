@@ -20,7 +20,7 @@
     </div>
     <div data-tauri-drag-region class="navbar-center">
         <div class="btn-group btn-group-horizontal">
-            <TitleBarLink disabled href="/settings">Settings</TitleBarLink>            
+            <TitleBarLink href="/settings">Settings</TitleBarLink>            
             <TitleBarLink href="/">Video Selector</TitleBarLink>
             <TitleBarLink disabled={$selected_video.length == 0} href="/video-editor">Editor</TitleBarLink>
         </div>

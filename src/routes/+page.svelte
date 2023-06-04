@@ -8,6 +8,8 @@
   import type { VideoData } from "../lib/models/VideoData";
   import { goto } from "$app/navigation";
   import { selected_video } from "$lib/stores/VideoEditorStore";
+  import { getMatches } from '@tauri-apps/api/cli'
+
   import {
     dependencies_has_been_verified,
     missing_dependencies,
@@ -25,6 +27,14 @@
   })().catch((err) => {
     throw error(500, { message: err, title: "Unable to verify dependencies" });
   });
+
+  $: if($dependencies_has_been_verified) {
+    getMatches().then((matches) => {
+      if(matches.args.source.value && !$selected_video) {
+        select_video(matches.args.source.value as string);
+      }
+    });
+  };
 
   let latest_videos = invoke<VideoData[]>("get_latest_videos", { count: 3 });
 
