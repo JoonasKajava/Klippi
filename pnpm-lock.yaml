@@ -34,8 +34,8 @@ devDependencies:
     specifier: ^18.7.10
     version: 18.7.10
   daisyui:
-    specifier: ^3.0.0
-    version: 3.0.0(postcss@8.4.24)
+    specifier: ^3.0.3
+    version: 3.0.3(postcss@8.4.24)
   postcss:
     specifier: ^8.4.24
     version: 8.4.24
@@ -633,8 +633,8 @@ packages:
     hasBin: true
     dev: true
 
-  /daisyui@3.0.0(postcss@8.4.24):
-    resolution: {integrity: sha512-EuNK9JQd5yrPLDynAPQkG/29vjZXFWhBK4HXvM83d9oJU0EmF35UNLLs0cslBFfLK4b+bOuhgoYPJ4BjytOxNQ==}
+  /daisyui@3.0.3(postcss@8.4.24):
+    resolution: {integrity: sha512-RSbXsEBj2LonvjOKEI0I64F5xFJrFrthPgxRNeAZKmACQ3NoIoP45lO6UXLW3bm8PVOUGpKf1Br2SWwc1NqnHQ==}
     peerDependencies:
       postcss: ^8
     dependencies:
