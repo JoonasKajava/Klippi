@@ -1,7 +1,6 @@
 use std::{
     env::temp_dir,
-    path::PathBuf,
-    sync::{Arc, RwLock},
+    path::PathBuf
 };
 
 use serde::{Deserialize, Serialize};

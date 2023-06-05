@@ -29,6 +29,7 @@ use tauri::http::{
 
 use crate::modules::config::Init;
 use crate::modules::tauri_commands::get_output_formats;
+
 fn main() {
     let _ = setup_logger();
     tauri::Builder::default()

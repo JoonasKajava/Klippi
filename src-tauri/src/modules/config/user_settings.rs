@@ -1,11 +1,9 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use std::path::{PathBuf};
-use std::sync::{Arc, RwLock};
 use tauri::api::path::{app_config_dir, home_dir};
 use tauri::api::path::video_dir;
 use tauri::Config;
-use anyhow::Result;
 
 use super::{JsonConfig, DefaultValues};
 

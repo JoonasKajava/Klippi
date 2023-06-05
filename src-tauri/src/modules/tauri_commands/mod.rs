@@ -1,6 +1,4 @@
 use anyhow::{Context, Result};
-use std::error;
-use std::path::Path;
 use std::{fs, path::PathBuf};
 use tauri::State;
 use tauri::Window;

@@ -52,7 +52,7 @@ impl <T: JsonConfig+ for<'de> Deserialize<'de>> Init for T {
 
         if !app_config_file.try_exists().unwrap_or(false) {
             let default = T::default(config); 
-            &default.save(&config).expect("Unable to save config");
+            let _ = &default.save(&config).expect("Unable to save config");
             return default; 
         } else {
             let config_reader = File::open(app_config_file).expect("Unable to open config file");

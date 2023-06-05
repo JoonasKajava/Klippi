@@ -3,12 +3,12 @@
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
     "devPath": "http://localhost:1420",
-    "distDir": "../dist",
+    "distDir": "../build",
     "withGlobalTauri": false
   },
   "package": {
     "productName": "Klippi",
-    "version": "1.0.2"
+    "version": "1.0.4"
   },
   "tauri": {
     "cli": {
