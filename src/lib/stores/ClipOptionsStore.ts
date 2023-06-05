@@ -1,3 +1,4 @@
+import type { OutputFormat } from '$lib/models/OutputFormat';
 import FileSize from '../utilities/FileSize';
 import { writable, derived } from 'svelte/store';
 
@@ -17,6 +18,7 @@ export const resolution = writable(720);
 export const clip_start = writable<number>(null);
 export const clip_end = writable<number>(null);
 
+export const format = writable<OutputFormat>({name: "mp4", extension: "mp4", limitations:[], preset: "ultrafast"});
 
 
 export const duration = derived([speed, clip_start, clip_end], ([$speed, $clip_start, $clip_end]) => Math.max(($clip_end - $clip_start) / $speed, 0));

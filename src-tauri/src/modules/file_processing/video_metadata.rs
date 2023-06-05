@@ -2,17 +2,15 @@ use std::{
     cmp::Ordering,
     collections::HashMap,
     fs::{Metadata, self},
-    path::{Path},
+    path::{PathBuf},
 };
 
 use glob::glob;
-use crate::modules::config::{user_settings::UserSettings, Static};
 
 
 
-pub fn find_latest_videos() -> Vec<String> {
-    let settings = UserSettings::current();
-    let regex = Path::new(&settings.videos_directory)
+pub fn find_latest_videos(from: &PathBuf, clip_location: &PathBuf) -> Vec<String> {
+    let regex = from
         .join("**/*.mp4")
         .into_os_string()
         .into_string()
@@ -21,7 +19,7 @@ pub fn find_latest_videos() -> Vec<String> {
     for entry in glob(regex.as_str()).expect("Failed to read glob pattern") {
         match entry {
             Ok(path) => {
-                if path.starts_with(&settings.clip_location) {
+                if path.starts_with(&clip_location) {
                     continue;
                 }
                 result.push(path.into_os_string().into_string().unwrap());

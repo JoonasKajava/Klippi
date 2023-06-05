@@ -8,7 +8,7 @@
 
     import { invoke } from "@tauri-apps/api/tauri";
     import type { ClipCreationOptions } from "$lib/models/ClipCreationOptions";
-    import { clip_name, clip_start, clip_end, final_bitrate, calculated_audio_bitrate, framerate, speed, resolution, mute_audio, validation_errors } from "$lib/stores/ClipOptionsStore";
+    import { clip_name, clip_start, clip_end, final_bitrate, calculated_audio_bitrate, framerate, speed, resolution, mute_audio, validation_errors, format } from "$lib/stores/ClipOptionsStore";
     import { selected_video } from "$lib/stores/VideoEditorStore";
     import { goto } from "$app/navigation";
 
@@ -47,7 +47,8 @@
             speed: $speed,
             resolution: $resolution,
             mute: $mute_audio,
-            format: "mp4"
+            format: $format.name,
+            preset: $format.preset,
         };
 
         invoke("create_clip", {options: options});
@@ -58,8 +59,8 @@
 </script>
 
 <div class="px-3">
-    <h2 class="text-2xl text-center mb-2">Create Clip</h2>
-    <div class="tabs tabs-boxed flex-nowrap justify-center">
+<!--     <h2 class="text-2xl text-center mb-2">Create Clip</h2>
+ -->    <div class="tabs tabs-boxed flex-nowrap justify-center">
         <button
             class:tab-active={current_tab == Basic}
             on:click={() => change_tab(Basic)}
@@ -84,7 +85,7 @@
             out:fly={{ x: -100 * move_direction, duration: 200 }}
         >
             <svelte:component this={current_tab} />
-            <button on:click={async () => await create_clip()} disabled={$validation_errors.length > 0} class="btn w-full my-2 btn-primary">Create Clip!</button>
+            <button on:click={async () => await create_clip()} disabled={$validation_errors.length > 0} class="btn w-full my-2 btn-primary"><i class="fa-solid fa-flag-checkered"></i> Create Clip!</button>
             <Stats />
         </div>
     {/key}

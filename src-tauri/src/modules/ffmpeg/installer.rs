@@ -45,7 +45,7 @@ pub struct StepChange {
     next_step: String
 }
 
-pub async fn install_ffmpeg(window: Window, path: &str) -> Result<String>{
+pub async fn install_ffmpeg(window: Window, path: &str, install_location: &PathBuf) -> Result<String>{
 
     let downloaded_file = download(PathBuf::from(FFMPEG_DOWNLOAD_URL), PathBuf::from(path), |progress| {
         window.emit("download_progress", progress).context("Unable to emit progress").expect("Could not emit event");
@@ -65,8 +65,8 @@ pub async fn install_ffmpeg(window: Window, path: &str) -> Result<String>{
 
     }).context("Unable to emit").expect("Could not emit event");
 
-    let probe_version = get_version("ffprobe");
-    let ffmpeg_version = get_version("ffmpeg");
+    let probe_version = get_version("ffprobe", &install_location);
+    let ffmpeg_version = get_version("ffmpeg", &install_location);
 
     if probe_version.is_err() || ffmpeg_version.is_err() {
         bail!("Unable to verify installation")

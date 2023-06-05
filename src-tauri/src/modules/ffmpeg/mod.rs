@@ -1,6 +1,6 @@
 use std::{process::Command, path::PathBuf};
 
-use crate::modules::config::{app_config::AppConfig, Static};
+use log::info;
 
 pub mod ffprobe;
 pub mod installer;
@@ -24,13 +24,10 @@ pub struct Version {
     minor: usize
 }
 
-pub fn get_version(of: &str) -> Result<Version, VersionResultError> {
-
-    let ffmpeg_location = PathBuf::from(AppConfig::current().ffmpeg_location.clone());
-
+pub fn get_version(of: &str, ffmpeg_location: &PathBuf) -> Result<Version, VersionResultError> {
     let full_program = ffmpeg_location.join("bin").join(&of);
 
-    println!("Checking version of {:?}", full_program);
+    info!("Checking version of {:?}", full_program);
 
     let output = Command::new( full_program)
         .arg("-version")
@@ -50,6 +47,8 @@ pub fn get_version(of: &str) -> Result<Version, VersionResultError> {
         major: try_get(&version_string_slit, 0)?,
         minor: try_get(&version_string_slit, 1)?
     };
+
+    info!("Version of {:?} is {:?}", of, result);
 
     Ok(result)
 }

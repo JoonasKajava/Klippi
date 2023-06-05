@@ -1,4 +1,5 @@
 use std::{path::PathBuf, process::Command};
+use log::info;
 use md5;
 
 
@@ -20,6 +21,7 @@ impl PathBufExtensions for PathBuf {
     }
 
     fn reveal(&self) {
+        info!("Revealing file: {}", self.to_str().unwrap());
         let mut command = Command::new("explorer");
         command.args(["/select,", self.to_str().unwrap()]);
         println!("{:?}", command);

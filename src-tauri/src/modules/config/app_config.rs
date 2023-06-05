@@ -4,7 +4,6 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use tauri::{
     api::path::{app_config_dir, app_data_dir},
@@ -12,7 +11,7 @@ use tauri::{
 };
 use ts_rs::TS;
 
-use super::{DefaultValues, JsonConfig, Static};
+use super::{DefaultValues, JsonConfig};
 
 const APP_CONFIGURATION_FILENAME: &str = "AppConfig.json";
 
@@ -30,10 +29,10 @@ impl JsonConfig for AppConfig {
 }
 
 impl DefaultValues for AppConfig {
-    fn default(config: &Config) -> Result<AppConfig> {
-        Ok(AppConfig {
+    fn default(config: &Config) -> Self {
+        AppConfig {
             ffmpeg_location: app_data_dir(config)
-                .context("Unable to get app data dir")?
+                .expect("Unable to get app data dir")
                 .join("ffmpeg")
                 .to_string_lossy()
                 .into(),
@@ -41,20 +40,6 @@ impl DefaultValues for AppConfig {
                 .join("klippi_thumbnails")
                 .to_string_lossy()
                 .into(),
-        })
+        }
     }
-}
-
-impl Static for AppConfig {
-    fn current() -> Arc<Self> {
-        APP_CONFIG.read().expect("Cannot read APP_CONFIG").clone()
-    }
-
-    fn make_current(self) {
-        *APP_CONFIG.write().expect("APP_CONFIG was not writable") = Arc::new(self)
-    }
-}
-
-lazy_static::lazy_static! {
-    static ref APP_CONFIG: RwLock<Arc<AppConfig>> = RwLock::new(Default::default());
 }

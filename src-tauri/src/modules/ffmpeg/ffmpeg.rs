@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use log::{warn, info};
 use std::{process::{Child, Stdio},  thread, io::{BufReader, BufRead}};
 
 
@@ -24,9 +25,11 @@ impl FFmpegBuilder {
             let mut progress: Progress = Default::default();
             while let Ok(n) = bufread.read_line(&mut buf) {
                 if n > 0 {
-                    match progress.try_parse(buf.as_str()) {
+                    let line = buf.as_str();
+                    info!("{}", line);
+                    match progress.try_parse(&line) {
                         Ok(_) => on_progress(progress.clone()),
-                        Err(e) => println!("Parse error: {:?}", e),
+                        Err(e) => warn!("Parse error: {:?}", e),
                     };
 
                     buf.clear();

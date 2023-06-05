@@ -11,6 +11,7 @@
         calculated_audio_bitrate,
         resolution,
         ValidationError,
+        format,
     } from "$lib/stores/ClipOptionsStore";
 
     interface Option {
@@ -91,18 +92,14 @@
 </script>
 
 <InputGroup label="Video Bitrate">
-    <button on:click={toggle_bitrate_lock} class="btn btn-square btn-sm">
-        {#if $bitrate_lock}
-            <i class="fas fa-lock" />
-        {:else}
-            <i class="fas fa-lock-open" />
-        {/if}
+    <button on:click={toggle_bitrate_lock} disabled={$format.limitations.includes("NoAudio")} class="btn btn-square btn-sm">
+        <i class="fas fa-lock" class:fa-lock={$bitrate_lock} class:fa-lock-open={!$bitrate_lock} />
     </button>
     <input
         class:input-error={$validation_errors.includes(
             ValidationError.InvalidVideoBitrate
         )}
-        disabled={$bitrate_lock}
+        disabled={$bitrate_lock || $format.limitations.includes("NoBitrate")}
         type="number"
         class="input input-bordered input-sm w-full"
         on:input={update_bitrate}
@@ -113,7 +110,7 @@
 
 <InputGroup label="Audio Bitrate">
     <input
-        disabled={$mute_audio}
+        disabled={$mute_audio || $format.limitations.includes("NoBitrate") || $format.limitations.includes("NoAudio")}
         title={$mute_audio
             ? "Cannot change audio bitrate when 'Mute Audio' option is selected."
             : ""}

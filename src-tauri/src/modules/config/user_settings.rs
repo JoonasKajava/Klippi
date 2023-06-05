@@ -7,11 +7,11 @@ use tauri::api::path::video_dir;
 use tauri::Config;
 use anyhow::Result;
 
-use super::{JsonConfig, DefaultValues, Static};
+use super::{JsonConfig, DefaultValues};
 
 const USER_SETTINGS_FILENAME: &str = "UserSettings.json";
 
-#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, TS)]
 #[ts(export, export_to="../src/lib/models/")]
 pub struct UserSettings {
     pub clip_location: String,
@@ -25,28 +25,13 @@ impl JsonConfig for UserSettings {
 }
 
 impl DefaultValues for UserSettings {
-    fn default(_config: &Config) -> Result<UserSettings> {
-        Ok(UserSettings { 
+    fn default(_config: &Config) -> UserSettings {
+        UserSettings { 
             clip_location: get_video_dir().join("Clips").into_os_string().into_string().unwrap(),
             videos_directory: get_video_dir().into_os_string().into_string().unwrap()
-        })
+        }
     }
 }
-
-impl Static for UserSettings {
-    fn current() -> Arc<Self> {
-        USER_SETTINGS.read().unwrap().clone()
-    }
-
-    fn make_current(self) {
-        *USER_SETTINGS.write().unwrap() = Arc::new(self)
-    }
-}
-
-lazy_static::lazy_static! {
-    static ref USER_SETTINGS: RwLock<Arc<UserSettings>> = RwLock::new(Default::default());
-}
-
 
 fn get_video_dir() -> PathBuf {
     match video_dir() {

@@ -1,14 +1,35 @@
 pub mod user_settings;
 pub mod app_config;
 
-use std::{sync::Arc, path::PathBuf, fs::{File, self}};
+
+
+#[derive(Debug)]
+pub struct Configuration {
+    pub app_config: Mutex<AppConfig>,
+    pub user_settings: Mutex<UserSettings>,
+}
+
+impl Init for Configuration {
+    fn init(config: &Config) -> Self {
+        Configuration {
+            app_config: Mutex::new(AppConfig::init(config)),
+            user_settings: Mutex::new(UserSettings::init(config)),
+        }
+    }
+}
+
+
+
+use std::{sync::{Mutex}, path::PathBuf, fs::{File, self}};
 
 use anyhow::{Result, Context};
 use serde::{Deserialize, Serialize};
 use tauri::Config;
 
+use self::{user_settings::UserSettings, app_config::AppConfig};
+
 pub trait Init {
-    fn init(config: &Config) -> Result<()>;
+    fn init(config: &Config) -> Self;
 }
 
 pub trait Save {
@@ -16,32 +37,32 @@ pub trait Save {
 }
 
 pub trait DefaultValues {
-    fn default(config: &Config) -> Result<Self> where Self: Sized;
+    fn default(config: &Config) -> Self;
 }
 
-pub trait JsonConfig : Save + Init + Static + DefaultValues {
+pub trait JsonConfig : Save + Init + DefaultValues {
     
     fn file_location(config: &Config) -> Option<PathBuf>;
 }
 
 impl <T: JsonConfig+ for<'de> Deserialize<'de>> Init for T {
-    fn init(config: &tauri::Config) -> anyhow::Result<()> {
+    fn init(config: &tauri::Config) -> Self {
         let app_config_file =
-            T::file_location(config).context("Unable to find app config file")?;
+            T::file_location(config).expect("Unable to find app config file");
 
         if !app_config_file.try_exists().unwrap_or(false) {
-            T::default(config)?.save(&config)?
+            let default = T::default(config); 
+            &default.save(&config).expect("Unable to save config");
+            return default; 
         } else {
-            let config_reader = File::open(app_config_file)?;
+            let config_reader = File::open(app_config_file).expect("Unable to open config file");
             match serde_json::from_reader::<File, Self>(config_reader) {
-                Ok(x) => x.make_current(),
+                Ok(x) => return x,
                 Err(_) => {
-                    let _sink = T::default(config)?;
+                    return T::default(config);
                 }
             }
         }
-
-        Ok(())
     }
 }
 
@@ -59,9 +80,4 @@ impl <T: JsonConfig + Serialize> Save for T {
 
         Ok(())
     }
-}
-
-pub trait Static {
-    fn current() -> Arc<Self>;
-    fn make_current(self);
 }

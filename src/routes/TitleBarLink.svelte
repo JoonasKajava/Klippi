@@ -5,4 +5,16 @@
     export let href: string;
 </script>
 
-<button class="btn" disabled={disabled} class:btn-active={$page.url.pathname == href} on:click={() => goto(href)}><slot /></button>
+<button
+    class="join-item btn"
+    {disabled}
+    class:btn-active={$page.url.pathname == href}
+    on:click={() => goto(href)}><slot /></button
+>
+
+<style lang="scss">
+    .btn {
+        border-top-right-radius: 0 !important;
+        border-top-left-radius: 0 !important;
+    }
+</style>

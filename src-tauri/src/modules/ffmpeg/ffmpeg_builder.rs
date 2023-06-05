@@ -7,10 +7,6 @@ use std::os::windows::process::CommandExt;
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
-
-
-use crate::modules::config::{app_config::AppConfig, Static};
-
 #[derive(Debug)]
 pub struct FFmpegBuilder {
 
@@ -19,6 +15,7 @@ pub struct FFmpegBuilder {
     pub outputs: Vec<File>,
     pub video_filters: Vec<Param>,
     pub audio_filters: Vec<Param>,
+    pub run_location : Option<PathBuf>,
     pub command: String
 
 }
@@ -42,14 +39,14 @@ impl Param {
 }
 
 impl<'a> FFmpegBuilder {
-    pub fn get_full_command(command: &str) -> PathBuf{
-        PathBuf::from(AppConfig::current().ffmpeg_location.clone())
+    pub fn get_full_command(&self, command: &str) -> PathBuf{
+        self.run_location.clone().unwrap_or_default()
         .join("bin")
         .join(command)
     }
 
     pub fn new() -> FFmpegBuilder {
-        FFmpegBuilder { options: Vec::new(), inputs: Vec::new(), outputs: Vec::new(), video_filters: vec![], audio_filters: vec![], command: "ffmpeg".into() }
+        FFmpegBuilder { options: Vec::new(), inputs: Vec::new(), outputs: Vec::new(), video_filters: vec![], audio_filters: vec![], command: "ffmpeg".into(), run_location: None }
     }
 
     pub fn option(&mut self, option:Param) -> &mut Self {
@@ -90,8 +87,13 @@ impl<'a> FFmpegBuilder {
         filters.join(", ")
     }
 
+    pub fn set_run_location(&mut self, location: PathBuf) -> &mut Self {
+        self.run_location = Some(location);
+        self
+    }
+
     pub fn to_command(&self) -> Command {
-        let mut command = Command::new(FFmpegBuilder::get_full_command(&self.command));
+        let mut command = Command::new(self.get_full_command(&self.command));
 
         for option in &self.options {
             option.push_to(&mut command);

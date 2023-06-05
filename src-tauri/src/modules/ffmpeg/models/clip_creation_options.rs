@@ -18,12 +18,6 @@ pub struct ClipCreationOptions {
     pub speed: f64,
     pub resolution: u32,
     pub mute: bool,
-    pub format: ClipFormat
-}
-
-#[derive(Debug, Default, Clone, Deserialize, Serialize, TS)]
-#[ts(export, export_to="../src/lib/models/", rename_all="lowercase")]
-pub enum ClipFormat {
-    #[default] Mp4,
-    Gif
+    pub format: String,
+    pub preset: String
 }

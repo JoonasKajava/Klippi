@@ -1,14 +1,19 @@
 use anyhow::{Context, Result};
-use std::{fs, path::PathBuf, sync::Arc};
+use std::error;
+use std::path::Path;
+use std::{fs, path::PathBuf};
+use tauri::State;
 use tauri::Window;
 use ts_rs::TS;
 
 use crate::modules::config::user_settings::UserSettings;
 use crate::modules::ffmpeg::VersionResultError::NotInstalled;
 use crate::modules::ffmpeg::VersionResultError::ParseError;
+use crate::modules::ffmpeg::models::output_format::Limitation;
 
+use super::config::Configuration;
+use super::ffmpeg::models::output_format::OutputFormat;
 use super::{
-    config::{app_config::AppConfig, Static},
     ffmpeg::{
         ffmpeg_factory::{
             create_clip_command, create_thumbnail_command, create_timeline_thumbnails_command,
@@ -20,6 +25,7 @@ use super::{
     file_processing::video_metadata::find_latest_videos,
     utils::filesystem_utils::PathBufExtensions,
 };
+use log::{error, info};
 
 #[derive(Clone, serde::Serialize, TS)]
 #[ts(export, export_to = "../src/lib/models/")]
@@ -30,10 +36,11 @@ pub struct VideoData {
 }
 
 #[tauri::command]
-pub async fn clip_exists(file: PathBuf) -> bool {
-    PathBuf::from(&UserSettings::current().clip_location)
+pub async fn clip_exists(file: PathBuf, settings: State<'_, Configuration>) -> Result<bool, ()> {
+    let user_settings = settings.user_settings.lock().unwrap();
+    Ok(PathBuf::from(user_settings.clip_location.clone())
         .join(file)
-        .exists()
+        .exists())
 }
 
 #[derive(Clone, serde::Serialize, TS)]
@@ -48,16 +55,17 @@ pub async fn get_timeline_thumbnails(
     window: Window,
     of: PathBuf,
     duration: usize,
-) -> TimelineThumbnailsResult {
+    settings: State<'_, Configuration>,
+) -> Result<TimelineThumbnailsResult, ()> {
     let hashed_path = &of.to_hashed();
-
 
     let folder_name = hashed_path.file_name().expect("Unable to get filename");
 
-    let folder_path = PathBuf::from(AppConfig::current().thumbnail_cache.clone()).join(folder_name);
+    let folder_path = PathBuf::from(settings.app_config.lock().unwrap().thumbnail_cache.clone())
+        .join(folder_name);
 
     if folder_path.join(format!("{}.bmp", duration)).exists() {
-        return TimelineThumbnailsResult::Found(folder_path);
+        return Ok(TimelineThumbnailsResult::Found(folder_path));
     }
 
     let command = create_timeline_thumbnails_command(&of, &folder_path).unwrap();
@@ -70,7 +78,7 @@ pub async fn get_timeline_thumbnails(
         .await
         .unwrap();
 
-    return TimelineThumbnailsResult::Generating(folder_path);
+    return Ok(TimelineThumbnailsResult::Generating(folder_path));
 }
 
 fn friendly_error(error: anyhow::Error) -> String {
@@ -78,11 +86,27 @@ fn friendly_error(error: anyhow::Error) -> String {
 }
 
 #[tauri::command]
-pub async fn get_thumbnail(of: &PathBuf) -> Result<PathBuf, String> {
-    let thumbnails_folder = PathBuf::from(AppConfig::current().thumbnail_cache.clone());
+pub async fn get_thumbnail(
+    of: &PathBuf,
+    settings: &State<'_, Configuration>,
+) -> Result<PathBuf, String> {
+    info!("Getting thumbnail for: {}", of.display());
+
+    let app_config = settings.app_config.lock().unwrap().clone();
+
+    let thumbnails_folder =
+        PathBuf::from(settings.app_config.lock().unwrap().thumbnail_cache.clone());
 
     if !thumbnails_folder.exists() {
-        fs::create_dir_all(&thumbnails_folder).map_err(|_| format!("Unable to create folder {}", &thumbnails_folder.display()))?;
+        info!("Creating folder: {}", thumbnails_folder.display());
+        match fs::create_dir_all(&thumbnails_folder) {
+            Ok(_) => {}
+            Err(e) => {
+                let error = format!("Unable to create thumbnail folder: {}", e.to_string());
+                error!("{}", error);
+                return Err(error);
+            }
+        }
     }
 
     let mut hash_name = of.to_hashed();
@@ -91,26 +115,49 @@ pub async fn get_thumbnail(of: &PathBuf) -> Result<PathBuf, String> {
     let output_file_path = thumbnails_folder.join(hash_name.file_name().unwrap());
 
     if output_file_path.exists() {
-        println!("Found thumbnail: {}", output_file_path.display());
+        info!("Found thumbnail: {}", output_file_path.display());
         return Ok(output_file_path);
     }
+    info!(
+        "Thumbnail not found, creating: {}",
+        output_file_path.display()
+    );
 
-    let command = create_thumbnail_command(of, &output_file_path).map_err(friendly_error)?; 
+    let command = match create_thumbnail_command(of, &output_file_path, PathBuf::from(&app_config.ffmpeg_location)) {
+        Ok(command) => command,
+        Err(e) => {
+            let error = format!("Unable to create thumbnail command: {}", e.to_string());
+            error!("{}", error);
+            return Err(error);
+        }
+    };
 
-    
-        command.run(|_| ())
-        .await.map_err(friendly_error)?
-        .wait().map_err(|e| e.to_string())?;
+    command
+        .run(|_| ())
+        .await
+        .map_err(friendly_error)?
+        .wait()
+        .map_err(|e| e.to_string())?;
     Ok(output_file_path)
 }
 
 #[tauri::command]
-pub async fn get_latest_videos(count: usize) -> Result<Vec<VideoData>, String> {
+pub async fn get_latest_videos(
+    count: usize,
+    settings: State<'_, Configuration>,
+) -> Result<Vec<VideoData>, String> {
     let mut videos: Vec<VideoData> = Vec::new();
-    for video in find_latest_videos().into_iter().take(count) {
+    let user_settings = settings.user_settings.lock().unwrap().clone();
+
+    let from = PathBuf::from(&user_settings.videos_directory);
+    let clip_location = PathBuf::from(&user_settings.clip_location);
+
+    for video in find_latest_videos(&from, &clip_location)
+        .into_iter()
+        .take(count)
+    {
         let video_path = &PathBuf::from(&video);
-        let thumbnail = get_thumbnail(&video_path)
-            .await?;
+        let thumbnail = get_thumbnail(&video_path, &settings).await?;
         videos.push(VideoData {
             thumbnail: thumbnail.to_string_lossy().into(),
             file: video,
@@ -126,11 +173,17 @@ pub async fn get_latest_videos(count: usize) -> Result<Vec<VideoData>, String> {
 }
 
 #[tauri::command]
-pub async fn verify_dependencies() -> Result<Vec<String>, &'static str> {
+pub async fn verify_dependencies(
+    settings: State<'_, Configuration>,
+) -> Result<Vec<String>, &'static str> {
+    info!("Verifying dependencies");
     let mut failed_dependencies: Vec<String> = Vec::new();
 
-    let ffmpeg_version = get_version("ffmpeg");
-    let ffprobe_version = get_version("ffprobe");
+    let ffmpeg_location = settings.app_config.lock().unwrap().ffmpeg_location.clone();
+    let ffmpeg_location = PathBuf::from(ffmpeg_location);
+
+    let ffmpeg_version = get_version("ffmpeg", &ffmpeg_location);
+    let ffprobe_version = get_version("ffprobe", &ffmpeg_location);
 
     if let Err(e) = ffmpeg_version {
         match e {
@@ -148,8 +201,14 @@ pub async fn verify_dependencies() -> Result<Vec<String>, &'static str> {
     Ok(failed_dependencies)
 }
 #[tauri::command]
-pub async fn install_dependencies(window: Window, path: &str) -> Result<String, String> {
-    let result = install_ffmpeg(window, &path).await;
+pub async fn install_dependencies(
+    window: Window,
+    path: &str,
+    settings: State<'_, Configuration>,
+) -> Result<String, String> {
+    let ffmpeg_location = settings.app_config.lock().unwrap().ffmpeg_location.clone();
+    let ffmpeg_location = PathBuf::from(ffmpeg_location);
+    let result = install_ffmpeg(window, &path, &ffmpeg_location).await;
     match result {
         Ok(_) => Ok("Successful".into()),
         Err(e) => {
@@ -160,14 +219,23 @@ pub async fn install_dependencies(window: Window, path: &str) -> Result<String, 
 }
 
 #[tauri::command]
-pub async fn create_clip(window: Window, options: ClipCreationOptions) -> Result<String, String> {
-    let final_options = ClipCreationOptions {
-        to: PathBuf::from(UserSettings::current().clip_location.clone()).join(options.to),
+pub async fn create_clip(
+    window: Window,
+    options: ClipCreationOptions,
+    settings: State<'_, Configuration>,
+) -> Result<String, String> {
+
+    let app_config = settings.app_config.lock().unwrap().clone();
+
+    let mut final_options = ClipCreationOptions {
+        to: PathBuf::from(&settings.user_settings.lock().unwrap().clip_location).join(options.to),
         ..options
     };
 
+    final_options.to.set_extension(final_options.format.to_string().to_lowercase());
+
     let command =
-        create_clip_command(&final_options).map_err(|_| "Unable to get command".to_string())?;
+        create_clip_command(&final_options, PathBuf::from(app_config.ffmpeg_location)).map_err(|_| "Unable to get command".to_string())?;
 
     command
         .run(move |progress| {
@@ -186,6 +254,36 @@ pub async fn create_clip(window: Window, options: ClipCreationOptions) -> Result
 }
 
 #[tauri::command]
-pub async fn get_user_settings() -> Arc<UserSettings> {
-    return UserSettings::current().clone();
+pub async fn get_user_settings(settings: State<'_, Configuration>) -> Result<UserSettings, ()> {
+    return Ok(settings.user_settings.lock().unwrap().clone());
+}
+
+#[tauri::command]
+pub fn get_output_formats() -> Vec<OutputFormat> {
+    vec![
+        OutputFormat {
+            name: "mp4",
+            extension: "mp4",
+            preset: "ultrafast",
+            limitations: vec![],
+        },
+        OutputFormat {
+            name: "webm",
+            extension: "webm",
+            preset: "ultrafast",
+            limitations: vec![],
+        },
+        OutputFormat {
+            name: "gif",
+            extension: "gif",
+            preset: "ultrafast",
+            limitations: vec![Limitation::NoBitrate, Limitation::NoAudio],
+        },
+        OutputFormat {
+            name: "webp",
+            extension: "webp",
+            preset: "default",
+            limitations: vec![Limitation::NoBitrate, Limitation::NoAudio],
+        },
+    ]
 }
