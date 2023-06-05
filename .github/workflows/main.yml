@@ -33,6 +33,8 @@ jobs:
               args: [--frozen-lockfile, --strict-peer-dependencies]
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommit: 'c48c767'
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
