@@ -11,7 +11,7 @@ edition = "2021"
 
 [package.metadata.vcpkg]
 git = "https://github.com/microsoft/vcpkg"
-rev = "7f52dea"
+rev = "c48c767"
 dependencies = ["libarchive"]
 
 [build-dependencies]
