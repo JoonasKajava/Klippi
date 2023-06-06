@@ -32,9 +32,10 @@ jobs:
             - recursive: true
               args: [--frozen-lockfile, --strict-peer-dependencies]
       - name: "Run vcpkg"
+        working-directory: ./src-tauri
         run: |
-          ./src-tauri/cargo install cargo-vcpkg
-          ./src-tauri/cargo vcpkg build
+          cargo install cargo-vcpkg
+          cargo vcpkg build
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
