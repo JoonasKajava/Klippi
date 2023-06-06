@@ -15,6 +15,7 @@
     missing_dependencies,
   } from "$lib/stores/InstallerStore";
 
+
   (async () => {
     if ($dependencies_has_been_verified) return;
     let result = await invoke<string[]>("verify_dependencies");
