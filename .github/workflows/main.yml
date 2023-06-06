@@ -27,21 +27,16 @@ jobs:
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev libarchive-dev patchelf
       - name: install dependencies (windows only)​
         if: runner.os == 'Windows'
-        working-directory: './src-tauri/'
-        run: |
-          cargo install cargo-vcpkg
-          cargo vcpkg build
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: 'c48c767286550fc316055f6aa3c381396f19e640'
+          runVcpkgInstall: true
       - uses: pnpm/action-setup@v2
         with:
           version: 8
           run_install: |
             - recursive: true
               args: [--frozen-lockfile, --strict-peer-dependencies]
-  #    - name: Vcpkg
-  #      uses: lukka/run-vcpkg@v11
-  #      with:
-  #        vcpkgGitCommitId: 'c48c767286550fc316055f6aa3c381396f19e640'
-  #        runVcpkgInstall: true
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
