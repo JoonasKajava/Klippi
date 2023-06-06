@@ -12,10 +12,10 @@ edition = "2021"
 [package.metadata.vcpkg]
 git = "https://github.com/microsoft/vcpkg"
 rev = "7f52dea"
-dependencies = ["libarchive"]
+dependencies = ["libarchive", "gtk3"]
 
 [package.metadata.vcpkg.target]
-x86_64-pc-windows-msvc = { triplet = "x64-windows-static-md", dependencies = ["libarchive"] }
+x86_64-pc-windows-msvc = { triplet = "x64-windows-static-md", dependencies = ["libarchive", "gtk3"] }
 
 [build-dependencies]
 tauri-build = { version = "1.3", features = [] }
