@@ -20,7 +20,7 @@
     </div>
     <div data-tauri-drag-region class="navbar-center">
         <div class="join join-horizontal">
-            <TitleBarLink href="/settings"><i class="fa-solid fa-gear"></i> Settings</TitleBarLink>            
+            <TitleBarLink disabled={true} href="/settings"><i class="fa-solid fa-gear"></i> Settings</TitleBarLink>            
             <TitleBarLink href="/"><i class="fa-regular fa-file-video"></i> Video Selector</TitleBarLink>
             <TitleBarLink disabled={$selected_video.length == 0} href="/video-editor"><i class="fa-solid fa-clapperboard"></i> Editor</TitleBarLink>
         </div>
