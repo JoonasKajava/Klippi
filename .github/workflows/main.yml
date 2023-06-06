@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-latest, windows-latest]
+        os: [ubuntu-20.04, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -25,6 +25,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev libarchive-dev patchelf
+      - name: install dependencies (windows only)​
+        if: runner.os == 'Windows'
+        working-directory: './src-tauri/'
+        run: |
+          cargo install cargo-vcpkg
+          cargo vcpkg build
       - uses: pnpm/action-setup@v2
         with:
           version: 8
