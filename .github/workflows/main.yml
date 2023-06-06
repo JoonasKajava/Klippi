@@ -33,6 +33,7 @@ jobs:
               args: [--frozen-lockfile, --strict-peer-dependencies]
       - name: "Run vcpkg"
         run: |
+          cargo install cargo-vcpkg
           cargo vcpkg build
       - uses: tauri-apps/tauri-action@v0
         env:
