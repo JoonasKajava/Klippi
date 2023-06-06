@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "Klippi",
-    "version": "1.0.5"
+    "version": "1.0.6"
   },
   "tauri": {
     "cli": {
@@ -91,7 +91,14 @@
       "csp": null
     },
     "updater": {
-      "active": false
+      "windows": {
+        "installMode": "passive",
+        "installerArgs": []
+      },
+      "active": true,
+      "endpoints": ["https://localhost:8080/latest/{{target}}/{{arch}}/{{current_version}}"],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDZBOTMyN0M5ODIxQUIzNjcKUldSbnN4cUN5U2VUYXZLMEJPeHNYaU95ZWtQNDJxK3lNeW9MenFNT29RMTR3MjNDcVFJRHJxMlIK"
     },
     "windows": [
       {
