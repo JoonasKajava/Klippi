@@ -26,10 +26,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev libarchive-dev patchelf
       - name: "Run vcpkg"
+        if: runner.os == 'Windows'
         working-directory: ./src-tauri
         run: |
           cargo install cargo-vcpkg
-          cargo vcpkg build
+          cargo vcpkg -v build
       - uses: pnpm/action-setup@v2
         with:
           version: 8
