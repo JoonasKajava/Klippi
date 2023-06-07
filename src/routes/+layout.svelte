@@ -1,23 +1,19 @@
-<script type="ts">
+<script lang="ts">
     import { fly } from "svelte/transition";
     import TitleBar from "./TitleBar.svelte";
     import Update from "$lib/components/Update.svelte";
-    import { checkUpdate } from "@tauri-apps/api/updater";
+    import { checkUpdate, type UpdateManifest } from "@tauri-apps/api/updater";
 
     export let data;
 
     let should_update = false;
-    let update_manifest;
+    let update_manifest: UpdateManifest;
 
     (async () => {
         const { shouldUpdate, manifest } = await checkUpdate();
-        //should_update = shouldUpdate;
+        should_update = shouldUpdate;
         update_manifest = manifest;
     })();
-
-    setTimeout(() => {
-        should_update = true;
-    }, 4000);
 </script>
 
 <TitleBar />

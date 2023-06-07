@@ -2,6 +2,8 @@ use std::{process::Command, path::PathBuf};
 
 use log::info;
 
+use crate::modules::utils::command_utils::NoWindow;
+
 pub mod ffprobe;
 pub mod installer;
 pub mod ffmpeg;
@@ -31,6 +33,7 @@ pub fn get_version(of: &str, ffmpeg_location: &PathBuf) -> Result<Version, Versi
 
     let output = Command::new( full_program)
         .arg("-version")
+        .no_window()
         .output().map_err(|_|VersionResultError::NotInstalled)?;
     let output_string = String::from_utf8_lossy(&output.stdout);
     let output_string_vec: Vec<&str> = output_string.split_whitespace().collect();
