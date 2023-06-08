@@ -6,6 +6,7 @@
         "atempo",
         "Calibri",
         "fastdecode",
+        "filetime",
         "hwaccel",
         "icns",
         "Kbits",
@@ -14,6 +15,8 @@
         "outrostart",
         "setpts",
         "sseof",
+        "tempdir",
+        "tempfile",
         "ultrafast",
         "unlisten",
         "unmaximize"

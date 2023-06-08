@@ -10,13 +10,13 @@ use glob::glob;
 
 
 pub fn find_latest_videos(from: &PathBuf, clip_location: &PathBuf) -> Vec<String> {
-    let regex = from
+    let pattern = from
         .join("**/*.mp4")
         .into_os_string()
         .into_string()
         .unwrap();
     let mut result: Vec<String> = Vec::new();
-    for entry in glob(regex.as_str()).expect("Failed to read glob pattern") {
+    for entry in glob(pattern.as_str()).expect("Failed to read glob pattern") {
         match entry {
             Ok(path) => {
                 if path.starts_with(&clip_location) {

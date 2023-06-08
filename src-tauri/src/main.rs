@@ -6,6 +6,8 @@ use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 
+use std::path::PathBuf;
+use std::thread;
 use std::time::SystemTime;
 use modules::config::Configuration;
 use modules::tauri_commands::clip_exists;
@@ -32,9 +34,20 @@ use crate::modules::tauri_commands::get_output_formats;
 
 fn main() {
     let _ = setup_logger();
+
+
+
     tauri::Builder::default()
         .setup(|app| {
-            app.manage(Configuration::init(&app.config()));
+            let config = Configuration::init(&app.config());
+
+            let thumbnails_location = PathBuf::from(config.app_config.lock().unwrap().thumbnail_cache.clone()); 
+
+            thread::spawn(move || {
+                modules::cleaning::clean_thumbnails(thumbnails_location);
+            });
+
+            app.manage(config);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

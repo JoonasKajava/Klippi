@@ -4,6 +4,7 @@ use tauri::State;
 use tauri::Window;
 use ts_rs::TS;
 
+use crate::modules::cleaning::THUMBNAIL_EXTENSION;
 use crate::modules::config::user_settings::UserSettings;
 use crate::modules::ffmpeg::VersionResultError::NotInstalled;
 use crate::modules::ffmpeg::VersionResultError::ParseError;
@@ -108,7 +109,7 @@ pub async fn get_thumbnail(
     }
 
     let mut hash_name = of.to_hashed();
-    hash_name.set_extension("jpg");
+    hash_name.set_extension(THUMBNAIL_EXTENSION);
 
     let output_file_path = thumbnails_folder.join(hash_name.file_name().unwrap());
 
