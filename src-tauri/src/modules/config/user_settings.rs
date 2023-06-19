@@ -1,13 +1,11 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use std::path::{PathBuf};
-use tauri::api::path::{app_config_dir, home_dir};
+use tauri::api::path::{home_dir};
 use tauri::api::path::video_dir;
 use tauri::Config;
 
-use super::{JsonConfig, DefaultValues};
-
-const USER_SETTINGS_FILENAME: &str = "UserSettings.json";
+use super::{FileConfig, DefaultValues};
 
 #[derive(Debug, Serialize, Deserialize, Clone, TS)]
 #[ts(export, export_to="../src/lib/models/")]
@@ -16,10 +14,8 @@ pub struct UserSettings {
     pub videos_directory: String,
 }
 
-impl JsonConfig for UserSettings {
-    fn file_location(config: &Config) -> Option<PathBuf> {
-        Some(app_config_dir(config)?.join(USER_SETTINGS_FILENAME))
-    }
+impl FileConfig for UserSettings {
+    
 }
 
 impl DefaultValues for UserSettings {

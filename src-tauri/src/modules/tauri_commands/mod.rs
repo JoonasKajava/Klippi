@@ -1,4 +1,6 @@
 use anyhow::{Context, Result};
+use tauri::Manager;
+use tauri::api::path::app_data_dir;
 use std::{fs, path::PathBuf};
 use tauri::State;
 use tauri::Window;
@@ -11,6 +13,7 @@ use crate::modules::ffmpeg::VersionResultError::ParseError;
 use crate::modules::ffmpeg::models::output_format::Limitation;
 
 use super::config::Configuration;
+use super::ffmpeg::ffmpeg::get_ffmpeg_location;
 use super::ffmpeg::models::output_format::OutputFormat;
 use super::{
     ffmpeg::{
@@ -86,12 +89,11 @@ fn friendly_error(error: anyhow::Error) -> String {
 
 #[tauri::command]
 pub async fn get_thumbnail(
+    window: Window,
     of: &PathBuf,
     settings: &State<'_, Configuration>,
 ) -> Result<PathBuf, String> {
     info!("Getting thumbnail for: {}", of.display());
-
-    let app_config = settings.app_config.lock().unwrap().clone();
 
     let thumbnails_folder =
         PathBuf::from(settings.app_config.lock().unwrap().thumbnail_cache.clone());
@@ -122,7 +124,10 @@ pub async fn get_thumbnail(
         output_file_path.display()
     );
 
-    let command = match create_thumbnail_command(of, &output_file_path, PathBuf::from(&app_config.ffmpeg_location)) {
+    let ffmpeg_location = get_ffmpeg_location(&window.app_handle().config());
+
+
+    let command = match create_thumbnail_command(of, &output_file_path, ffmpeg_location) {
         Ok(command) => command,
         Err(e) => {
             let error = format!("Unable to create thumbnail command: {}", e.to_string());
@@ -142,6 +147,7 @@ pub async fn get_thumbnail(
 
 #[tauri::command]
 pub async fn get_latest_videos(
+    window: Window,
     count: usize,
     settings: State<'_, Configuration>,
 ) -> Result<Vec<VideoData>, String> {
@@ -156,7 +162,7 @@ pub async fn get_latest_videos(
         .take(count)
     {
         let video_path = &PathBuf::from(&video);
-        let thumbnail = get_thumbnail(&video_path, &settings).await?;
+        let thumbnail = get_thumbnail(window.clone(), &video_path, &settings).await?;
         videos.push(VideoData {
             thumbnail: thumbnail.to_string_lossy().into(),
             file: video,
@@ -173,13 +179,12 @@ pub async fn get_latest_videos(
 
 #[tauri::command]
 pub async fn verify_dependencies(
-    settings: State<'_, Configuration>,
+    window: Window,
 ) -> Result<Vec<String>, &'static str> {
     info!("Verifying dependencies");
     let mut failed_dependencies: Vec<String> = Vec::new();
 
-    let ffmpeg_location = settings.app_config.lock().unwrap().ffmpeg_location.clone();
-    let ffmpeg_location = PathBuf::from(ffmpeg_location);
+    let ffmpeg_location = get_ffmpeg_location(&window.app_handle().config());
 
     let ffmpeg_version = get_version("ffmpeg", &ffmpeg_location);
     let ffprobe_version = get_version("ffprobe", &ffmpeg_location);
@@ -203,10 +208,9 @@ pub async fn verify_dependencies(
 pub async fn install_dependencies(
     window: Window,
     path: &str,
-    settings: State<'_, Configuration>,
 ) -> Result<String, String> {
-    let ffmpeg_location = settings.app_config.lock().unwrap().ffmpeg_location.clone();
-    let ffmpeg_location = PathBuf::from(ffmpeg_location);
+    let config = window.app_handle().config();
+    let ffmpeg_location = app_data_dir(&config).expect("Unable to get app data dir").join("ffmpeg");
     let result = install_ffmpeg(window, &path, &ffmpeg_location).await;
     match result {
         Ok(_) => Ok("Successful".into()),
@@ -223,8 +227,7 @@ pub async fn create_clip(
     options: ClipCreationOptions,
     settings: State<'_, Configuration>,
 ) -> Result<String, String> {
-
-    let app_config = settings.app_config.lock().unwrap().clone();
+    let ffmpeg_location = get_ffmpeg_location(&window.app_handle().config());
 
     let mut final_options = ClipCreationOptions {
         to: PathBuf::from(&settings.user_settings.lock().unwrap().clip_location).join(options.to),
@@ -234,7 +237,7 @@ pub async fn create_clip(
     final_options.to.set_extension(final_options.format.to_string().to_lowercase());
 
     let command =
-        create_clip_command(&final_options, PathBuf::from(app_config.ffmpeg_location)).map_err(|_| "Unable to get command".to_string())?;
+        create_clip_command(&final_options, ffmpeg_location).map_err(|_| "Unable to get command".to_string())?;
 
     command
         .run(move |progress| {

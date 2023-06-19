@@ -1,7 +1,7 @@
-pub mod user_settings;
 pub mod app_config;
+pub mod user_settings;
 
-
+use log::error;
 
 #[derive(Debug)]
 pub struct Configuration {
@@ -9,75 +9,197 @@ pub struct Configuration {
     pub user_settings: Mutex<UserSettings>,
 }
 
-impl Init for Configuration {
-    fn init(config: &Config) -> Self {
+impl Configuration {
+    pub fn init(config: &Config) -> Self {
+        let config_dir = app_config_dir(config).expect("Unable to get config dir");
         Configuration {
-            app_config: Mutex::new(AppConfig::init(config)),
-            user_settings: Mutex::new(UserSettings::init(config)),
+            app_config: Mutex::new(AppConfig::init(
+                config_dir.join("app_config.toml"),
+                AppConfig::default(config),
+            )),
+            user_settings: Mutex::new(UserSettings::init(
+                config_dir.join("user_settings.toml"),
+                UserSettings::default(config),
+            )),
         }
     }
 }
 
+use std::{
+    fs::{self},
+    path::{Path},
+    sync::Mutex,
+};
 
-
-use std::{sync::{Mutex}, path::PathBuf, fs::{File, self}};
-
-use anyhow::{Result, Context};
+use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
-use tauri::Config;
+use tauri::{api::path::app_config_dir, Config};
 
-use self::{user_settings::UserSettings, app_config::AppConfig};
+use self::{app_config::AppConfig, user_settings::UserSettings};
 
 pub trait Init {
-    fn init(config: &Config) -> Self;
+    fn init(config_location: impl AsRef<Path>, default: Self) -> Self;
 }
 
 pub trait Save {
-    fn save(&self, config: &Config) -> Result<()>;
+    fn save(&self, config_location: impl AsRef<Path>) -> Result<()>;
 }
 
 pub trait DefaultValues {
     fn default(config: &Config) -> Self;
 }
 
-pub trait JsonConfig : Save + Init + DefaultValues {
-    
-    fn file_location(config: &Config) -> Option<PathBuf>;
-}
+pub trait FileConfig: Save + Init + DefaultValues {}
 
-impl <T: JsonConfig+ for<'de> Deserialize<'de>> Init for T {
-    fn init(config: &tauri::Config) -> Self {
-        let app_config_file =
-            T::file_location(config).expect("Unable to find app config file");
-
-        if !app_config_file.try_exists().unwrap_or(false) {
-            let default = T::default(config); 
-            let _ = &default.save(&config).expect("Unable to save config");
-            return default; 
+impl<T: FileConfig + for<'de> Deserialize<'de>> Init for T {
+    fn init(config_location: impl AsRef<Path>, default: Self) -> Self {
+        if !config_location.as_ref().try_exists().unwrap_or(false) {
+            let _ = &default
+                .save(&config_location)
+                .expect("Unable to save config");
+            return default;
         } else {
-            let config_reader = File::open(app_config_file).expect("Unable to open config file");
-            match serde_json::from_reader::<File, Self>(config_reader) {
+            let config_string = fs::read_to_string(config_location).expect("Unable to open config file");
+            match toml::from_str::<Self>(&config_string) {
                 Ok(x) => return x,
-                Err(_) => {
-                    return T::default(config);
+                Err(e) => {
+                    println!("{:?}", e);
+                    error!("Unable to deserialize config, using default: {:?}", e);
+                    return default;
                 }
             }
         }
     }
 }
 
-impl <T: JsonConfig + Serialize> Save for T {
-    fn save(&self, config: &Config) -> anyhow::Result<()> {
-        let json = serde_json::to_string_pretty(&self)?;
+impl<T: FileConfig + Serialize> Save for T {
+    fn save(&self, config_location: impl AsRef<Path>) -> anyhow::Result<()> {
+        let toml = toml::to_string_pretty(&self)?;
 
-        let file_location = T::file_location(config).context("Unable to get file location")?;
-
-        let config_dir = file_location.parent().context("Unable to get config location")?;
+        let config_dir = config_location
+            .as_ref()
+            .parent()
+            .context("Unable to get config location")?;
 
         fs::create_dir_all(config_dir)?;
 
-        fs::write(file_location, json)?;
+        fs::write(config_location, toml)?;
 
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use std::{io::Write, fs::File};
+
+    use super::*;
+    use anyhow::Ok;
+    use tempfile::tempdir;
+    #[derive(Debug, Serialize, Deserialize, Clone,)]
+    struct TestConfig {
+        pub field1: String,
+        pub field2: String,
+    }
+
+    impl Default for TestConfig {
+        fn default() -> Self {
+            TestConfig {
+                field1: "default_field1".into(),
+                field2: "default_field2".into(),
+            }
+        }
+    }
+
+    impl DefaultValues for TestConfig {
+        fn default(config: &Config) -> Self {
+            TestConfig {
+                field1: "default_field1".into(),
+                field2: "default_field2".into(),
+            }
+        }
+    }
+
+    impl FileConfig for TestConfig {}
+
+    #[test]
+    pub fn test_init_creates_file() -> Result<()> {
+        let temp_dir = tempdir()?;
+
+        let test_config_location = temp_dir.path().join("test_config.toml");
+
+        let _ = TestConfig::init(&test_config_location, Default::default());
+
+        assert_eq!(
+            test_config_location.exists(),
+            true,
+            "Config file initialization must create a file if it doesn't exist"
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    pub fn test_init_self_correction() -> Result<()> {
+        let temp_dir = tempdir()?;
+
+        let test_config_location = temp_dir.path().join("test_config.toml");
+
+        {
+            #[derive(Serialize)]
+            struct InvalidConfig {
+                pub field1: String,
+                pub field2: i64,
+            }
+
+            let mut file = File::create(&test_config_location)?;
+            let toml = toml::to_string_pretty(&InvalidConfig {
+                field1: "existing_field1".into(),
+                field2: 123,
+            })?;
+            file.write_all(toml.as_bytes())?;
+        }
+
+        let existing_config = TestConfig::init(&test_config_location, Default::default());
+
+        assert_eq!(
+            existing_config.field1, "default_field1",
+            "Config file initialization must replace invalid values with default values"
+        );
+
+        assert_eq!(
+            existing_config.field2, "default_field2",
+            "Config file initialization must replace invalid values with default values");
+
+        Ok(())
+    }
+
+    #[test]
+    pub fn test_init_loads_existing_config() -> Result<()> {
+        let temp_dir = tempdir()?;
+
+        let test_config_location = temp_dir.path().join("test_config.toml");
+
+        {
+            let mut file = File::create(&test_config_location)?;
+            let toml = toml::to_string_pretty(&TestConfig {
+                field1: "existing_field1".into(),
+                field2: "existing_field2".into(),
+            })?;
+            file.write_all(toml.as_bytes())?;
+        }
+
+        let existing_config = TestConfig::init(&test_config_location, Default::default());
+
+        assert_eq!(
+            existing_config.field1, "existing_field1",
+            "Config file initialization must load existing config"
+        );
+        assert_eq!(
+            existing_config.field2, "existing_field2",
+            "Config file initialization must load existing config"
+        );
         Ok(())
     }
 }

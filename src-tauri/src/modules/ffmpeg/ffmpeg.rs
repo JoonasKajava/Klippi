@@ -1,11 +1,16 @@
 use anyhow::{Context, Result};
 use log::{warn, info};
-use std::{process::{Child, Stdio},  thread, io::{BufReader, BufRead}};
+use tauri::{Config, api::path::app_data_dir};
+use std::{process::{Child, Stdio},  thread, io::{BufReader, BufRead}, path::PathBuf};
 
 
 use crate::modules::ffmpeg::progress::{Progress, Status};
 
 use super::ffmpeg_builder::{FFmpegBuilder, Param};
+
+pub fn get_ffmpeg_location(config: &Config) -> PathBuf {
+    return app_data_dir(&config).expect("Unable to get app data dir").join("ffmpeg");
+}
 
 
 impl FFmpegBuilder {
