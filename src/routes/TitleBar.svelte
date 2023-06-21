@@ -3,6 +3,7 @@
     import {appWindow} from '@tauri-apps/api/window';
     import TitleBarLink from './TitleBarLink.svelte';
     import { selected_video } from '$lib/stores/VideoEditorStore';
+    import { dependencies_has_been_verified } from '$lib/stores/InstallerStore';
 
     const appName = getName();
 
@@ -21,8 +22,8 @@
     <div data-tauri-drag-region class="navbar-center">
         <div class="join join-horizontal">
             <TitleBarLink disabled={true} href="/settings"><i class="fa-solid fa-gear"></i> Settings</TitleBarLink>            
-            <TitleBarLink href="/"><i class="fa-regular fa-file-video"></i> Video Selector</TitleBarLink>
-            <TitleBarLink disabled={$selected_video.length == 0} href="/video-editor"><i class="fa-solid fa-clapperboard"></i> Editor</TitleBarLink>
+            <TitleBarLink disabled={!$dependencies_has_been_verified} href="/"><i class="fa-regular fa-file-video"></i> Video Selector</TitleBarLink>
+            <TitleBarLink disabled={$selected_video.length == 0 || !$dependencies_has_been_verified} href="/video-editor"><i class="fa-solid fa-clapperboard"></i> Editor</TitleBarLink>
         </div>
     </div>
     <div data-tauri-drag-region class="navbar-end">

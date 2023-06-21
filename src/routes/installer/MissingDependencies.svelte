@@ -46,19 +46,12 @@
                 In order to function correctly {appName} needs following programs:
             </p>
             <DependencyDisplay dependencies={$missing_dependencies} />
-            <div class="mt-4 flex">
-                <button
-                    on:click={() => modal.classList.add("modal-open")}
-                    class="btn btn-outline btn-error"
-                >
-                    I will install these my self
-                </button>
-                <div class="divider divider-horizontal">OR</div>
+            <div class="mt-4 flex justify-center">
                 <button
                     on:click={onInstallClick}
                     class="btn btn-outline btn-success"
                 >
-                    Install these for me
+                    Install
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>

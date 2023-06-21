@@ -44,7 +44,7 @@ pub async fn download<F : Fn(DownloadProgress)>(
 
     let mut parsed_target = target;
 
-    if parsed_target.is_dir() {
+    if parsed_target.extension().is_none() {
         let url_filename = url.file_name().context("Unable to determinate filename since url or target do not contain filename")?;
         parsed_target = parsed_target.join(url_filename);
     }

@@ -206,12 +206,11 @@ pub async fn verify_dependencies(
 }
 #[tauri::command]
 pub async fn install_dependencies(
-    window: Window,
-    path: &str,
+    window: Window
 ) -> Result<String, String> {
     let config = window.app_handle().config();
-    let ffmpeg_location = app_data_dir(&config).expect("Unable to get app data dir").join("ffmpeg");
-    let result = install_ffmpeg(window, &path, &ffmpeg_location).await;
+    let ffmpeg_location = app_data_dir(&config).expect("Unable to get app data dir");
+    let result = install_ffmpeg(window, &ffmpeg_location).await;
     match result {
         Ok(_) => Ok("Successful".into()),
         Err(e) => {

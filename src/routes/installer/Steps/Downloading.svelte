@@ -1,17 +1,28 @@
 <script lang="ts">
+    import { error } from "@sveltejs/kit";
+    import { invoke } from "@tauri-apps/api/tauri";
     import type { Event, UnlistenFn } from "@tauri-apps/api/event";
     import { appWindow } from "@tauri-apps/api/window";
     import prettyBytes from "pretty-bytes";
     import Step from "./Step.svelte";
-    import { onDestroy } from "svelte";
+    import { onDestroy, onMount } from "svelte";
     import type { DownloadProgress } from "$lib/models/DownloadProgress";
-    
+
     let progress: DownloadProgress = {
         progress: 0,
         total_size: 0n,
         downloaded: 0n,
         speed: 0,
     };
+
+    function install_dependencies() {
+        invoke("install_dependencies").catch((e: string) => {
+            throw error(500, {
+                message: e,
+                title: "Unable to install dependencies",
+            });
+        });
+    }
 
     let unlisten: UnlistenFn;
 
@@ -25,6 +36,10 @@
 
     onDestroy(() => {
         unlisten();
+    });
+
+    onMount(() => {
+        install_dependencies();
     });
 
     export let transitions;

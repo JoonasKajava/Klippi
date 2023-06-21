@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invoke } from "@tauri-apps/api/tauri";
+
     import MissingDependencies from "./MissingDependencies.svelte";
     import { fly } from "svelte/transition";
     import Options from "./Steps/Options.svelte";
@@ -11,8 +11,8 @@
     import Verifying from "./Steps/Verifying.svelte";
     import Done from "./Steps/Done.svelte";
     import type { StepChange } from "$lib/models/StepChange";
-    import { ffmpeg_install_location, missing_dependencies } from "$lib/stores/InstallerStore";
-    import { error } from "@sveltejs/kit";
+    import { missing_dependencies } from "$lib/stores/InstallerStore";
+
 
     interface Step {
         name: String;
@@ -21,11 +21,6 @@
     }
 
     let steps: Step[] = [
-        {
-            name: "Options",
-            completed: false,
-            component: Options,
-        },
         {
             name: "Downloading",
             completed: false,
@@ -53,16 +48,7 @@
     $: completed_steps = steps.filter((x) => x.completed);
     let current_step: Step = steps[0];
 
-    function install_dependencies() {
-        invoke("install_dependencies", {
-            path: $ffmpeg_install_location,
-        }).catch((e: string) => {
-            throw error(500, {
-                message: e,
-                title: "Unable to install dependencies",
-            });
-        });
-    }
+
     let unlisten: UnlistenFn;
 
     appWindow
@@ -84,7 +70,6 @@
     });
 
     function next_step() {
-        if (current_step.name == "Options") install_dependencies();
         current_step.completed = true;
         current_step = steps[steps.indexOf(current_step) + 1];
         steps = steps;
