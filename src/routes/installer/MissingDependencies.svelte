@@ -23,7 +23,7 @@
             Come back when you are done installing!
         </h3>
         <p>
-            {appName} needs to be restarted after you have installed all the neccessary
+            {appName} needs to be restarted after you have installed all the necessary
             programs.
         </p>
         <p>Here's again all the programs you need to install:</p>
