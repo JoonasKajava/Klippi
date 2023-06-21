@@ -37,9 +37,10 @@ impl Param {
 
 impl<'a> FFmpegBuilder {
     pub fn get_full_command(&self, command: &str) -> PathBuf{
-        self.run_location.clone().unwrap_or_default()
-        .join("bin")
-        .join(command)
+        #[cfg(target_os = "windows")]
+        return self.run_location.clone().unwrap_or_default().join("bin").join(command);
+        #[cfg(target_os = "linux")]
+        return PathBuf::from(command);
     }
 
     pub fn new() -> FFmpegBuilder {

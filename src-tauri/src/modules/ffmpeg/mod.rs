@@ -27,7 +27,10 @@ pub struct Version {
 }
 
 pub fn get_version(of: &str, ffmpeg_location: &PathBuf) -> Result<Version, VersionResultError> {
+    #[cfg(target_os = "windows")]
     let full_program = ffmpeg_location.join("bin").join(&of);
+    #[cfg(target_os = "linux")]
+    let full_program = of;
 
     info!("Checking version of {:?}", full_program);
 

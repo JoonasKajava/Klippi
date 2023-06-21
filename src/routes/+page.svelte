@@ -50,9 +50,14 @@
 
   async function open_file_dialog(e: Event) {
     e.preventDefault();
+    let dir:string = "~/";
+    try {
+      dir = await videoDir();
+    }catch(err) {
+    }
     const file = await open({
       multiple: false,
-      defaultPath: await videoDir(),
+      defaultPath: dir,
       directory: false,
       title: "Select A Video",
       filters: [

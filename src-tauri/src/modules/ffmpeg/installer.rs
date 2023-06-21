@@ -45,9 +45,9 @@ pub struct StepChange {
     next_step: String
 }
 
-pub async fn install_ffmpeg(window: Window, path: &str, install_location: &PathBuf) -> Result<String>{
+pub async fn install_ffmpeg(window: Window, install_location: &PathBuf) -> Result<String>{
 
-    let downloaded_file = download(PathBuf::from(FFMPEG_DOWNLOAD_URL), PathBuf::from(path), |progress| {
+    let downloaded_file = download(PathBuf::from(FFMPEG_DOWNLOAD_URL), install_location.to_path_buf(), |progress| {
         window.emit("download_progress", progress).context("Unable to emit progress").expect("Could not emit event");
     }).await?;
 
