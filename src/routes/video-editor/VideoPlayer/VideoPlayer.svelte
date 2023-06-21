@@ -133,7 +133,7 @@
         on:durationchange={(d) => (video_duration = video_player.duration)}
         bind:this={video_player}
     >
-        <source src={convertFileSrc(video, "stream")} />
+        <source src={convertFileSrc(video)} />
     </video>
     {#if display_controls}
         <div
