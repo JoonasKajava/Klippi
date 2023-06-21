@@ -113,7 +113,7 @@ mod tests {
     }
 
     impl DefaultValues for TestConfig {
-        fn default(config: &Config) -> Self {
+        fn default(_config: &Config) -> Self {
             TestConfig {
                 field1: "default_field1".into(),
                 field2: "default_field2".into(),

@@ -2,9 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod modules;
-use std::io::Read;
-use std::io::Seek;
-use std::io::SeekFrom;
+
+
 
 use std::path::PathBuf;
 use std::thread;
@@ -18,14 +17,10 @@ use modules::tauri_commands::get_user_settings;
 use modules::tauri_commands::install_dependencies;
 use modules::tauri_commands::verify_dependencies;
 use tauri::Manager;
-use tauri::http::ResponseBuilder;
 
-use std::io::Write;
-use tauri::http::{
-    header::{ACCEPT_RANGES, CONTENT_LENGTH, CONTENT_RANGE, CONTENT_TYPE, RANGE},
-    status::StatusCode,
-    MimeType,
-};
+
+
+
 
 use crate::modules::tauri_commands::get_output_formats;
 

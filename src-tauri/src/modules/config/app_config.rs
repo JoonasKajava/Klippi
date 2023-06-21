@@ -21,7 +21,7 @@ impl FileConfig for AppConfig {
 }
 
 impl DefaultValues for AppConfig {
-    fn default(config: &Config) -> Self {
+    fn default(_config: &Config) -> Self {
         AppConfig {
             thumbnail_cache: temp_dir()
                 .join("klippi_thumbnails")
