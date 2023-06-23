@@ -3,10 +3,11 @@ use super::{
     models::clip_creation_options::ClipCreationOptions,
 };
 use anyhow::Result;
+use tauri::Config;
 use std::{fs, path::PathBuf};
 
-pub fn create_timeline_thumbnails_command(from: &PathBuf, into: &PathBuf) -> Result<FFmpegBuilder> {
-    let mut instance = FFmpegBuilder::new();
+pub fn create_timeline_thumbnails_command(from: &PathBuf, into: &PathBuf, config: &Config) -> Result<FFmpegBuilder> {
+    let mut instance = FFmpegBuilder::new(&config);
 
     let thumbnails_folder = into.join("%d.bmp");
 
@@ -35,12 +36,11 @@ pub fn create_timeline_thumbnails_command(from: &PathBuf, into: &PathBuf) -> Res
 pub fn create_thumbnail_command(
     of: &PathBuf,
     into: &PathBuf,
-    ffmpeg_location: PathBuf,
+    config: &Config,
 ) -> Result<FFmpegBuilder> {
-    let mut instance = FFmpegBuilder::new();
+    let mut instance = FFmpegBuilder::new(&config);
 
     instance
-        .set_run_location(ffmpeg_location)
         .input(File {
             path: of.to_path_buf(),
             options: vec![Param::create_pair("sseof", "-3")],
@@ -60,9 +60,9 @@ pub fn create_thumbnail_command(
 
 pub fn create_clip_command<'a>(
     options: &'a ClipCreationOptions,
-    ffmpeg_location: PathBuf,
+    config: &Config
 ) -> Result<FFmpegBuilder> {
-    let mut instance = FFmpegBuilder::new();
+    let mut instance = FFmpegBuilder::new(&config);
 
     let framerate: f64;
     if options.speed < 1.0 {
@@ -72,7 +72,6 @@ pub fn create_clip_command<'a>(
     }
 
     instance
-        .set_run_location(ffmpeg_location)
         .input(File {
             path: options.from.to_path_buf(),
             options: vec![

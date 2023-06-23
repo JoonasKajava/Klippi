@@ -70,7 +70,7 @@ pub async fn get_timeline_thumbnails(
         return Ok(TimelineThumbnailsResult::Found(folder_path));
     }
 
-    let command = create_timeline_thumbnails_command(&of, &folder_path).unwrap();
+    let command = create_timeline_thumbnails_command(&of, &folder_path, &window.config()).unwrap();
     command
         .run(move |progress| {
             window
@@ -124,10 +124,8 @@ pub async fn get_thumbnail(
         output_file_path.display()
     );
 
-    let ffmpeg_location = get_ffmpeg_location(&window.app_handle().config());
 
-
-    let command = match create_thumbnail_command(of, &output_file_path, ffmpeg_location) {
+    let command = match create_thumbnail_command(of, &output_file_path, &window.config()) {
         Ok(command) => command,
         Err(e) => {
             let error = format!("Unable to create thumbnail command: {}", e.to_string());
@@ -226,8 +224,6 @@ pub async fn create_clip(
     options: ClipCreationOptions,
     settings: State<'_, Configuration>,
 ) -> Result<String, String> {
-    let ffmpeg_location = get_ffmpeg_location(&window.app_handle().config());
-
     let mut final_options = ClipCreationOptions {
         to: PathBuf::from(&settings.user_settings.lock().unwrap().clip_location).join(options.to),
         ..options
@@ -236,7 +232,7 @@ pub async fn create_clip(
     final_options.to.set_extension(final_options.format.to_string().to_lowercase());
 
     let command =
-        create_clip_command(&final_options, ffmpeg_location).map_err(|_| "Unable to get command".to_string())?;
+        create_clip_command(&final_options, &window.config()).map_err(|_| "Unable to get command".to_string())?;
 
     command
         .run(move |progress| {

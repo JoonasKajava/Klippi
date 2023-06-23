@@ -4,7 +4,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 use tauri::{
-    Config,
+    Config, api::path::app_cache_dir,
 };
 use ts_rs::TS;
 
@@ -23,8 +23,8 @@ impl FileConfig for AppConfig {
 impl DefaultValues for AppConfig {
     fn default(_config: &Config) -> Self {
         AppConfig {
-            thumbnail_cache: temp_dir()
-                .join("klippi_thumbnails")
+            thumbnail_cache: app_cache_dir(&_config).expect("Unable to get app cache dir")
+                .join("thumbnails")
                 .to_string_lossy()
                 .into(),
         }

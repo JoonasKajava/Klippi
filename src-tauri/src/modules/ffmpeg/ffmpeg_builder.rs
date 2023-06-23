@@ -1,5 +1,6 @@
 use std::{path::PathBuf, process::Command};
 use anyhow::{Result, bail};
+use tauri::{Config, api::path::app_data_dir};
 use std::fmt;
 
 use crate::modules::utils::command_utils::NoWindow;
@@ -12,8 +13,7 @@ pub struct FFmpegBuilder {
     pub outputs: Vec<File>,
     pub video_filters: Vec<Param>,
     pub audio_filters: Vec<Param>,
-    pub run_location : Option<PathBuf>,
-    pub command: String
+    pub working_directory : Option<PathBuf>
 
 }
 
@@ -36,15 +36,15 @@ impl Param {
 }
 
 impl<'a> FFmpegBuilder {
-    pub fn get_full_command(&self, command: &str) -> PathBuf{
-        #[cfg(target_os = "windows")]
-        return self.run_location.clone().unwrap_or_default().join("bin").join(command);
-        #[cfg(target_os = "linux")]
-        return PathBuf::from(command);
-    }
 
-    pub fn new() -> FFmpegBuilder {
-        FFmpegBuilder { options: Vec::new(), inputs: Vec::new(), outputs: Vec::new(), video_filters: vec![], audio_filters: vec![], command: "ffmpeg".into(), run_location: None }
+    pub fn new(config: &Config) -> FFmpegBuilder {
+
+        #[cfg(target_os = "windows")]
+        let working_directory = Some(app_data_dir(&config).expect("Unable to get app data dir").join("ffmpeg"));
+        #[cfg(target_os = "linux")]
+        let working_directory = None;
+
+        FFmpegBuilder { options: Vec::new(), inputs: Vec::new(), outputs: Vec::new(), video_filters: vec![], audio_filters: vec![], working_directory }
     }
 
     pub fn option(&mut self, option:Param) -> &mut Self {
@@ -85,13 +85,13 @@ impl<'a> FFmpegBuilder {
         filters.join(", ")
     }
 
-    pub fn set_run_location(&mut self, location: PathBuf) -> &mut Self {
-        self.run_location = Some(location);
-        self
-    }
-
     pub fn to_command(&self) -> Command {
-        let mut command = Command::new(self.get_full_command(&self.command));
+        let mut command = Command::new("ffmpeg");
+        
+        match &self.working_directory {
+            Some(path) => command.current_dir(path),
+            None => &mut command,
+        };
 
         for option in &self.options {
             option.push_to(&mut command);

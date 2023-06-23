@@ -18,8 +18,8 @@ impl FFmpegBuilder {
         self.option(Param::create_pair("progress", "-"));
         self.option(Param::Single("nostats".into()));
 
-        println!("Running: {}", self);
-
+        info!("Running: {}", self);
+        
         let mut child = self.to_command().stdout(Stdio::piped()).spawn()?;
 
         let stdout = child.stdout.take().context("Unable to get stdout")?;
