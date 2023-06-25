@@ -11,8 +11,6 @@ use std::time::SystemTime;
 use modules::config::Configuration;
 use modules::tauri_commands::clip_exists;
 use modules::tauri_commands::create_clip;
-use modules::tauri_commands::get_latest_videos;
-use modules::tauri_commands::get_timeline_thumbnails;
 use modules::tauri_commands::get_user_settings;
 use modules::tauri_commands::install_dependencies;
 use modules::tauri_commands::verify_dependencies;
@@ -22,7 +20,10 @@ use tauri::Manager;
 
 
 
+use crate::modules::tauri_commands::discover::discover_videos;
 use crate::modules::tauri_commands::get_output_formats;
+use crate::modules::tauri_commands::thumbnail::get_supported_video_extensions;
+use crate::modules::tauri_commands::thumbnail::get_timeline_thumbnails;
 
 fn main() {
     let _ = setup_logger();
@@ -43,14 +44,15 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            get_latest_videos,
+            discover_videos,
             verify_dependencies,
             install_dependencies,
             create_clip,
             clip_exists,
             get_user_settings,
             get_timeline_thumbnails,
-            get_output_formats
+            get_output_formats,
+            get_supported_video_extensions
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

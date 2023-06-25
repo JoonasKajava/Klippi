@@ -7,11 +7,13 @@ use std::{
 
 use glob::glob;
 
+use crate::modules::config::constants::SUPPORTED_VIDEO_EXTENSIONS;
+
 
 
 pub fn find_latest_videos(from: &PathBuf, clip_location: &PathBuf) -> Vec<String> {
     let pattern = from
-        .join("**/*.mp4")
+        .join(format!("**/*.{{{}}}", SUPPORTED_VIDEO_EXTENSIONS.join(",")))
         .into_os_string()
         .into_string()
         .unwrap();

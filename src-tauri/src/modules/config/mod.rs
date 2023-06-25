@@ -1,6 +1,8 @@
 pub mod app_config;
 pub mod user_settings;
 
+pub mod constants;
+
 use log::error;
 
 #[derive(Debug)]

@@ -2,8 +2,7 @@ use std::{path::{PathBuf, Path}, fs, time::Duration};
 use glob::glob;
 use log::error;
 
-pub const THUMBNAIL_EXTENSION: &str = "jpg";
-pub const DAYS_TO_KEEP: u64 = 7;
+use super::config::constants::{DAYS_TO_KEEP_THUMBNAILS, THUMBNAIL_EXTENSION};
 
 
 pub fn is_eligible_for_cleanup(path: impl AsRef<Path>) -> bool {
@@ -21,7 +20,7 @@ pub fn is_eligible_for_cleanup(path: impl AsRef<Path>) -> bool {
 
     let now = std::time::SystemTime::now();
     return match metadata.modified() {
-        Ok(c) => now - Duration::from_secs(DAYS_TO_KEEP * 24 * 60 * 60) > c,
+        Ok(c) => now - Duration::from_secs(DAYS_TO_KEEP_THUMBNAILS * 24 * 60 * 60) > c,
         Err(_) => false,
     }
 } 
@@ -78,11 +77,11 @@ mod tests {
 
         let new_file = create_file(&temp_dir, format!("new_file.{}", THUMBNAIL_EXTENSION), 0)?;
 
-        assert_eq!(is_eligible_for_cleanup(&new_file), false, "File should not be eligible for cleanup if it was modified less than {} days ago", DAYS_TO_KEEP);
+        assert_eq!(is_eligible_for_cleanup(&new_file), false, "File should not be eligible for cleanup if it was modified less than {} days ago", DAYS_TO_KEEP_THUMBNAILS);
 
-        let old_file = create_file(&temp_dir, format!("old_file.{}", THUMBNAIL_EXTENSION), DAYS_TO_KEEP + 1)?;
+        let old_file = create_file(&temp_dir, format!("old_file.{}", THUMBNAIL_EXTENSION), DAYS_TO_KEEP_THUMBNAILS + 1)?;
 
-        assert_eq!(is_eligible_for_cleanup(&old_file), true, "File should be eligible for cleanup if modified it was more than {} days ago", DAYS_TO_KEEP);
+        assert_eq!(is_eligible_for_cleanup(&old_file), true, "File should be eligible for cleanup if modified it was more than {} days ago", DAYS_TO_KEEP_THUMBNAILS);
 
 
         Ok(())
@@ -104,9 +103,9 @@ mod tests {
         let temp_dir = tempdir()?;
 
         let new_file = create_file(&temp_dir, format!("new_file.{}", THUMBNAIL_EXTENSION), 0)?;
-        let old_file = create_file(&temp_dir, format!("old_file.{}", THUMBNAIL_EXTENSION), DAYS_TO_KEEP + 1)?;
+        let old_file = create_file(&temp_dir, format!("old_file.{}", THUMBNAIL_EXTENSION), DAYS_TO_KEEP_THUMBNAILS + 1)?;
         let new_non_thumbnail_file = create_file(&temp_dir, "new_non_thumbnail_file.pdf", 0)?;
-        let old_non_thumbnail_file = create_file(&temp_dir, "old_non_thumbnail_file.pdf", DAYS_TO_KEEP + 1)?;
+        let old_non_thumbnail_file = create_file(&temp_dir, "old_non_thumbnail_file.pdf", DAYS_TO_KEEP_THUMBNAILS + 1)?;
 
         clean_thumbnails(&temp_dir);
 

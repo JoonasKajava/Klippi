@@ -37,7 +37,7 @@
     });
   };
 
-  let latest_videos = invoke<VideoData[]>("get_latest_videos", { count: 3 });
+  let latest_videos = invoke<VideoData[]>("discover_videos", { count: 3 });
 
   latest_videos.catch((err: string) => {
     throw error(500, { message: err, title: "Unable to load latest videos" });
@@ -50,6 +50,9 @@
 
   async function open_file_dialog(e: Event) {
     e.preventDefault();
+
+    let extensions = await invoke<string[]>("get_supported_extensions");
+
     let dir:string = "~/";
     try {
       dir = await videoDir();
@@ -63,7 +66,7 @@
       filters: [
         {
           name: "Video",
-          extensions: ["mp4"],
+          extensions: extensions,
         },
       ],
     });
