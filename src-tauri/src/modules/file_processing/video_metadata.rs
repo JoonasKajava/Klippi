@@ -5,22 +5,25 @@ use std::{
     path::{PathBuf},
 };
 
-use glob::glob;
+use log::info;
+use wax::Glob;
 
 use crate::modules::config::constants::SUPPORTED_VIDEO_EXTENSIONS;
 
 
 
 pub fn find_latest_videos(from: &PathBuf, clip_location: &PathBuf) -> Vec<String> {
-    let pattern = from
-        .join(format!("**/*.{{{}}}", SUPPORTED_VIDEO_EXTENSIONS.join(",")))
-        .into_os_string()
-        .into_string()
-        .unwrap();
+
+    let file_matcher = format!("**/*.{{{}}}", SUPPORTED_VIDEO_EXTENSIONS.join(","));
+    info!("Searching for videos in: {}", file_matcher);
+
+    let glob = Glob::new(&file_matcher).unwrap();
+
     let mut result: Vec<String> = Vec::new();
-    for entry in glob(pattern.as_str()).expect("Failed to read glob pattern") {
+    for entry in glob.walk(&from){
         match entry {
             Ok(path) => {
+                let path = path.into_path();
                 if path.starts_with(&clip_location) {
                     continue;
                 }

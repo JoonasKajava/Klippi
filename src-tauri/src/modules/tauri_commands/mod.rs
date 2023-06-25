@@ -1,7 +1,8 @@
-use anyhow::{Context, Result};
+use anyhow::{Result};
+use log::info;
 use tauri::Manager;
 use tauri::api::path::app_data_dir;
-use std::{fs, path::PathBuf};
+use std::{path::PathBuf};
 use tauri::State;
 use tauri::Window;
 use ts_rs::TS;
@@ -17,7 +18,7 @@ use super::ffmpeg::models::output_format::OutputFormat;
 use super::{
     ffmpeg::{
         ffmpeg_factory::{
-            create_clip_command, create_thumbnail_command, create_timeline_thumbnails_command,
+            create_clip_command,
         },
         get_version,
         installer::install_ffmpeg,
@@ -25,7 +26,6 @@ use super::{
     },
     utils::filesystem_utils::PathBufExtensions,
 };
-use log::{error, info};
 
 pub mod discover;
 pub mod thumbnail;
@@ -51,12 +51,6 @@ pub async fn clip_exists(file: PathBuf, settings: State<'_, Configuration>) -> R
 pub enum TimelineThumbnailsResult {
     Generating(PathBuf),
     Found(PathBuf),
-}
-
-
-
-fn friendly_error(error: anyhow::Error) -> String {
-    error.to_string()
 }
 
 #[tauri::command]

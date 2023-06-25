@@ -1,6 +1,6 @@
 use std::{path::{PathBuf, Path}, fs, time::Duration};
-use glob::glob;
 use log::error;
+use wax::Glob;
 
 use super::config::constants::{DAYS_TO_KEEP_THUMBNAILS, THUMBNAIL_EXTENSION};
 
@@ -27,13 +27,11 @@ pub fn is_eligible_for_cleanup(path: impl AsRef<Path>) -> bool {
 
 
 pub fn clean_thumbnails(thumbnails_path: impl AsRef<Path>) {
-    let pattern = thumbnails_path.as_ref()
-        .join(format!("**/*.{}", THUMBNAIL_EXTENSION))
-        .into_os_string()
-        .into_string()
-        .unwrap();
+    let glob_pattern = &format!("**/*.{}", THUMBNAIL_EXTENSION);
 
-    let result = glob(pattern.as_str()).expect("Failed to read glob pattern")
+    let glob = Glob::new(glob_pattern).unwrap();
+
+    let result = glob.walk(thumbnails_path)
     .map(|x| {
         match x {
             Ok(x) => Some(x),
@@ -43,7 +41,7 @@ pub fn clean_thumbnails(thumbnails_path: impl AsRef<Path>) {
                 return None;
             }
         }
-    }).filter(|x| x.is_some()).map(|x| x.unwrap()).collect::<Vec<PathBuf>>();
+    }).filter(|x| x.is_some()).map(|x| x.unwrap().into_path()).collect::<Vec<PathBuf>>();
 
     for path in result {
         if !is_eligible_for_cleanup(&path) {

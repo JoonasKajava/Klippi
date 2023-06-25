@@ -8,13 +8,12 @@
   import type { VideoData } from "../lib/models/VideoData";
   import { goto } from "$app/navigation";
   import { selected_video } from "$lib/stores/VideoEditorStore";
-  import { getMatches } from '@tauri-apps/api/cli'
+  import { getMatches } from "@tauri-apps/api/cli";
 
   import {
     dependencies_has_been_verified,
     missing_dependencies,
   } from "$lib/stores/InstallerStore";
-
 
   (async () => {
     if ($dependencies_has_been_verified) return;
@@ -29,13 +28,13 @@
     throw error(500, { message: err, title: "Unable to verify dependencies" });
   });
 
-  $: if($dependencies_has_been_verified) {
+  $: if ($dependencies_has_been_verified) {
     getMatches().then((matches) => {
-      if(matches.args.source.value && !$selected_video) {
+      if (matches.args.source.value && !$selected_video) {
         select_video(matches.args.source.value as string);
       }
     });
-  };
+  }
 
   let latest_videos = invoke<VideoData[]>("discover_videos", { count: 3 });
 
@@ -51,13 +50,12 @@
   async function open_file_dialog(e: Event) {
     e.preventDefault();
 
-    let extensions = await invoke<string[]>("get_supported_extensions");
+    let extensions = await invoke<string[]>("get_supported_video_extensions");
 
-    let dir:string = "~/";
+    let dir: string = "~/";
     try {
       dir = await videoDir();
-    }catch(err) {
-    }
+    } catch (err) {}
     const file = await open({
       multiple: false,
       defaultPath: dir,

@@ -23,7 +23,7 @@ tauri-build = { version = "1.4", features = [] }
 [dependencies]
 tauri = { version = "1.4", features = ["cli", "dialog-all", "notification", "path-all", "protocol-all", "shell-open", "updater", "window-close", "window-hide", "window-maximize", "window-minimize", "window-request-user-attention", "window-set-fullscreen", "window-set-title", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize"] }
 serde = { version = "1.0", features = ["derive", "rc"] }
-glob = "0.3.1"
+wax = "0.5.0"
 lazy_static = "1.4.0"
 anyhow = "1.0.71"
 reqwest = {version = "0.11.18", features = ["stream"] }
