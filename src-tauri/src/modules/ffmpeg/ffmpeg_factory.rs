@@ -7,11 +7,11 @@ use tauri::Config;
 use std::{fs, path::PathBuf};
 
 pub fn create_timeline_thumbnails_command(from: &PathBuf, into: &PathBuf, config: &Config) -> Result<FFmpegBuilder> {
-    let mut instance = FFmpegBuilder::new(&config);
+    let mut instance = FFmpegBuilder::new(config);
 
     let thumbnails_folder = into.join("%d.bmp");
 
-    fs::create_dir_all(&thumbnails_folder.parent().unwrap())?;
+    fs::create_dir_all(thumbnails_folder.parent().unwrap())?;
 
     instance
         .input(File {
@@ -30,7 +30,7 @@ pub fn create_timeline_thumbnails_command(from: &PathBuf, into: &PathBuf, config
                 Param::create_pair("preset", "fast"),
             ],
         });
-    return Ok(instance);
+    Ok(instance)
 }
 
 pub fn create_thumbnail_command(
@@ -38,7 +38,7 @@ pub fn create_thumbnail_command(
     into: &PathBuf,
     config: &Config,
 ) -> Result<FFmpegBuilder> {
-    let mut instance = FFmpegBuilder::new(&config);
+    let mut instance = FFmpegBuilder::new(config);
 
     instance
         .input(File {
@@ -58,11 +58,11 @@ pub fn create_thumbnail_command(
     Ok(instance)
 }
 
-pub fn create_clip_command<'a>(
-    options: &'a ClipCreationOptions,
+pub fn create_clip_command(
+    options: &ClipCreationOptions,
     config: &Config
 ) -> Result<FFmpegBuilder> {
-    let mut instance = FFmpegBuilder::new(&config);
+    let mut instance = FFmpegBuilder::new(config);
 
     let framerate: f64;
     if options.speed < 1.0 {
@@ -81,7 +81,7 @@ pub fn create_clip_command<'a>(
             ],
         })?
         .option(Param::Single("y".into()))
-        .video_filter("scale", format!("-1:{}", options.resolution.to_string()))
+        .video_filter("scale", format!("-1:{}", options.resolution))
         .video_filter("fps=fps", framerate.to_string())
         .set_speed(options.speed)
         .output(File {

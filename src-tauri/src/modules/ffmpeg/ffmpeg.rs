@@ -9,7 +9,7 @@ use crate::modules::ffmpeg::progress::{Progress, Status};
 use super::ffmpeg_builder::{FFmpegBuilder, Param};
 
 pub fn get_ffmpeg_location(config: &Config) -> PathBuf {
-    return app_data_dir(&config).expect("Unable to get app data dir").join("ffmpeg");
+    app_data_dir(config).expect("Unable to get app data dir").join("ffmpeg")
 }
 
 
@@ -32,7 +32,7 @@ impl FFmpegBuilder {
                 if n > 0 {
                     let line = buf.as_str();
                     info!("{}", line);
-                    match progress.try_parse(&line) {
+                    match progress.try_parse(line) {
                         Ok(_) => on_progress(progress.clone()),
                         Err(e) => warn!("Parse error: {:?}", e),
                     };

@@ -59,15 +59,15 @@ impl<T: FileConfig + for<'de> Deserialize<'de>> Init for T {
             let _ = &default
                 .save(&config_location)
                 .expect("Unable to save config");
-            return default;
+            default
         } else {
             let config_string = fs::read_to_string(config_location).expect("Unable to open config file");
             match toml::from_str::<Self>(&config_string) {
-                Ok(x) => return x,
+                Ok(x) => x,
                 Err(e) => {
                     println!("{:?}", e);
                     error!("Unable to deserialize config, using default: {:?}", e);
-                    return default;
+                    default
                 }
             }
         }

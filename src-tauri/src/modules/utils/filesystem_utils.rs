@@ -19,7 +19,7 @@ impl PathBufExtensions for PathBuf {
         let hash = format!("{:x}", digest);
 
         new_path.set_file_name(hash);
-        return new_path;
+        new_path
     }
 
     fn reveal(&self) {

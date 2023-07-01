@@ -40,7 +40,7 @@ impl<'a> FFmpegBuilder {
     pub fn new(config: &Config) -> FFmpegBuilder {
 
         #[cfg(target_os = "windows")]
-        let working_directory = Some(app_data_dir(&config).expect("Unable to get app data dir").join("ffmpeg"));
+        let working_directory = Some(app_data_dir(config).expect("Unable to get app data dir").join("ffmpeg"));
         #[cfg(target_os = "linux")]
         let working_directory = None;
 
@@ -78,8 +78,8 @@ impl<'a> FFmpegBuilder {
     fn create_filter_string(&self, filters: &Vec<Param>) -> String {
         let filters: Vec<String> = filters.iter().map(|x| {
             match x {
-                Param::Single(s) => return s.clone(),
-                Param::Pair(key, value) => format!("{}={}", key, value).clone(),
+                Param::Single(s) => s.clone(),
+                Param::Pair(key, value) => format!("{}={}", key, value),
             }
         }).collect();
         filters.join(", ")
@@ -124,7 +124,7 @@ impl<'a> FFmpegBuilder {
 impl<'a> fmt::Display for FFmpegBuilder {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let str = format!("{:?}", self.clone().to_command());
-        f.write_str(&str.as_str())
+        f.write_str(str.as_str())
         
     }
 }
@@ -148,7 +148,7 @@ impl<'a> File {
         if is_input  {
             command.arg("-i");
         }
-        command.arg(&self.path.to_str().unwrap());
+        command.arg(self.path.to_str().unwrap());
     }
 }
 

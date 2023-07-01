@@ -21,7 +21,7 @@ impl FileConfig for AppConfig {
 impl DefaultValues for AppConfig {
     fn default(_config: &Config) -> Self {
         AppConfig {
-            thumbnail_cache: app_cache_dir(&_config).expect("Unable to get app cache dir")
+            thumbnail_cache: app_cache_dir(_config).expect("Unable to get app cache dir")
                 .join("thumbnails")
                 .to_string_lossy()
                 .into(),

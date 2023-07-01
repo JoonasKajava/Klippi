@@ -20,11 +20,11 @@ pub fn find_latest_videos(from: &PathBuf, clip_location: &PathBuf) -> Vec<String
     let glob = Glob::new(&file_matcher).unwrap();
 
     let mut result: Vec<String> = Vec::new();
-    for entry in glob.walk(&from){
+    for entry in glob.walk(from){
         match entry {
             Ok(path) => {
                 let path = path.into_path();
-                if path.starts_with(&clip_location) {
+                if path.starts_with(clip_location) {
                     continue;
                 }
                 result.push(path.into_os_string().into_string().unwrap());
@@ -36,7 +36,7 @@ pub fn find_latest_videos(from: &PathBuf, clip_location: &PathBuf) -> Vec<String
     let mut metadata_cache: HashMap<String, fs::Metadata> = HashMap::new();
 
     result.sort_by(|a, b| {
-        let result = compare_file_dates(&a, &b, &mut metadata_cache);
+        let result = compare_file_dates(a, b, &mut metadata_cache);
         match result {
             Ok(ord) => ord,
             Err(e) => {println!("{}", e); Ordering::Less},
@@ -51,7 +51,7 @@ fn get_metadata<'a>(
 ) -> Result<&'a fs::Metadata, String> {
     let metadata = cache
         .entry(path.clone())
-        .or_insert_with(|| fs::metadata(&path).expect("Load file metadata"));
+        .or_insert_with(|| fs::metadata(path).expect("Load file metadata"));
     Ok(metadata)
 }
 
@@ -62,12 +62,12 @@ fn compare_file_dates<'a>(
 ) -> Result<Ordering, String> {
 
     let a_creation_date = {
-        let a_meta: &Metadata = get_metadata(&a, cache)?;
+        let a_meta: &Metadata = get_metadata(a, cache)?;
         a_meta.created().map_err(|_| "Unable to get create date")?
     };
 
     let b_creation_date = {
-        let b_meta: &Metadata = get_metadata(&b, cache)?;
+        let b_meta: &Metadata = get_metadata(b, cache)?;
         b_meta.created().map_err(|_| "Unable to get create date")?
     };
 

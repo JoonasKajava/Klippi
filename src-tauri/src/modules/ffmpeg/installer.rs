@@ -23,7 +23,7 @@ pub fn uncompress_with_new_name(archive: PathBuf, new_name: &str) -> Result<()> 
 
     let first_file = file_list.first().context("Unable to get first file from archive")?;
 
-    uncompress_archive(&mut source, &destination, Ownership::Preserve)?;
+    uncompress_archive(&mut source, destination, Ownership::Preserve)?;
 
     drop(source);
     fs::remove_file(&archive)?;
@@ -65,8 +65,8 @@ pub async fn install_ffmpeg(window: Window, install_location: &PathBuf) -> Resul
 
     }).context("Unable to emit").expect("Could not emit event");
 
-    let probe_version = get_version("ffprobe", &install_location);
-    let ffmpeg_version = get_version("ffmpeg", &install_location);
+    let probe_version = get_version("ffprobe", install_location);
+    let ffmpeg_version = get_version("ffmpeg", install_location);
 
     if probe_version.is_err() || ffmpeg_version.is_err() {
         bail!("Unable to verify installation")

@@ -28,7 +28,7 @@ pub struct Version {
 
 pub fn get_version(of: &str, ffmpeg_location: &PathBuf) -> Result<Version, VersionResultError> {
     #[cfg(target_os = "windows")]
-    let full_program = ffmpeg_location.join("bin").join(&of);
+    let full_program = ffmpeg_location.join("bin").join(of);
     #[cfg(target_os = "linux")]
     let full_program = of;
 
@@ -46,7 +46,7 @@ pub fn get_version(of: &str, ffmpeg_location: &PathBuf) -> Result<Version, Versi
 
     fn try_get(vec: &Vec<&str>, index: usize) -> Result<usize, VersionResultError> {
         let x = vec.get(index).ok_or(VersionResultError::ParseError)?;
-        Ok(x.parse::<usize>().map_err(|_| VersionResultError::ParseError)?)
+        x.parse::<usize>().map_err(|_| VersionResultError::ParseError)
     }
 
     let result = Version {

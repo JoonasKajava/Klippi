@@ -19,7 +19,7 @@ pub fn is_eligible_for_cleanup(path: impl AsRef<Path>) -> bool {
     }
 
     let now = std::time::SystemTime::now();
-    return match metadata.modified() {
+    match metadata.modified() {
         Ok(c) => now - Duration::from_secs(DAYS_TO_KEEP_THUMBNAILS * 24 * 60 * 60) > c,
         Err(_) => false,
     }
@@ -38,7 +38,7 @@ pub fn clean_thumbnails(thumbnails_path: impl AsRef<Path>) {
             Err(e) => 
             {
                 error!("Error reading thumbnail path: {}", e);
-                return None;
+                None
             }
         }
     }).filter(|x| x.is_some()).map(|x| x.unwrap().into_path()).collect::<Vec<PathBuf>>();

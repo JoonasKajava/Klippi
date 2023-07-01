@@ -29,7 +29,7 @@ impl DefaultValues for UserSettings {
 
 fn get_video_dir() -> PathBuf {
     match video_dir() {
-        Some(dir) => return dir,
-        None => return home_dir().expect("Unable to get home dir"),
+        Some(dir) => dir,
+        None => home_dir().expect("Unable to get home dir"),
     }
 }

@@ -32,7 +32,7 @@ pub async fn get_thumbnail(
         match fs::create_dir_all(&thumbnails_folder) {
             Ok(_) => {}
             Err(e) => {
-                let error = format!("Unable to create thumbnail folder: {}", e.to_string());
+                let error = format!("Unable to create thumbnail folder: {}", e);
                 error!("{}", error);
                 return Err(error);
             }
@@ -57,7 +57,7 @@ pub async fn get_thumbnail(
     let command = match create_thumbnail_command(of, &output_file_path, &window.config()) {
         Ok(command) => command,
         Err(e) => {
-            let error = format!("Unable to create thumbnail command: {}", e.to_string());
+            let error = format!("Unable to create thumbnail command: {}", e);
             error!("{}", error);
             return Err(error);
         }
@@ -101,5 +101,5 @@ pub async fn get_timeline_thumbnails(
         .await
         .unwrap();
 
-    return Ok(TimelineThumbnailsResult::Generating(folder_path));
+    Ok(TimelineThumbnailsResult::Generating(folder_path))
 }

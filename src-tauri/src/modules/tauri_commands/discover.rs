@@ -26,7 +26,7 @@ pub async fn discover_videos(
         .take(count)
     {
         let video_path = &PathBuf::from(&video);
-        let thumbnail = get_thumbnail(window.clone(), &video_path, &settings).await?;
+        let thumbnail = get_thumbnail(window.clone(), video_path, &settings).await?;
         videos.push(VideoData {
             thumbnail: thumbnail.to_string_lossy().into(),
             file: video,

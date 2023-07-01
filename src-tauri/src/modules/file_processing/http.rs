@@ -52,7 +52,7 @@ pub async fn download<F : Fn(DownloadProgress)>(
 
 
     println!("Downloading into {}", &parsed_target.display());
-    fs::create_dir_all(&parsed_target.parent().context("Unable to folder from filename")?)?;
+    fs::create_dir_all(parsed_target.parent().context("Unable to folder from filename")?)?;
 
     let client = Client::new();
 
@@ -76,7 +76,7 @@ pub async fn download<F : Fn(DownloadProgress)>(
     let temp_filename = &target_file.with_extension(format!("{}.{}", original_extension.to_string_lossy(), "temp"));
 
     println!("Creating temp file of {}", &target_file.display());
-    file = File::create(&temp_filename)?;
+    file = File::create(temp_filename)?;
 
     let start = Instant::now();
     println!("Starting download");
@@ -92,12 +92,12 @@ pub async fn download<F : Fn(DownloadProgress)>(
             progress: downloaded as f64 / total_size as f64,
             total_size,
             downloaded,
-            speed: downloaded as f64 / delta.as_secs_f64() as f64,
+            speed: downloaded as f64 / delta.as_secs_f64(),
         });
     }
 
     println!("Renaming {} to {}", &temp_filename.display(), &target_file.display());
-    fs::rename(&temp_filename, &target_file)?;
+    fs::rename(temp_filename, &target_file)?;
 
     Ok(target_file)
 }
