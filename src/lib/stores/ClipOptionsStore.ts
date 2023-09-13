@@ -1,82 +1,76 @@
 import type { OutputFormat } from '$lib/models/OutputFormat';
 import FileSize from '../utilities/FileSize';
-import { writable, derived } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 
-export const clip_name = writable("");
-export const max_file_size = writable(8);
+export const clipName = writable('');
+export const maxFileSize = writable(8);
 export const framerate = writable(24);
 export const speed = writable(1);
-export const mute_audio = writable(false);
+export const muteAudio = writable(false);
 
-export const user_bitrate = writable(1);
-export const bitrate_lock = writable(true);
+export const userBitrate = writable(1);
+export const bitrateLock = writable(true);
 
-export const audio_bitrate = writable(64);
+export const audioBitrate = writable(64);
 
 export const resolution = writable(720);
 
-export const clip_start = writable<number>(null);
-export const clip_end = writable<number>(null);
+export const clipStart = writable<number | null>(null);
+export const clipEnd = writable<number | null>(null);
 
-export const format = writable<OutputFormat>({name: "mp4", extension: "mp4", limitations:[], preset: "ultrafast"});
+export const format = writable<OutputFormat>({ name: 'mp4', extension: 'mp4', limitations: [], preset: 'ultrafast' });
 
-
-export const duration = derived([speed, clip_start, clip_end], ([$speed, $clip_start, $clip_end]) => Math.max(($clip_end - $clip_start) / $speed, 0));
+export const duration = derived([speed, clipStart, clipEnd], ([$speed, $clipStart, $clipEnd]) => {
+    if ($clipStart === null || $clipEnd === null) {
+        // TODO: get full duration of the video
+        return 0;
+    }
+    return Math.max(($clipEnd - $clipStart) / $speed, 0);
+});
 
 /// In kilobits
-export const calculated_audio_bitrate = derived([audio_bitrate, mute_audio], ([$audio_bitrate, $mute_audio]) => {
-    if ($mute_audio) return 0;
-    return $audio_bitrate;
-
+export const calculatedAudioBitrate = derived([audioBitrate, muteAudio], ([$audioBitrate, $muteAudio]) => {
+    if ($muteAudio) return 0;
+    return $audioBitrate;
 });
 /// In kilobits
-export const calculated_video_bitrate = derived([duration, max_file_size, calculated_audio_bitrate], ([$duration, $max_file_size, $calculated_audio_bitrate]) => {
+export const calculatedVideoBitrate = derived([duration, maxFileSize, calculatedAudioBitrate], ([$duration, $maxFileSize, $calculatedAudioBitrate]) => {
     if ($duration <= 0) return 0;
-    return (FileSize.fromMegaBytes($max_file_size).toKiloBits() / $duration) - $calculated_audio_bitrate
-
+    return (FileSize.fromMegaBytes($maxFileSize).toKiloBits() / $duration) - $calculatedAudioBitrate
 });
 
-
-
 /// In kilobits
-export const final_bitrate = derived([calculated_video_bitrate, user_bitrate, bitrate_lock], ([$calculated_video_bitrate, $user_bitrate, $bitrate_lock]) => {
-    return ($bitrate_lock ? $calculated_video_bitrate : $user_bitrate);
+export const finalBitrate = derived([calculatedVideoBitrate, userBitrate, bitrateLock], ([$calculatedVideoBitrate, $userBitrate, $bitrateLock]) => {
+    return ($bitrateLock ? $calculatedVideoBitrate : $userBitrate);
 })
 
-
-export const estimated_size = derived([final_bitrate, duration, calculated_audio_bitrate], ([$final_bitrate, $duration, $calculated_audio_bitrate]) => FileSize.fromKiloBits($final_bitrate + $calculated_audio_bitrate).bytes * $duration);
-
-
+export const estimatedSize = derived([finalBitrate, duration, calculatedAudioBitrate], ([$finalBitrate, $duration, $calculatedAudioBitrate]) => FileSize.fromKiloBits($finalBitrate + $calculatedAudioBitrate).bytes * $duration);
 
 export enum ValidationError {
-    InvalidDuration,
     InvalidFramerate,
     InvalidSpeed,
     InvalidVideoBitrate,
     InvalidClipName
 }
 
-export const validation_errors = derived(
+export const validationErrors = derived(
     [
-        clip_name,
-        duration,
+        clipName,
         framerate,
         speed,
-        final_bitrate
+        finalBitrate
     ],
     ([
-        clip_name,
-        duration,
-        framerate,
-        speed,
-        final_bitrate
-    ]) => {
-        let validation_errors: ValidationError[] = [];
-        if (!clip_name) validation_errors.push(ValidationError.InvalidClipName);
-        if (duration <= 0) validation_errors.push(ValidationError.InvalidDuration);
-        if (framerate <= 0) validation_errors.push(ValidationError.InvalidFramerate);
-        if (speed <= 0) validation_errors.push(ValidationError.InvalidSpeed);
-        if (!isFinite(final_bitrate) || final_bitrate <= 1) validation_errors.push(ValidationError.InvalidVideoBitrate);
-        return validation_errors;
+         clipName,
+         framerate,
+         speed,
+         finalBitrate
+     ]) => {
+        const validationErrors: ValidationError[] = [];
+        if (!clipName) validationErrors.push(ValidationError.InvalidClipName);
+        if (framerate <= 0) validationErrors.push(ValidationError.InvalidFramerate);
+        if (speed <= 0) validationErrors.push(ValidationError.InvalidSpeed);
+        if (!isFinite(finalBitrate) || finalBitrate <= 1) validationErrors.push(ValidationError.InvalidVideoBitrate);
+        return validationErrors;
     }
 )

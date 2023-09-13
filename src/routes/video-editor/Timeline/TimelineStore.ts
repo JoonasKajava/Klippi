@@ -1,8 +1,6 @@
-import { writable } from "svelte/store";
+import { writable } from 'svelte/store';
 
-
-
-function create_thumbnail_processes() {
+function createThumbnailProcesses() {
     const { update, subscribe } = writable<string[]>([]);
 
     return {
@@ -19,7 +17,8 @@ function create_thumbnail_processes() {
                 list.splice(index, 1);
                 return list;
             });
-        },
+        }
     }
 }
-export const thumbnail_processes = create_thumbnail_processes();
+
+export const thumbnailProcesses = createThumbnailProcesses();

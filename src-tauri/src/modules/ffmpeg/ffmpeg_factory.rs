@@ -1,10 +1,12 @@
+use std::{fs, path::PathBuf};
+
+use anyhow::Result;
+use tauri::Config;
+
 use super::{
     ffmpeg_builder::{FFmpegBuilder, File, Param},
     models::clip_creation_options::ClipCreationOptions,
 };
-use anyhow::Result;
-use tauri::Config;
-use std::{fs, path::PathBuf};
 
 pub fn create_timeline_thumbnails_command(from: &PathBuf, into: &PathBuf, config: &Config) -> Result<FFmpegBuilder> {
     let mut instance = FFmpegBuilder::new(config);
@@ -60,7 +62,7 @@ pub fn create_thumbnail_command(
 
 pub fn create_clip_command(
     options: &ClipCreationOptions,
-    config: &Config
+    config: &Config,
 ) -> Result<FFmpegBuilder> {
     let mut instance = FFmpegBuilder::new(config);
 
@@ -71,14 +73,18 @@ pub fn create_clip_command(
         framerate = options.framerate;
     }
 
+    let mut input_file_options = vec![Param::create_pair("hwaccel", "auto")];
+
+    if options.start.is_some() {
+        input_file_options.push(Param::create_pair("ss", options.start.unwrap().to_string()));
+    }
+    if options.end.is_some() {
+        input_file_options.push(Param::create_pair("to", options.end.unwrap().to_string()));
+    }
     instance
         .input(File {
             path: options.from.to_path_buf(),
-            options: vec![
-                Param::create_pair("ss", options.start.to_string()),
-                Param::create_pair("to", options.end.to_string()),
-                Param::create_pair("hwaccel", "auto"),
-            ],
+            options: input_file_options,
         })?
         .option(Param::Single("y".into()))
         .video_filter("scale", format!("-1:{}", options.resolution))

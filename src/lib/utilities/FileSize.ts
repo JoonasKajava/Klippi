@@ -1,6 +1,6 @@
+// noinspection JSUnusedGlobalSymbols
 
 export default class FileSize {
-
     bits: number = 0;
     bytes: number = 0;
 
@@ -15,85 +15,91 @@ export default class FileSize {
         this.bytes = bits / 8;
     }
 
-    static fromBits(bits: number) {
+    static fromBits(bits: number): FileSize {
         return new FileSize(bits);
     }
 
-    static fromBytes(bytes: number) {
+    static fromBytes(bytes: number): FileSize {
         return new FileSize(Math.ceil(bytes * 8));
     }
 
-    static fromKiloBytes(value: number) {
+    static fromKiloBytes(value: number): FileSize {
         return this.fromBytes(value * this.bytesInKiloByte);
     }
 
-    static fromMegaBytes(value: number) {
+    static fromMegaBytes(value: number): FileSize {
         return this.fromBytes(value * this.bytesInMegaByte);
     }
 
-    static fromGigaBytes(value: number) {
+    static fromGigaBytes(value: number): FileSize {
         return this.fromBytes(value * this.bytesInGigaByte);
     }
 
-    static fromTeraBytes(value: number) {
+    static fromTeraBytes(value: number): FileSize {
         return this.fromBytes(value * this.bytesInTeraByte);
     }
 
-    static fromPetaBytes(value: number) {
+    static fromPetaBytes(value: number): FileSize {
         return this.fromBytes(value * this.bytesInPetaByte);
     }
 
-    static fromKiloBits(value: number) {
+    static fromKiloBits(value: number): FileSize {
         return this.fromBits(value * this.bytesInKiloByte);
     }
 
-    static fromMegaBits(value: number) {
+    static fromMegaBits(value: number): FileSize {
         return this.fromBits(value * this.bytesInMegaByte);
     }
 
-    static fromGigaBits(value: number) {
+    static fromGigaBits(value: number): FileSize {
         return this.fromBits(value * this.bytesInGigaByte);
     }
 
-    static fromTeraBits(value: number) {
+    static fromTeraBits(value: number): FileSize {
         return this.fromBits(value * this.bytesInTeraByte);
     }
 
-    static fromPetaBits(value: number) {
+    static fromPetaBits(value: number): FileSize {
         return this.fromBits(value * this.bytesInPetaByte);
     }
 
-    toKiloBytes() : number {
+    toKiloBytes(): number {
         return this.bytes / FileSize.bytesInKiloByte;
     }
-    toMegaBytes() : number {
+
+    toMegaBytes(): number {
         return this.bytes / FileSize.bytesInMegaByte;
     }
-    toGigaBytes() : number {
+
+    toGigaBytes(): number {
         return this.bytes / FileSize.bytesInGigaByte;
     }
-    toTeraBytes() : number {
+
+    toTeraBytes(): number {
         return this.bytes / FileSize.bytesInTeraByte;
     }
-    toPetaBytes() : number {
+
+    toPetaBytes(): number {
         return this.bytes / FileSize.bytesInPetaByte;
     }
 
-
-    toKiloBits() : number {
+    toKiloBits(): number {
         return this.bits / FileSize.bytesInKiloByte;
     }
-    toMegaBits() : number {
+
+    toMegaBits(): number {
         return this.bits / FileSize.bytesInMegaByte;
     }
-    toGigaBits() : number {
+
+    toGigaBits(): number {
         return this.bits / FileSize.bytesInGigaByte;
     }
-    toTeraBits() : number {
+
+    toTeraBits(): number {
         return this.bits / FileSize.bytesInTeraByte;
     }
-    toPetaBits() : number {
+
+    toPetaBits(): number {
         return this.bits / FileSize.bytesInPetaByte;
     }
-    
 }

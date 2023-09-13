@@ -1,22 +1,16 @@
 <script lang="ts">
-    import {
-        validation_errors,
-        duration,
-        estimated_size,
-        ValidationError,
-        format,
-    } from "$lib/stores/ClipOptionsStore";
-    import prettyBytes from "pretty-bytes";
+    import { duration, estimatedSize, format } from '$lib/stores/ClipOptionsStore';
+    import prettyBytes from 'pretty-bytes';
 
-    $: no_bitrate = $format.limitations.includes("NoBitrate");
+    $: no_bitrate = $format.limitations.includes('NoBitrate');
 
     $: estimated_size_display = () => {
         if (no_bitrate) {
-            return "N/A";
+            return 'N/A';
         }
         return prettyBytes(
-            isFinite($estimated_size) && $estimated_size > 0
-                ? $estimated_size
+            isFinite($estimatedSize) && $estimatedSize > 0
+                ? $estimatedSize
                 : 0
         );
     };
@@ -26,10 +20,7 @@
     <div class="stat">
         <div class="stat-title">Clip Duration:</div>
         <div
-            class:text-error={$validation_errors.includes(
-                ValidationError.InvalidDuration
-            )}
-            class="stat-value"
+                class="stat-value"
         >
             {$duration.toFixed(1)}s
         </div>

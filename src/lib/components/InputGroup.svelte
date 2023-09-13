@@ -1,6 +1,6 @@
 <script lang="ts">
-    export let label = null;
-    export let altLabelLeft = null;
+    export let label: string | null = null;
+    export let altLabelLeft: string | null = null;
 
 </script>
 

@@ -1,251 +1,266 @@
 <script lang="ts">
-    import { convertFileSrc } from "@tauri-apps/api/tauri";
-    import { fly } from "svelte/transition";
-    import VolumeController from "./VolumeController.svelte";
-    import { appWindow } from "@tauri-apps/api/window";
-    import Timeline from "../Timeline/Timeline.svelte";
-    import { duration, clip_end, clip_start, speed } from "$lib/stores/ClipOptionsStore";
+    import { convertFileSrc } from '@tauri-apps/api/tauri';
+    import { fly } from 'svelte/transition';
+    import VolumeController from './VolumeController.svelte';
+    import { appWindow } from '@tauri-apps/api/window';
+    import Timeline from '../Timeline/Timeline.svelte';
+    import { clipEnd, clipStart, duration, speed } from '$lib/stores/ClipOptionsStore';
 
     export let video: string;
     let timeline: Timeline;
-    let video_player: HTMLVideoElement;
-    let is_playing: boolean;
-    let video_fullscreen = false;
-    let display_controls = false;
-    let loop_clip = false;
+    let videoPlayer: HTMLVideoElement;
+    let isPlaying: boolean;
+    let videoFullscreen = false;
+    let displayControls = false;
+    let loopClip = false;
 
-    let video_duration: number;
-    let current_time: number = 0;
+    let videoDuration: number;
+    let currentTime: number = 0;
     let volume = 0.5;
 
-    let timeline_height: number;
-    let window_height: number;
+    let timelineHeight: number;
+    let windowHeight: number;
 
     const FRAME_RATE = 60;
 
-    function move_one_frame(direction: -1 | 1) {
-        video_player.pause();
-        video_player.currentTime += direction / FRAME_RATE;
+    function moveOneFrame(direction: -1 | 1): void {
+        videoPlayer.pause();
+        videoPlayer.currentTime += direction / FRAME_RATE;
     }
 
-    function toggle_play() {
-        video_player.paused ? video_player.play() : video_player.pause();
-        is_playing = !video_player.paused;
+    function togglePlay(): void {
+        if (videoPlayer.paused) {
+            videoPlayer.play().catch((e) => {
+                console.error(e);
+            });
+        } else {
+            videoPlayer.pause()
+        }
+        isPlaying = !videoPlayer.paused;
     }
 
-    function timeupdate() {
-        if (loop_clip && $duration > 0) {
+    function timeupdate(): void {
+        if (loopClip && $duration > 0 && $clipEnd && $clipStart) {
             if (
-                video_player.currentTime > $clip_end ||
-                video_player.currentTime < $clip_start - 1
+                videoPlayer.currentTime > $clipEnd ||
+                videoPlayer.currentTime < $clipStart - 1
             ) {
-                video_player.currentTime = $clip_start;
+                videoPlayer.currentTime = $clipStart;
             }
         }
 
-        current_time = video_player.currentTime;
+        currentTime = videoPlayer.currentTime;
     }
 
-    function pretty_seconds(sec: number) {
+    function prettySeconds(sec: number): string {
         return `${Math.floor(sec / 60)}:${(sec % 60)
             .toFixed(0)
-            .padStart(2, "0")}`;
+            .padStart(2, '0')}`;
     }
 
-    async function toggle_fullscreen() {
+    function toggleFullscreen(): void {
         appWindow.isFullscreen().then((value) => {
-            appWindow.setFullscreen(!value);
-            video_fullscreen = !value;
+            appWindow.setFullscreen(!value).catch((e) => {
+                console.error(e);
+            });
+            videoFullscreen = !value;
+        }).catch((e) => {
+            console.error(e);
         });
     }
 
-    $: if (video_player) {
-        video_player.volume = volume;
-        video_player.playbackRate = $speed;
+    $: if (videoPlayer) {
+        videoPlayer.volume = volume;
+        videoPlayer.playbackRate = $speed;
     }
 
-    function exit_fullscreen() {
+    function exitFullscreen(): void {
         appWindow.isFullscreen().then((value) => {
-            if (value) toggle_fullscreen();
+            if (value) toggleFullscreen();
+        }).catch((e) => {
+            console.error(e);
         });
     }
 
-    function set_clip_start() {
-        $clip_start = video_player.currentTime;
+    function setClipStart(): void {
+        $clipStart = videoPlayer.currentTime;
         timeline.update_clip_marker();
     }
 
-    function set_clip_end() {
-        $clip_end = video_player.currentTime;
+    function setClipEnd(): void {
+        $clipEnd = videoPlayer.currentTime;
         timeline.update_clip_marker();
     }
 
-    function keyboard_navigation(
-        e: KeyboardEvent & { currentTarget: EventTarget & Window, target: HTMLElement }
-    ) {
-        console.log(e);
-        if(e.target.nodeName.toLowerCase() === 'input') return;
+    function keyboardNavigation(
+        e: KeyboardEvent & { currentTarget: EventTarget & Window }
+    ): void {
+        const targetAsElement = e.target as Element;
+        if (targetAsElement && targetAsElement.nodeName.toLowerCase() === 'input') return;
         switch (e.code) {
-            case "ArrowLeft":
-                move_one_frame(-1);
+            case 'ArrowLeft':
+                moveOneFrame(-1);
                 break;
-            case "ArrowRight":
-                move_one_frame(1);
+            case 'ArrowRight':
+                moveOneFrame(1);
                 break;
-            case "ArrowUp":
-                set_clip_start();
+            case 'ArrowUp':
+                setClipStart();
                 break;
-            case "ArrowDown":
-                set_clip_end();   
+            case 'ArrowDown':
+                setClipEnd();
                 break;
-            case "Space":
+            case 'Space':
                 timeline.center();
                 break;
         }
     }
 
-    function update_video_max_Height() {
-        video_player.style.maxHeight = `${
-            window_height -
-            timeline_height -
-            document.getElementById("titlebar").clientHeight -
+    function updateVideoMaxHeight(): void {
+        const titleBar = document.getElementById('titlebar');
+        if (!titleBar) return;
+        videoPlayer.style.maxHeight = `${
+            windowHeight -
+            timelineHeight -
+            titleBar.clientHeight -
             20
         }px`;
     }
 </script>
 
 <svelte:window
-    on:resize={update_video_max_Height}
-    on:keyup={exit_fullscreen}
-    on:keydown={keyboard_navigation}
+        on:resize={updateVideoMaxHeight}
+        on:keyup={exitFullscreen}
+        on:keydown={keyboardNavigation}
 />
 
 <div
-    class:fullscreen={video_fullscreen}
-    on:mouseenter={() => (display_controls = true)}
-    on:mouseleave={() => (display_controls = false)}
-    class="relative inline-flex flex-col video-player transition-all z-50"
+        class:fullscreen={videoFullscreen}
+        on:mouseenter={() => (displayControls = true)}
+        on:mouseleave={() => (displayControls = false)}
+        class="relative inline-flex flex-col video-player transition-all z-50"
 >
     <!-- svelte-ignore a11y-media-has-caption -->
     <video
-        on:click={toggle_play}
-        on:timeupdate={timeupdate}
-        on:durationchange={(d) => (video_duration = video_player.duration)}
-        bind:this={video_player}
+            on:click={togglePlay}
+            on:timeupdate={timeupdate}
+            on:durationchange={() => (videoDuration = videoPlayer.duration)}
+            bind:this={videoPlayer}
     >
-        <source src={convertFileSrc(video)} />
+        <source src={convertFileSrc(video)}/>
     </video>
-    {#if display_controls}
+    {#if displayControls}
         <div
-            transition:fly={{ y: 5, duration: 200 }}
-            class="absolute inset-0 controls transition-all flex flex-col"
+                transition:fly={{ y: 5, duration: 200 }}
+                class="absolute inset-0 controls transition-all flex flex-col"
         >
             <div
-                class="grow"
-                on:click={toggle_play}
-                on:keypress={toggle_play}
+                    class="grow"
+                    on:click={togglePlay}
+                    on:keypress={togglePlay}
             />
 
             <div
-                class=" self-end p-2 w-full bg-gradient-to-t from-black from-20% to-transparent text-white"
+                    class=" self-end p-2 w-full bg-gradient-to-t from-black from-20% to-transparent text-white"
             >
                 <div class="flex justify-between">
                     <div class="flex items-center gap-4">
                         <button
-                            on:click={toggle_play}
-                            class="btn btn-circle btn-sm"
+                                on:click={togglePlay}
+                                class="btn btn-circle btn-sm"
                         >
-                        <i class="fas fa-pause" class:fa-pause={is_playing} class:fa-play={!is_playing}></i>
+                            <i class="fas fa-pause" class:fa-pause={isPlaying} class:fa-play={!isPlaying}></i>
                         </button>
                         <span
-                            >{pretty_seconds(current_time)} / {pretty_seconds(
-                                video_duration
-                            )}</span
+                        >{prettySeconds(currentTime)} / {prettySeconds(
+                            videoDuration
+                        )}</span
                         >
                     </div>
 
                     <div>
-                        <VolumeController bind:value={volume} />
+                        <VolumeController bind:value={volume}/>
                         <button
-                            on:click={() => (loop_clip = !loop_clip)}
-                            class="btn btn-circle btn-sm"
-                            class:spin={loop_clip}
+                                on:click={() => (loopClip = !loopClip)}
+                                class="btn btn-circle btn-sm"
+                                class:spin={loopClip}
                         >
                             <i class="fa-solid fa-arrow-rotate-left"></i>
                         </button>
 
                         <button
-                            on:click={toggle_fullscreen}
-                            class="btn btn-circle btn-sm"
+                                on:click={toggleFullscreen}
+                                class="btn btn-circle btn-sm"
                         >
-                        <i class="fas fa-expand" class:fa-expand={!video_fullscreen} class:fa-compress={video_fullscreen}></i>
+                            <i class="fas fa-expand" class:fa-expand={!videoFullscreen}
+                               class:fa-compress={videoFullscreen}></i>
                         </button>
                     </div>
                 </div>
 
                 <input
-                    type="range"
-                    min="0"
-                    on:input={(e) =>
-                        (video_player.currentTime =
+                        type="range"
+                        min="0"
+                        on:input={(e) =>
+                        (videoPlayer.currentTime =
                             e.currentTarget.valueAsNumber)}
-                    bind:value={current_time}
-                    max={video_duration}
-                    class="range w-full range-xs"
+                        bind:value={currentTime}
+                        max={videoDuration}
+                        class="range w-full range-xs"
                 />
             </div>
         </div>
     {/if}
 </div>
-<div bind:clientHeight={timeline_height}>
+<div bind:clientHeight={timelineHeight}>
     <div class="flex justify-between mx-3 my-2">
-        <button on:click={() => move_one_frame(-1)} class="text-sm">
+        <button on:click={() => { moveOneFrame(-1); }} class="text-sm">
             <kbd class="kbd kbd-sm">◀︎</kbd> Previous frame
         </button>
-        <button on:click={set_clip_start} class="text-sm">
+        <button on:click={setClipStart} class="text-sm">
             Set clip start <kbd class="kbd kbd-sm">▲</kbd>
         </button>
         <button on:click={timeline.center} class="text-sm">
             Center Timeline <kbd class="kbd kbd-sm">Space</kbd>
         </button>
-        <button on:click={set_clip_end} class="text-sm"
-            >Set clip end<kbd class="kbd kbd-sm">▼</kbd>
+        <button on:click={setClipEnd} class="text-sm"
+        >Set clip end<kbd class="kbd kbd-sm">▼</kbd>
         </button>
-        <button on:click={() => move_one_frame(1)} class="text-sm">
+        <button on:click={() => { moveOneFrame(1); }} class="text-sm">
             Next frame <kbd class="kbd kbd-sm">▶︎</kbd>
         </button>
     </div>
-    {#key video_duration}
+    {#key videoDuration}
         <Timeline
-            bind:this={timeline}
-            onUpdate={(e) => (video_player.currentTime = e)}
-            video_current_time={current_time}
-            seconds={video_duration}
+                bind:this={timeline}
+                onUpdate={(e) => (videoPlayer.currentTime = e)}
+                videoCurrentTime={currentTime}
+                seconds={videoDuration}
         />
     {/key}
 </div>
 
 <style lang="scss">
-    .video-player * {
-        user-select: none;
-    }
+  .video-player * {
+    user-select: none;
+  }
 
-    .fullscreen {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-    }
+  .fullscreen {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+  }
 
-    .spin {
-        animation: spin 2s linear infinite;
-    }
+  .spin {
+    animation: spin 2s linear infinite;
+  }
 
-    @keyframes spin {
-        from {
-            transform: rotate(0deg);
-        }
-        to {
-            transform: rotate(-360deg);
-        }
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
     }
+    to {
+      transform: rotate(-360deg);
+    }
+  }
 </style>

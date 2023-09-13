@@ -1,7 +1,11 @@
 <script lang="ts">
-    import Step from "./Step.svelte";
+    import Step from './Step.svelte';
+    import type { FlyParams } from 'svelte/transition';
 
-    export let transitions;
+    export let transitions: {
+        in: FlyParams
+        out: FlyParams
+    };
 </script>
 
 <Step transitions={transitions}>

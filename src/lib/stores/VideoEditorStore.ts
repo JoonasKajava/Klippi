@@ -1,3 +1,3 @@
-import { writable } from 'svelte/store';
+import { type Writable, writable } from 'svelte/store';
 
-export const selected_video = writable("");
+export const selectedVideo: Writable<string | null> = writable(null);
