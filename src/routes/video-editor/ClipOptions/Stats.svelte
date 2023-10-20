@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { duration, estimatedSize, format } from '$lib/stores/ClipOptionsStore';
+    import {duration, estimatedSize, format} from '$lib/stores/ClipOptionsStore';
     import prettyBytes from 'pretty-bytes';
 
     $: no_bitrate = $format.limitations.includes('NoBitrate');
@@ -22,7 +22,7 @@
         <div
                 class="stat-value"
         >
-            {$duration.toFixed(1)}s
+            {$duration?.toFixed(1) ?? 0}s
         </div>
         <div class="stat-desc">Seconds</div>
     </div>

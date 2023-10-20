@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { convertFileSrc } from '@tauri-apps/api/tauri';
-    import { fly } from 'svelte/transition';
+    import {convertFileSrc} from '@tauri-apps/api/tauri';
+    import {fly} from 'svelte/transition';
     import VolumeController from './VolumeController.svelte';
-    import { appWindow } from '@tauri-apps/api/window';
+    import {appWindow} from '@tauri-apps/api/window';
     import Timeline from '../Timeline/Timeline.svelte';
-    import { clipEnd, clipStart, duration, speed } from '$lib/stores/ClipOptionsStore';
+    import {clipEnd, clipStart, duration, speed} from '$lib/stores/ClipOptionsStore';
+    import {videoDuration} from '$lib/stores/VideoEditorStore';
 
     export let video: string;
     let timeline: Timeline;
@@ -14,7 +15,6 @@
     let displayControls = false;
     let loopClip = false;
 
-    let videoDuration: number;
     let currentTime: number = 0;
     let volume = 0.5;
 
@@ -144,7 +144,7 @@
     <video
             on:click={togglePlay}
             on:timeupdate={timeupdate}
-            on:durationchange={() => (videoDuration = videoPlayer.duration)}
+            on:durationchange={() => ($videoDuration = videoPlayer.duration)}
             bind:this={videoPlayer}
     >
         <source src={convertFileSrc(video)}/>
@@ -173,7 +173,7 @@
                         </button>
                         <span
                         >{prettySeconds(currentTime)} / {prettySeconds(
-                            videoDuration
+                            $videoDuration
                         )}</span
                         >
                     </div>
@@ -205,7 +205,7 @@
                         (videoPlayer.currentTime =
                             e.currentTarget.valueAsNumber)}
                         bind:value={currentTime}
-                        max={videoDuration}
+                        max={$videoDuration}
                         class="range w-full range-xs"
                 />
             </div>
@@ -230,12 +230,12 @@
             Next frame <kbd class="kbd kbd-sm">▶︎</kbd>
         </button>
     </div>
-    {#key videoDuration}
+    {#key $videoDuration}
         <Timeline
                 bind:this={timeline}
                 onUpdate={(e) => (videoPlayer.currentTime = e)}
                 videoCurrentTime={currentTime}
-                seconds={videoDuration}
+                seconds={$videoDuration}
         />
     {/key}
 </div>

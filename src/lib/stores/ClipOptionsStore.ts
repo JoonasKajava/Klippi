@@ -1,6 +1,7 @@
-import type { OutputFormat } from '$lib/models/OutputFormat';
+import type {OutputFormat} from '$lib/models/OutputFormat';
 import FileSize from '../utilities/FileSize';
-import { derived, writable } from 'svelte/store';
+import {derived, writable} from 'svelte/store';
+import {videoDuration} from '$lib/stores/VideoEditorStore';
 
 export const clipName = writable('');
 export const maxFileSize = writable(8);
@@ -20,10 +21,9 @@ export const clipEnd = writable<number | null>(null);
 
 export const format = writable<OutputFormat>({ name: 'mp4', extension: 'mp4', limitations: [], preset: 'ultrafast' });
 
-export const duration = derived([speed, clipStart, clipEnd], ([$speed, $clipStart, $clipEnd]) => {
+export const duration = derived([speed, clipStart, clipEnd, videoDuration], ([$speed, $clipStart, $clipEnd, $videoDuration]) => {
     if ($clipStart === null || $clipEnd === null) {
-        // TODO: get full duration of the video
-        return 0;
+        return $videoDuration
     }
     return Math.max(($clipEnd - $clipStart) / $speed, 0);
 });
@@ -35,7 +35,7 @@ export const calculatedAudioBitrate = derived([audioBitrate, muteAudio], ([$audi
 });
 /// In kilobits
 export const calculatedVideoBitrate = derived([duration, maxFileSize, calculatedAudioBitrate], ([$duration, $maxFileSize, $calculatedAudioBitrate]) => {
-    if ($duration <= 0) return 0;
+    if (!$duration || $duration <= 0) return 0;
     return (FileSize.fromMegaBytes($maxFileSize).toKiloBits() / $duration) - $calculatedAudioBitrate
 });
 
@@ -44,7 +44,10 @@ export const finalBitrate = derived([calculatedVideoBitrate, userBitrate, bitrat
     return ($bitrateLock ? $calculatedVideoBitrate : $userBitrate);
 })
 
-export const estimatedSize = derived([finalBitrate, duration, calculatedAudioBitrate], ([$finalBitrate, $duration, $calculatedAudioBitrate]) => FileSize.fromKiloBits($finalBitrate + $calculatedAudioBitrate).bytes * $duration);
+export const estimatedSize = derived([finalBitrate, duration, calculatedAudioBitrate], ([$finalBitrate, $duration, $calculatedAudioBitrate]) => {
+    if (!$duration) return 0;
+    return FileSize.fromKiloBits($finalBitrate + $calculatedAudioBitrate).bytes * $duration
+});
 
 export enum ValidationError {
     InvalidFramerate,
