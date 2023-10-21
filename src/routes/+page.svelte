@@ -11,7 +11,7 @@
     import { getMatches } from '@tauri-apps/api/cli';
 
     import { dependenciesHasBeenVerified, missingDependencies } from '$lib/stores/InstallerStore';
-    import { clipEnd, clipStart } from "$lib/stores/ClipOptionsStore";
+    import { clipEnd, clipStart } from '$lib/stores/ClipOptionsStore';
 
     (async () => {
         if ($dependenciesHasBeenVerified) return;
@@ -20,6 +20,7 @@
         if (result.length > 0) {
             await goto('/installer');
         } else {
+            console.log('Dependencies have been verified');
             dependenciesHasBeenVerified.set(true);
         }
     })().catch((err) => {
@@ -28,7 +29,8 @@
 
     $: if ($dependenciesHasBeenVerified) {
         getMatches().then((matches) => {
-            if (matches.args.source.value !== null && $selectedVideo === null) {
+            console.dir(matches);
+            if (!!matches.args.source.value && !$selectedVideo) {
                 selectVideo(matches.args.source.value as string);
             }
         }).catch(() => {

@@ -26,7 +26,7 @@
                 Video Selector
             </TitleBarLink>
             <TitleBarLink
-                    disabled={$selectedVideo === null || $selectedVideo.length === 0 || !$dependenciesHasBeenVerified}
+                    disabled={!$selectedVideo || $selectedVideo.length === 0 || !$dependenciesHasBeenVerified}
                     href="/video-editor"><i class="fa-solid fa-clapperboard"></i> Editor
             </TitleBarLink>
         </div>
