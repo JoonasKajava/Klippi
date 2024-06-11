@@ -8,7 +8,7 @@
   packages = with pkgs; [libarchive openssl libsoup cairo gdk-pixbuf pango atkmm gtk3 webkitgtk];
 
   scripts.bump.exec = ''
-    cz bump --changelog --changelog-to-stdout > CURRENT_CHANGELOG.md
+    cz bump --changelog --changelog-to-stdout > CURRENT_CHANGELOG.md;
   '';
 
   languages.rust.enable = true;
