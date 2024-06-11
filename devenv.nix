@@ -5,12 +5,11 @@
   inputs,
   ...
 }: {
-  packages = with pkgs; [pyright libarchive openssl libsoup cairo gdk-pixbuf pango atkmm gtk3 webkitgtk];
+  packages = with pkgs; [libarchive openssl libsoup cairo gdk-pixbuf pango atkmm gtk3 webkitgtk];
 
-  languages.python = {
-    enable = true;
-    venv.enable = true;
-  };
+  scripts.bump.exec = ''
+    cz bump --changelog --changelog-to-stdout > CURRENT_CHANGELOG.md
+  '';
 
   languages.rust.enable = true;
   languages.javascript = {
