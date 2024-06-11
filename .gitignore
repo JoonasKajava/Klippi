@@ -36,3 +36,12 @@ dist-ssr
 .output
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
