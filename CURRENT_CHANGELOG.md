@@ -8,3 +8,6 @@
 
 - **env**: removed python
 
+[master 94f09e0] bump: version 1.0.14 → 1.0.15
+ 4 files changed, 22 insertions(+), 2 deletions(-)
+
