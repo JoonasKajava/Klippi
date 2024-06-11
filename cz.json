@@ -3,7 +3,12 @@
     "name": "cz_conventional_commits",
     "tag_format": "v$version",
     "version_scheme": "semver2",
-    "version": "1.0.12",
-    "update_changelog_on_bump": true
+    "update_changelog_on_bump": true,
+    "version": "1.0.14",
+    "version_files": [
+      "./package.json:version",
+      "./src-tauri/tauri.conf.json:version",
+      "./src-tauri/Cargo.toml:version"
+    ]
   }
 }
