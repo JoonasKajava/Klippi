@@ -492,18 +492,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "compress-tools"
-version = "0.14.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "521f83287bb884804de26b80fcf5fe11718e5e2e74c24877c5a6f52c307a1c38"
-dependencies = [
- "derive_more",
- "libc",
- "pkg-config",
- "vcpkg",
-]
-
-[[package]]
 name = "concurrent-queue"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1776,7 +1764,6 @@ name = "klippi"
 version = "1.1.0"
 dependencies = [
  "anyhow",
- "compress-tools",
  "fern",
  "filetime_creation",
  "futures-util",
