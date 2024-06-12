@@ -17,6 +17,9 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           changelog_increment_filename: body.md
+      - name: Read changelog
+        run: |
+          echo "changelog=$(cat body.md)" >> $GITHUB_ENV
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -48,6 +51,6 @@ jobs:
         with:
           tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
           releaseName: 'Klippi v__VERSION__'
-          releaseBody: ${{cat body.md}}
+          releaseBody: ${{ env.changelog }}
           releaseDraft: false
           prerelease: false
