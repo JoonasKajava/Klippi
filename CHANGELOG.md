@@ -1,3 +1,9 @@
+## v1.1.0 (2024-06-12)
+
+### Feat
+
+- **CI**: added bump github action to trigger new release
+
 ## v1.0.15 (2024-06-11)
 
 ### Fix
