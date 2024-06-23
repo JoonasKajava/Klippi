@@ -14,6 +14,7 @@ pub struct GstreamerBuilder {
     pub input_file: Option<PathBuf>,
 }
 
+// Doc: https://github.com/sdroege/gstreamer-rs/blob/main/examples/src/bin/thumbnail.rs
 impl GstreamerBuilder {
     pub fn set_input(&mut self, input: impl Into<PathBuf>) {
         // TODO: Check that the file exists?
