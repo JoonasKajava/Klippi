@@ -19,6 +19,7 @@ serde = { version = "1.0", features = ["derive", "rc"] }
 wax = "0.6.0"
 lazy_static = "1.4.0"
 anyhow = "1.0.71"
+thiserror = "1.0.61"
 reqwest = {version = "0.11.18", features = ["stream"] }
 futures-util = "0.3.28"
 md5 = "0.7.0"
