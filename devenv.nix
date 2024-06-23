@@ -16,6 +16,9 @@
       gtk3
       webkitgtk
     ]
+    ++ (with pkgs.nodePackages_latest; [
+      typescript-language-server
+    ])
     ++ (with pkgs.gst_all_1; [
       gst-libav
       gst-plugins-bad

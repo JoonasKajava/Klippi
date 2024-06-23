@@ -3,11 +3,11 @@
     "devenv": {
       "locked": {
         "dir": "src/modules",
-        "lastModified": 1718120801,
+        "lastModified": 1719155972,
         "owner": "cachix",
         "repo": "devenv",
-        "rev": "a04f29f6412e5829ee7774c672233f3ef17771bc",
-        "treeHash": "c75398c2d196caa306b583e44b37f735a455237e",
+        "rev": "52b3a67a2da7fbea30ee547d97d598f2f1ac83c4",
+        "treeHash": "73b342056d61bf331ad859c64e416396609fa610",
         "type": "github"
       },
       "original": {
@@ -72,11 +72,11 @@
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1718060059,
+        "lastModified": 1718811006,
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "a3c8d64ba846725f040582b2d3b875466d2115bd",
-        "treeHash": "4378720d991b2af92b2e078b80bff5ec363a11c5",
+        "rev": "03d771e513ce90147b65fe922d87d3a0356fc125",
+        "treeHash": "ab837eb82b2b0afbb6568f2b27f214324699af3d",
         "type": "github"
       },
       "original": {
@@ -96,11 +96,11 @@
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
-        "lastModified": 1717664902,
+        "lastModified": 1718879355,
         "owner": "cachix",
         "repo": "pre-commit-hooks.nix",
-        "rev": "cc4d466cb1254af050ff7bdf47f6d404a7c646d1",
-        "treeHash": "def977583217aad11744d144c1f7fc216ce450bf",
+        "rev": "8cd35b9496d21a6c55164d8547d9d5280162b07a",
+        "treeHash": "246f2197feb48979ccc58af4cab0cfd0f5738645",
         "type": "github"
       },
       "original": {
