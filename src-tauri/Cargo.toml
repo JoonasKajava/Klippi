@@ -11,24 +11,25 @@ edition = "2021"
 
 
 [build-dependencies]
-tauri-build = { version = "1.5.0", features = [] }
+tauri-build = { version = "1.5.2", features = [] }
 
 [dependencies]
-tauri = { version = "1.5.2", features = ["cli", "dialog-all", "notification", "path-all", "protocol-all", "shell-open", "updater", "window-close", "window-hide", "window-maximize", "window-minimize", "window-request-user-attention", "window-set-fullscreen", "window-set-title", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize"] }
+tauri = { version = "1.6.8", features = ["cli", "dialog-all", "notification", "path-all", "protocol-all", "shell-open", "updater", "window-close", "window-hide", "window-maximize", "window-minimize", "window-request-user-attention", "window-set-fullscreen", "window-set-title", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize"] }
 serde = { version = "1.0", features = ["derive", "rc"] }
 wax = "0.6.0"
-lazy_static = "1.4.0"
-anyhow = "1.0.71"
+lazy_static = "1.5.0"
+anyhow = "1.0.86"
 thiserror = "1.0.61"
-reqwest = {version = "0.11.18", features = ["stream"] }
-futures-util = "0.3.28"
+reqwest = {version = "0.12.5", features = ["stream"] }
+futures-util = "0.3.30"
 md5 = "0.7.0"
-ts-rs = "7.0.0"
+ts-rs = "9.0.0"
 fern = "0.6.2"
 humantime = "2.1.0"
-log = "0.4.19"
-toml = "0.8.2"
-gstreamer = { version = "0.22.5", features = ["serde"] }
+log = "0.4.21"
+toml = "0.8.14"
+gstreamer = { version = "0.22.6", features = ["serde"] }
+gstreamer-app = "0.22.6"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
@@ -36,5 +37,5 @@ gstreamer = { version = "0.22.5", features = ["serde"] }
 custom-protocol = ["tauri/custom-protocol"]
 
 [dev-dependencies]
-filetime_creation = "0.1.5"
-tempfile = "3.6.0"
+filetime_creation = "0.2.0"
+tempfile = "3.10.1"
