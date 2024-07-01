@@ -1,0 +1,1 @@
+mod gstreamer_thumbnail_creation_strategy;

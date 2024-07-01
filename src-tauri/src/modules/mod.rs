@@ -6,4 +6,4 @@ pub mod file_processing;
 pub mod gstreamer;
 pub mod tauri_commands;
 pub mod utils;
-
+pub mod video_processing;
