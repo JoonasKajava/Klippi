@@ -2,7 +2,7 @@
     import { fly } from 'svelte/transition';
     import TitleBar from './TitleBar.svelte';
     import Update from '$lib/components/Update.svelte';
-    import { checkUpdate, type UpdateManifest } from '@tauri-apps/api/updater';
+    import { checkUpdate, type UpdateManifest } from '@tauri-apps/plugin-updater';
 
     export let data;
 

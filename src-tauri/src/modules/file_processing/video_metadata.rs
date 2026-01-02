@@ -1,8 +1,8 @@
 use std::{
     cmp::Ordering,
     collections::HashMap,
-    fs::{Metadata, self},
-    path::{PathBuf},
+    fs::{self, Metadata},
+    path::PathBuf,
 };
 
 use log::info;
@@ -10,17 +10,14 @@ use wax::Glob;
 
 use crate::modules::config::constants::SUPPORTED_VIDEO_EXTENSIONS;
 
-
-
 pub fn find_latest_videos(from: &PathBuf, clip_location: &PathBuf) -> Vec<String> {
-
     let file_matcher = format!("**/*.{{{}}}", SUPPORTED_VIDEO_EXTENSIONS.join(","));
     info!("Searching for videos in: {}", file_matcher);
 
     let glob = Glob::new(&file_matcher).unwrap();
 
     let mut result: Vec<String> = Vec::new();
-    for entry in glob.walk(from){
+    for entry in glob.walk(from) {
         match entry {
             Ok(path) => {
                 let path = path.into_path();
@@ -39,7 +36,10 @@ pub fn find_latest_videos(from: &PathBuf, clip_location: &PathBuf) -> Vec<String
         let result = compare_file_dates(a, b, &mut metadata_cache);
         match result {
             Ok(ord) => ord,
-            Err(e) => {println!("{}", e); Ordering::Less},
+            Err(e) => {
+                println!("{}", e);
+                Ordering::Less
+            }
         }
     });
     result
@@ -60,7 +60,6 @@ fn compare_file_dates<'a>(
     b: &'a String,
     cache: &mut HashMap<String, fs::Metadata>,
 ) -> Result<Ordering, String> {
-
     let a_creation_date = {
         let a_meta: &Metadata = get_metadata(a, cache)?;
         a_meta.created().map_err(|_| "Unable to get create date")?

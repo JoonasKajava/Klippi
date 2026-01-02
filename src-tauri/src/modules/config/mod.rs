@@ -29,7 +29,7 @@ impl Configuration {
 
 use std::{
     fs::{self},
-    path::{Path},
+    path::Path,
     sync::Mutex,
 };
 
@@ -61,7 +61,8 @@ impl<T: FileConfig + for<'de> Deserialize<'de>> Init for T {
                 .expect("Unable to save config");
             default
         } else {
-            let config_string = fs::read_to_string(config_location).expect("Unable to open config file");
+            let config_string =
+                fs::read_to_string(config_location).expect("Unable to open config file");
             match toml::from_str::<Self>(&config_string) {
                 Ok(x) => x,
                 Err(e) => {
@@ -94,12 +95,12 @@ impl<T: FileConfig + Serialize> Save for T {
 #[cfg(test)]
 mod tests {
 
-    use std::{io::Write, fs::File};
+    use std::{fs::File, io::Write};
 
     use super::*;
     use anyhow::Ok;
     use tempfile::tempdir;
-    #[derive(Debug, Serialize, Deserialize, Clone,)]
+    #[derive(Debug, Serialize, Deserialize, Clone)]
     struct TestConfig {
         pub field1: String,
         pub field2: String,
@@ -172,7 +173,8 @@ mod tests {
 
         assert_eq!(
             existing_config.field2, "default_field2",
-            "Config file initialization must replace invalid values with default values");
+            "Config file initialization must replace invalid values with default values"
+        );
 
         Ok(())
     }

@@ -1,16 +1,35 @@
 {
   "build": {
-    "beforeDevCommand": "pnpm dev",
-    "beforeBuildCommand": "pnpm build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../build",
-    "withGlobalTauri": false
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../build",
+    "devUrl": "http://localhost:1420"
   },
-  "package": {
-    "productName": "Klippi",
-    "version": "1.1.0"
+  "bundle": {
+    "targets": "all",
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "linux": {
+      "deb": {
+        "depends": [
+          "ffmpeg"
+        ],
+        "files": {}
+      }
+    },
+    "createUpdaterArtifacts": "v1Compatible"
   },
-  "tauri": {
+  "productName": "Klippi",
+  "mainBinaryName": "Klippi",
+  "version": "1.1.0",
+  "identifier": "klippi",
+  "plugins": {
     "cli": {
       "args": [
         {
@@ -20,90 +39,18 @@
         }
       ]
     },
-    "allowlist": {
-      "path": {
-        "all": true
-      },
-      "protocol": {
-        "all": true,
-        "asset": true,
-        "assetScope": ["**/*"]
-      },
-      "dialog": {
-        "all": true,
-        "ask": true,
-        "confirm": true,
-        "message": true,
-        "open": true
-      },
-      "all": false,
-      "window": {
-        "all": false,
-        "center": false,
-        "close": true,
-        "create": false,
-        "hide": true,
-        "maximize": true,
-        "minimize": true,
-        "print": false,
-        "requestUserAttention": true,
-        "setAlwaysOnTop": false,
-        "setContentProtected": false,
-        "setCursorGrab": false,
-        "setCursorIcon": false,
-        "setCursorPosition": false,
-        "setCursorVisible": false,
-        "setDecorations": false,
-        "setFocus": false,
-        "setFullscreen": true,
-        "setIcon": false,
-        "setIgnoreCursorEvents": false,
-        "setMaxSize": false,
-        "setMinSize": false,
-        "setPosition": false,
-        "setResizable": false,
-        "setSize": false,
-        "setSkipTaskbar": false,
-        "setTitle": true,
-        "show": true,
-        "startDragging": true,
-        "unmaximize": true,
-        "unminimize": true
-      },
-      "shell": {
-        "all": false,
-        "open": true
-      }
-    },
-    "bundle": {
-      "deb": {
-        "depends": ["ffmpeg"],
-        "files": {}
-      },
-      "active": true,
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "klippi",
-      "targets": "all"
-    },
-    "security": {
-      "csp": null
-    },
     "updater": {
       "windows": {
         "installMode": "passive",
         "installerArgs": []
       },
-      "active": true,
-      "endpoints": ["https://github.com/JoonasKajava/Klippi/releases/latest/download/latest.json"],
-      "dialog": false,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDZBOTMyN0M5ODIxQUIzNjcKUldSbnN4cUN5U2VUYXZLMEJPeHNYaU95ZWtQNDJxK3lNeW9MenFNT29RMTR3MjNDcVFJRHJxMlIK"
-    },
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDZBOTMyN0M5ODIxQUIzNjcKUldSbnN4cUN5U2VUYXZLMEJPeHNYaU95ZWtQNDJxK3lNeW9MenFNT29RMTR3MjNDcVFJRHJxMlIK",
+      "endpoints": [
+        "https://github.com/JoonasKajava/Klippi/releases/latest/download/latest.json"
+      ]
+    }
+  },
+  "app": {
     "windows": [
       {
         "decorations": false,
@@ -113,8 +60,19 @@
         "width": 1000,
         "height": 700,
         "minHeight": 700,
-        "minWidth":  1000
+        "minWidth": 1000,
+        "useHttpsScheme": true
       }
-    ]
+    ],
+    "withGlobalTauri": false,
+    "security": {
+      "assetProtocol": {
+        "scope": [
+          "**/*"
+        ],
+        "enable": true
+      },
+      "csp": null
+    }
   }
 }

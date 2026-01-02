@@ -18,23 +18,26 @@ dependencies = ["libarchive"]
 x86_64-pc-windows-msvc = { triplet = "x64-windows-static-md", dependencies = ["libarchive"] }
 
 [build-dependencies]
-tauri-build = { version = "1.5.0", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "1.5.2", features = ["cli", "dialog-all", "notification", "path-all", "protocol-all", "shell-open", "updater", "window-close", "window-hide", "window-maximize", "window-minimize", "window-request-user-attention", "window-set-fullscreen", "window-set-title", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize"] }
+tauri = { version = "2", features = ["protocol-asset"] }
 serde = { version = "1.0", features = ["derive", "rc"] }
 wax = "0.6.0"
 lazy_static = "1.4.0"
 anyhow = "1.0.71"
-reqwest = {version = "0.11.18", features = ["stream"] }
+reqwest = {version = "0.13.1", features = ["stream"] }
 futures-util = "0.3.28"
-compress-tools = "0.14.3"
-md5 = "0.7.0"
-ts-rs = "7.0.0"
-fern = "0.6.2"
+compress-tools = "0.15.1"
+md5 = "0.8.0"
+ts-rs = "11.1.0"
+fern = "0.7.1"
 humantime = "2.1.0"
 log = "0.4.19"
-toml = "0.8.2"
+toml = "0.9.10"
+tauri-plugin-process = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-dialog = "2"
 
 
 [features]
@@ -43,5 +46,9 @@ toml = "0.8.2"
 custom-protocol = ["tauri/custom-protocol"]
 
 [dev-dependencies]
-filetime_creation = "0.1.5"
+filetime_creation = "0.2.0"
 tempfile = "3.6.0"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-cli = "2"
+tauri-plugin-updater = "2"

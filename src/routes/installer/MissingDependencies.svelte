@@ -1,8 +1,9 @@
 <script lang="ts">
     import { getName } from '@tauri-apps/api/app';
     import { missingDependencies } from '$lib/stores/InstallerStore';
-    import { appWindow } from '@tauri-apps/api/window';
+    import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
     import DependencyDisplay from './DependencyDisplay.svelte';
+const appWindow = getCurrentWebviewWindow()
 
     let appName: string;
     getName().then((name) => (appName = name)).catch(console.error);

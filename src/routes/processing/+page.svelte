@@ -2,8 +2,9 @@
     import type { Progress } from '$lib/models/Progress';
     import { duration } from '$lib/stores/ClipOptionsStore';
     import type { Event, UnlistenFn } from '@tauri-apps/api/event';
-    import { appWindow } from '@tauri-apps/api/window';
+    import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
     import { onDestroy } from 'svelte';
+const appWindow = getCurrentWebviewWindow()
 
     let unlisten: UnlistenFn;
 

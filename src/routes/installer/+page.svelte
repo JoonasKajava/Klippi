@@ -3,7 +3,7 @@
     import MissingDependencies from './MissingDependencies.svelte';
     import { fly } from 'svelte/transition';
     import Downloading from './Steps/Downloading.svelte';
-    import { appWindow } from '@tauri-apps/api/window';
+    import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
     import type { Event, UnlistenFn } from '@tauri-apps/api/event';
     import { onDestroy } from 'svelte';
     import Installing from './Steps/Installing.svelte';
@@ -11,6 +11,7 @@
     import Done from './Steps/Done.svelte';
     import type { StepChange } from '$lib/models/StepChange';
     import { missingDependencies } from '$lib/stores/InstallerStore';
+const appWindow = getCurrentWebviewWindow()
 
     interface Step {
         name: string

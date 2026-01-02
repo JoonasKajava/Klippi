@@ -1,9 +1,10 @@
 <script lang="ts">
     import { getName } from '@tauri-apps/api/app';
-    import { appWindow } from '@tauri-apps/api/window';
+    import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
     import TitleBarLink from './TitleBarLink.svelte';
     import { selectedVideo } from '$lib/stores/VideoEditorStore';
     import { dependenciesHasBeenVerified } from '$lib/stores/InstallerStore';
+const appWindow = getCurrentWebviewWindow()
 
     const appName = getName();
 

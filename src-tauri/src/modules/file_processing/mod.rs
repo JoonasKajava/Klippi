@@ -1,2 +1,2 @@
-pub mod video_metadata;
 pub mod http;
+pub mod video_metadata;

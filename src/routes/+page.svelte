@@ -1,14 +1,14 @@
 <script lang="ts">
-    import { convertFileSrc, invoke } from '@tauri-apps/api/tauri';
+    import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 
-    import { open } from '@tauri-apps/api/dialog';
+    import { open } from '@tauri-apps/plugin-dialog';
     import { videoDir } from '@tauri-apps/api/path';
     import { fly } from 'svelte/transition';
     import { error } from '@sveltejs/kit';
     import type { VideoData } from '$lib/models/VideoData';
     import { goto } from '$app/navigation';
     import { selectedVideo } from '$lib/stores/VideoEditorStore';
-    import { getMatches } from '@tauri-apps/api/cli';
+    import { getMatches } from '@tauri-apps/plugin-cli';
 
     import { dependenciesHasBeenVerified, missingDependencies } from '$lib/stores/InstallerStore';
     import { clipEnd, clipStart } from '$lib/stores/ClipOptionsStore';

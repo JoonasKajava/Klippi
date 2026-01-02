@@ -1,5 +1,3 @@
-
-
 pub fn clamp<T: PartialOrd>(value: T, min: T, max: T) -> T {
     if value < min {
         return min;

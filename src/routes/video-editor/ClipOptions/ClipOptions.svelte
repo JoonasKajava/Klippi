@@ -6,7 +6,7 @@
     import { fly } from 'svelte/transition';
     import Stats from './Stats.svelte';
 
-    import { invoke } from '@tauri-apps/api/tauri';
+    import { invoke } from '@tauri-apps/api/core';
     import type { ClipCreationOptions } from '$lib/models/ClipCreationOptions';
     import {
         calculatedAudioBitrate,

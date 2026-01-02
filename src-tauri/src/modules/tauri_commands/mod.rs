@@ -1,27 +1,23 @@
-use anyhow::{Result};
+use anyhow::Result;
 use log::info;
-use tauri::Manager;
+use std::path::PathBuf;
 use tauri::api::path::app_data_dir;
-use std::{path::PathBuf};
+use tauri::Manager;
 use tauri::State;
 use tauri::Window;
 use ts_rs::TS;
 
 use crate::modules::config::user_settings::UserSettings;
+use crate::modules::ffmpeg::models::output_format::Limitation;
 use crate::modules::ffmpeg::VersionResultError::NotInstalled;
 use crate::modules::ffmpeg::VersionResultError::ParseError;
-use crate::modules::ffmpeg::models::output_format::Limitation;
 
 use super::config::Configuration;
 use super::ffmpeg::ffmpeg::get_ffmpeg_location;
 use super::ffmpeg::models::output_format::OutputFormat;
 use super::{
     ffmpeg::{
-        ffmpeg_factory::{
-            create_clip_command,
-        },
-        get_version,
-        installer::install_ffmpeg,
+        ffmpeg_factory::create_clip_command, get_version, installer::install_ffmpeg,
         models::clip_creation_options::ClipCreationOptions,
     },
     utils::filesystem_utils::PathBufExtensions,
@@ -54,9 +50,7 @@ pub enum TimelineThumbnailsResult {
 }
 
 #[tauri::command]
-pub async fn verify_dependencies(
-    window: Window,
-) -> Result<Vec<String>, &'static str> {
+pub async fn verify_dependencies(window: Window) -> Result<Vec<String>, &'static str> {
     info!("Verifying dependencies");
     let mut failed_dependencies: Vec<String> = Vec::new();
 
@@ -81,9 +75,7 @@ pub async fn verify_dependencies(
     Ok(failed_dependencies)
 }
 #[tauri::command]
-pub async fn install_dependencies(
-    window: Window
-) -> Result<String, String> {
+pub async fn install_dependencies(window: Window) -> Result<String, String> {
     let config = window.app_handle().config();
     let ffmpeg_location = app_data_dir(&config).expect("Unable to get app data dir");
     let result = install_ffmpeg(window, &ffmpeg_location).await;
@@ -107,10 +99,12 @@ pub async fn create_clip(
         ..options
     };
 
-    final_options.to.set_extension(final_options.format.to_string().to_lowercase());
+    final_options
+        .to
+        .set_extension(final_options.format.to_string().to_lowercase());
 
-    let command =
-        create_clip_command(&final_options, &window.config()).map_err(|_| "Unable to get command".to_string())?;
+    let command = create_clip_command(&final_options, &window.config())
+        .map_err(|_| "Unable to get command".to_string())?;
 
     command
         .run(move |progress| {
