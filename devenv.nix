@@ -1,35 +1,23 @@
-{pkgs, ...}: {
-  packages = with pkgs;
-    [
-      libarchive
-    ]
-    ++ [
-      at-spi2-atk
-      atkmm
-      cairo
-      gdk-pixbuf
-      glib
-      gtk3
-      harfbuzz
-      librsvg
-      libsoup_3
-      pango
-      webkitgtk_4_1
-      openssl
-    ];
+{
+  pkgs,
+  lib,
+  config,
+  inputs,
+  ...
+}: {
+  packages = with pkgs; [libarchive openssl libsoup cairo gdk-pixbuf pango atkmm gtk3 webkitgtk];
 
   scripts.bump.exec = ''
     cz bump --changelog --changelog-to-stdout > CURRENT_CHANGELOG.md;
   '';
-  languages = {
-    rust.enable = true;
-    javascript = {
+
+  languages.rust.enable = true;
+  languages.javascript = {
+    enable = true;
+    npm = {
       enable = true;
-      npm = {
-        enable = true;
-        install.enable = true;
-      };
+      install.enable = true;
     };
-    typescript.enable = true;
   };
+  languages.typescript.enable = true;
 }

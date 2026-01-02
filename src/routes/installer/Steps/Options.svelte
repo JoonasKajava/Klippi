@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { open } from '@tauri-apps/plugin-dialog';
+    import { open } from '@tauri-apps/api/dialog';
     import { appDataDir } from '@tauri-apps/api/path';
     import Step from './Step.svelte';
     import { ffmpegInstallLocation } from '../../../lib/stores/InstallerStore';

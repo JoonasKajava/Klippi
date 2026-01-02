@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { join } from '@tauri-apps/api/path';
-import { convertFileSrc } from '@tauri-apps/api/core';
+import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { clipEnd, clipStart } from '$lib/stores/ClipOptionsStore';
 
 const clamp = (num: number, min: number, max: number) => Math.min(Math.max(num, min), max);

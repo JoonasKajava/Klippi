@@ -1,14 +1,13 @@
 <script lang="ts">
     import { error } from '@sveltejs/kit';
-    import { invoke } from '@tauri-apps/api/core';
+    import { invoke } from '@tauri-apps/api/tauri';
     import type { Event, UnlistenFn } from '@tauri-apps/api/event';
-    import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
+    import { appWindow } from '@tauri-apps/api/window';
     import prettyBytes from 'pretty-bytes';
     import Step from './Step.svelte';
     import { onDestroy, onMount } from 'svelte';
     import type { DownloadProgress } from '$lib/models/DownloadProgress';
     import type { FlyParams } from 'svelte/transition';
-const appWindow = getCurrentWebviewWindow()
 
     let progress: DownloadProgress = {
         progress: 0,

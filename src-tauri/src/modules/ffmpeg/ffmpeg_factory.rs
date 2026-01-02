@@ -8,11 +8,7 @@ use super::{
     models::clip_creation_options::ClipCreationOptions,
 };
 
-pub fn create_timeline_thumbnails_command(
-    from: &PathBuf,
-    into: &PathBuf,
-    config: &Config,
-) -> Result<FFmpegBuilder> {
+pub fn create_timeline_thumbnails_command(from: &PathBuf, into: &PathBuf, config: &Config) -> Result<FFmpegBuilder> {
     let mut instance = FFmpegBuilder::new(config);
 
     let thumbnails_folder = into.join("%d.bmp");

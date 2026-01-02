@@ -1,8 +1,9 @@
+use std::{path::PathBuf, process::Command};
 use log::info;
 use md5;
-use std::{path::PathBuf, process::Command};
 
 use crate::modules::utils::command_utils::NoWindow;
+
 
 pub trait PathBufExtensions {
     fn to_hashed(&self) -> PathBuf;

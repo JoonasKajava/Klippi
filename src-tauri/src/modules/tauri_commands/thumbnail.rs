@@ -1,16 +1,9 @@
-use std::{fs, path::PathBuf};
+use std::{path::PathBuf, fs};
 
-use log::{error, info};
-use tauri::{Manager, State, Window};
+use log::{info, error};
+use tauri::{Window, State, Manager};
 
-use crate::modules::{
-    config::{
-        constants::{SUPPORTED_VIDEO_EXTENSIONS, THUMBNAIL_EXTENSION},
-        Configuration,
-    },
-    ffmpeg::ffmpeg_factory::{create_thumbnail_command, create_timeline_thumbnails_command},
-    utils::filesystem_utils::PathBufExtensions,
-};
+use crate::modules::{config::{Configuration, constants::{THUMBNAIL_EXTENSION, SUPPORTED_VIDEO_EXTENSIONS}}, utils::filesystem_utils::PathBufExtensions, ffmpeg::ffmpeg_factory::{create_thumbnail_command, create_timeline_thumbnails_command}};
 
 use super::TimelineThumbnailsResult;
 
@@ -21,6 +14,7 @@ pub async fn get_supported_video_extensions() -> Vec<String> {
         .map(|x| x.to_string())
         .collect()
 }
+
 
 #[tauri::command]
 pub async fn get_thumbnail(
@@ -59,6 +53,7 @@ pub async fn get_thumbnail(
         output_file_path.display()
     );
 
+
     let command = match create_thumbnail_command(of, &output_file_path, &window.config()) {
         Ok(command) => command,
         Err(e) => {
@@ -76,6 +71,7 @@ pub async fn get_thumbnail(
         .map_err(|e| e.to_string())?;
     Ok(output_file_path)
 }
+
 
 #[tauri::command]
 pub async fn get_timeline_thumbnails(

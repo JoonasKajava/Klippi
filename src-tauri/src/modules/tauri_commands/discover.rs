@@ -1,11 +1,13 @@
 use std::path::PathBuf;
 
 use anyhow::Context;
-use tauri::{State, Window};
+use tauri::{Window, State};
 
 use crate::modules::{config::Configuration, file_processing::video_metadata::find_latest_videos};
 
-use super::{thumbnail::get_thumbnail, VideoData};
+use super::{VideoData, thumbnail::get_thumbnail};
+
+
 
 #[tauri::command]
 pub async fn discover_videos(

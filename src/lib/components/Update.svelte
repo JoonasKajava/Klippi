@@ -1,7 +1,7 @@
 <script lang="ts">
     import { getName, getVersion } from '@tauri-apps/api/app';
-    import { installUpdate, type UpdateManifest } from '@tauri-apps/plugin-updater';
-    import { relaunch } from '@tauri-apps/plugin-process'
+    import { installUpdate, type UpdateManifest } from '@tauri-apps/api/updater';
+    import { relaunch } from '@tauri-apps/api/process'
     import { fly } from 'svelte/transition';
 
     export let manifest: UpdateManifest | undefined;

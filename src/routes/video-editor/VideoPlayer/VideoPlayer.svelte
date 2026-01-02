@@ -1,12 +1,11 @@
 <script lang="ts">
-    import {convertFileSrc} from '@tauri-apps/api/core';
+    import {convertFileSrc} from '@tauri-apps/api/tauri';
     import {fly} from 'svelte/transition';
     import VolumeController from './VolumeController.svelte';
-    import {getCurrentWebviewWindow} from '@tauri-apps/api/webviewWindow';
+    import {appWindow} from '@tauri-apps/api/window';
     import Timeline from '../Timeline/Timeline.svelte';
     import {clipEnd, clipStart, duration, speed} from '$lib/stores/ClipOptionsStore';
     import {videoDuration} from '$lib/stores/VideoEditorStore';
-const appWindow = getCurrentWebviewWindow()
 
     export let video: string;
     let timeline: Timeline;
