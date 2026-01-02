@@ -33,16 +33,6 @@ pub fn clean_thumbnails(thumbnails_path: impl AsRef<Path>) {
 
     let glob = Glob::new(glob_pattern).unwrap();
 
-    if !thumbnails_path.as_ref().exists() {
-        if let Err(e) = fs::create_dir_all(&thumbnails_path) {
-            error!(
-                "Error creating thumbnails directory {:?}: {}",
-                thumbnails_path.as_ref(),
-                e
-            );
-        }
-    }
-
     let result = glob
         .walk(thumbnails_path)
         .map(|x| match x {

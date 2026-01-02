@@ -1,8 +1,8 @@
 <script lang="ts">
     import { fly } from 'svelte/transition';
     import TitleBar from './TitleBar.svelte';
-    //import Update from '$lib/components/Update.svelte';
-    //import { checkUpdate, type UpdateManifest } from '@tauri-apps/plugin-updater';
+    import Update from '$lib/components/Update.svelte';
+    import { checkUpdate, type UpdateManifest } from '@tauri-apps/plugin-updater';
 
     export let data;
 
@@ -27,6 +27,6 @@
     </div>
 {/key}
 
-<!-- {#if updateAvailable} -->
-<!--     <Update open={updateAvailable} manifest={updateManifest}/> -->
-<!-- {/if} -->
+{#if updateAvailable}
+    <Update open={updateAvailable} manifest={updateManifest}/>
+{/if}
