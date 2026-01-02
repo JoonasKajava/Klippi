@@ -1,7 +1,7 @@
 use std::{fs, path::PathBuf};
 
 use log::{error, info};
-use tauri::{Emitter, Manager, State, Window};
+use tauri::{Manager, State, Window};
 
 use crate::modules::{
     config::{
@@ -59,7 +59,7 @@ pub async fn get_thumbnail(
         output_file_path.display()
     );
 
-    let command = match create_thumbnail_command(of, &output_file_path, &window.app_handle()) {
+    let command = match create_thumbnail_command(of, &output_file_path, &window.config()) {
         Ok(command) => command,
         Err(e) => {
             let error = format!("Unable to create thumbnail command: {}", e);
@@ -95,7 +95,7 @@ pub async fn get_timeline_thumbnails(
         return Ok(TimelineThumbnailsResult::Found(folder_path));
     }
 
-    let command = create_timeline_thumbnails_command(&of, &folder_path, &window.app_handle()).unwrap();
+    let command = create_timeline_thumbnails_command(&of, &folder_path, &window.config()).unwrap();
     command
         .run(move |progress| {
             window

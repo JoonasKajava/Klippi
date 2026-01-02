@@ -2033,7 +2033,6 @@ dependencies = [
  "md5",
  "reqwest 0.13.1",
  "serde",
- "serde_json",
  "tauri",
  "tauri-build",
  "tauri-plugin-cli",

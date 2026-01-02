@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use tauri::{AppHandle, Manager};
+use tauri::api::path::home_dir;
+use tauri::api::path::video_dir;
+use tauri::Config;
 use ts_rs::TS;
 
 use super::{DefaultValues, FileConfig};
@@ -15,21 +17,21 @@ pub struct UserSettings {
 impl FileConfig for UserSettings {}
 
 impl DefaultValues for UserSettings {
-    fn default(app: &AppHandle) -> UserSettings {
+    fn default(_config: &Config) -> UserSettings {
         UserSettings {
-            clip_location: get_video_dir(app)
+            clip_location: get_video_dir()
                 .join("Clips")
                 .into_os_string()
                 .into_string()
                 .unwrap(),
-            videos_directory: get_video_dir(app).into_os_string().into_string().unwrap(),
+            videos_directory: get_video_dir().into_os_string().into_string().unwrap(),
         }
     }
 }
 
-fn get_video_dir(app: &AppHandle) -> PathBuf {
-    match app.path().video_dir() {
-        Ok(dir) => dir,
-        Err(_) => app.path().home_dir().expect("Unable to get home dir"),
+fn get_video_dir() -> PathBuf {
+    match video_dir() {
+        Some(dir) => dir,
+        None => home_dir().expect("Unable to get home dir"),
     }
 }

@@ -12,16 +12,16 @@ pub struct Configuration {
 }
 
 impl Configuration {
-    pub fn init(app: &AppHandle) -> Self {
-        let config_dir = app.path().app_config_dir().expect("Unable to get config dir");
+    pub fn init(config: &Config) -> Self {
+        let config_dir = app_config_dir(config).expect("Unable to get config dir");
         Configuration {
             app_config: Mutex::new(AppConfig::init(
                 config_dir.join("app_config.toml"),
-                AppConfig::default(app),
+                AppConfig::default(config),
             )),
             user_settings: Mutex::new(UserSettings::init(
                 config_dir.join("user_settings.toml"),
-                UserSettings::default(app),
+                UserSettings::default(config),
             )),
         }
     }
@@ -35,7 +35,7 @@ use std::{
 
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Manager};
+use tauri::{api::path::app_config_dir, Config};
 
 use self::{app_config::AppConfig, user_settings::UserSettings};
 
@@ -48,7 +48,7 @@ pub trait Save {
 }
 
 pub trait DefaultValues {
-    fn default(app: &AppHandle) -> Self;
+    fn default(config: &Config) -> Self;
 }
 
 pub trait FileConfig: Save + Init + DefaultValues {}
@@ -116,7 +116,7 @@ mod tests {
     }
 
     impl DefaultValues for TestConfig {
-        fn default(_app: &AppHandle) -> Self {
+        fn default(_config: &Config) -> Self {
             TestConfig {
                 field1: "default_field1".into(),
                 field2: "default_field2".into(),

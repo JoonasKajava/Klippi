@@ -5,7 +5,7 @@ use compress_tools::*;
 use std::fs::{self, File};
 use std::io::{Seek, SeekFrom};
 use std::path::PathBuf;
-use tauri::{Emitter, Window};
+use tauri::Window;
 use ts_rs::TS;
 
 use super::get_version;

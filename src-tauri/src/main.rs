@@ -29,7 +29,7 @@ fn main() {
         .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
-            let config = Configuration::init(&app.handle());
+            let config = Configuration::init(&app.config());
 
             let thumbnails_location =
                 PathBuf::from(config.app_config.lock().unwrap().thumbnail_cache.clone());

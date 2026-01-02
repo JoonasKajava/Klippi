@@ -1,7 +1,7 @@
 use anyhow::Result;
 use log::info;
 use std::path::PathBuf;
-use tauri::Emitter;
+use tauri::api::path::app_data_dir;
 use tauri::Manager;
 use tauri::State;
 use tauri::Window;
@@ -54,7 +54,7 @@ pub async fn verify_dependencies(window: Window) -> Result<Vec<String>, &'static
     info!("Verifying dependencies");
     let mut failed_dependencies: Vec<String> = Vec::new();
 
-    let ffmpeg_location = get_ffmpeg_location(&window.app_handle());
+    let ffmpeg_location = get_ffmpeg_location(&window.app_handle().config());
 
     let ffmpeg_version = get_version("ffmpeg", &ffmpeg_location);
     let ffprobe_version = get_version("ffprobe", &ffmpeg_location);
@@ -76,8 +76,8 @@ pub async fn verify_dependencies(window: Window) -> Result<Vec<String>, &'static
 }
 #[tauri::command]
 pub async fn install_dependencies(window: Window) -> Result<String, String> {
-    let app_handle = window.app_handle();
-    let ffmpeg_location = app_handle.path().app_data_dir().expect("Unable to get app data dir");
+    let config = window.app_handle().config();
+    let ffmpeg_location = app_data_dir(&config).expect("Unable to get app data dir");
     let result = install_ffmpeg(window, &ffmpeg_location).await;
     match result {
         Ok(_) => Ok("Successful".into()),
@@ -103,7 +103,7 @@ pub async fn create_clip(
         .to
         .set_extension(final_options.format.to_string().to_lowercase());
 
-    let command = create_clip_command(&final_options, &window.app_handle())
+    let command = create_clip_command(&final_options, &window.config())
         .map_err(|_| "Unable to get command".to_string())?;
 
     command
