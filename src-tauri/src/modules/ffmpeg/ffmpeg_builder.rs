@@ -1,7 +1,7 @@
 use anyhow::{bail, Result};
 use std::fmt;
 use std::{path::PathBuf, process::Command};
-use tauri::{api::path::app_data_dir, Config};
+use tauri::{ AppHandle, Config, Manager};
 
 use crate::modules::utils::command_utils::NoWindow;
 
@@ -34,10 +34,10 @@ impl Param {
 }
 
 impl<'a> FFmpegBuilder {
-    pub fn new(config: &Config) -> FFmpegBuilder {
+    pub fn new(app: &AppHandle) -> FFmpegBuilder {
         #[cfg(target_os = "windows")]
         let working_directory = Some(
-            app_data_dir(config)
+            app.path().app_data_dir()
                 .expect("Unable to get app data dir")
                 .join("ffmpeg"),
         );
@@ -139,7 +139,7 @@ impl<'a> FFmpegBuilder {
 
 impl<'a> fmt::Display for FFmpegBuilder {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let str = format!("{:?}", self.clone().to_command());
+        let str = format!("{:?}", self.to_command());
         f.write_str(str.as_str())
     }
 }

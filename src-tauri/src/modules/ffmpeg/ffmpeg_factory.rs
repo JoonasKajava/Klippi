@@ -1,7 +1,7 @@
 use std::{fs, path::PathBuf};
 
 use anyhow::Result;
-use tauri::Config;
+use tauri::{AppHandle, Config};
 
 use super::{
     ffmpeg_builder::{FFmpegBuilder, File, Param},
@@ -11,9 +11,9 @@ use super::{
 pub fn create_timeline_thumbnails_command(
     from: &PathBuf,
     into: &PathBuf,
-    config: &Config,
+    app: &AppHandle,
 ) -> Result<FFmpegBuilder> {
-    let mut instance = FFmpegBuilder::new(config);
+    let mut instance = FFmpegBuilder::new(app);
 
     let thumbnails_folder = into.join("%d.bmp");
 
@@ -42,9 +42,9 @@ pub fn create_timeline_thumbnails_command(
 pub fn create_thumbnail_command(
     of: &PathBuf,
     into: &PathBuf,
-    config: &Config,
+    app: &AppHandle,
 ) -> Result<FFmpegBuilder> {
-    let mut instance = FFmpegBuilder::new(config);
+    let mut instance = FFmpegBuilder::new(app);
 
     instance
         .input(File {
@@ -66,9 +66,9 @@ pub fn create_thumbnail_command(
 
 pub fn create_clip_command(
     options: &ClipCreationOptions,
-    config: &Config,
+    app: &AppHandle,
 ) -> Result<FFmpegBuilder> {
-    let mut instance = FFmpegBuilder::new(config);
+    let mut instance = FFmpegBuilder::new(app);
 
     let framerate: f64;
     if options.speed < 1.0 {

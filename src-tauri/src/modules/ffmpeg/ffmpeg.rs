@@ -6,14 +6,14 @@ use std::{
     process::{Child, Stdio},
     thread,
 };
-use tauri::{api::path::app_data_dir, Config};
+use tauri::{ AppHandle, Manager};
 
 use crate::modules::ffmpeg::progress::{Progress, Status};
 
 use super::ffmpeg_builder::{FFmpegBuilder, Param};
 
-pub fn get_ffmpeg_location(config: &Config) -> PathBuf {
-    app_data_dir(config)
+pub fn get_ffmpeg_location(app: &AppHandle) -> PathBuf {
+    app.path().app_data_dir()
         .expect("Unable to get app data dir")
         .join("ffmpeg")
 }

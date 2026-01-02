@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use tauri::{api::path::app_cache_dir, Config};
+use tauri::{AppHandle, Manager};
 use ts_rs::TS;
 
 use super::{DefaultValues, FileConfig};
@@ -13,9 +13,9 @@ pub struct AppConfig {
 impl FileConfig for AppConfig {}
 
 impl DefaultValues for AppConfig {
-    fn default(_config: &Config) -> Self {
+    fn default(app: &AppHandle) -> Self {
         AppConfig {
-            thumbnail_cache: app_cache_dir(_config)
+            thumbnail_cache: app.path().app_cache_dir()
                 .expect("Unable to get app cache dir")
                 .join("thumbnails")
                 .to_string_lossy()
